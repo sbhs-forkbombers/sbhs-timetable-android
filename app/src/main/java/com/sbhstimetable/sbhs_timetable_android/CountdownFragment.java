@@ -1,13 +1,15 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
+import android.content.Context;
 
 
 /**
@@ -25,7 +27,7 @@ public class CountdownFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
 
     // TODO: Rename and change types of parameters
-    private String mSectionNumber;
+    private Integer mSectionNumber;
 
     private OnFragmentInteractionListener mListener;
 
@@ -38,11 +40,8 @@ public class CountdownFragment extends Fragment {
      * @return A new instance of fragment CountdownFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CountdownFragment newInstance(Integer sectionNumber) {
+    public static CountdownFragment newInstance() {
         CountdownFragment fragment = new CountdownFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
         return fragment;
     }
     public CountdownFragment() {
@@ -53,8 +52,14 @@ public class CountdownFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mSectionNumber = getArguments().getString(ARG_SECTION_NUMBER);
+            mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+		Context context = getActivity();
+		CharSequence text = "Countdown! School never ends!";
+		int duration = Toast.LENGTH_SHORT;
+
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.show();
     }
 
     @Override

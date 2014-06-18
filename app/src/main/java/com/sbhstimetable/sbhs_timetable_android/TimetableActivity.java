@@ -52,9 +52,17 @@ public class TimetableActivity extends Activity
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction()
-				.replace(R.id.container, CountdownFragment.newInstance(position + 1))
-				.commit();
+		switch (position) {
+			case 0:
+				fragmentManager.beginTransaction()
+						.replace(R.id.container, CountdownFragment.newInstance())
+						.commit();
+			default:
+				fragmentManager.beginTransaction()
+						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+						.commit();
+
+		}
 	}
 
 	public void onSectionAttached(int number) {

@@ -1,0 +1,11 @@
+<resources>
+
+	<!-- Base application theme. -->
+	<style name="AppTheme" parent="android:Theme.Holo">
+		<!-- Customize your theme here. -->
+		<!--<item name="android:background">@android:color/transparent</item>
+		<item name="android:windowTranslucentNavigation">true</item>
+		<item name="android:windowTranslucentStatus">true</item>-->
+	</style>
+
+</resources>

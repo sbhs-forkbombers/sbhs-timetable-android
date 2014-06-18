@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 
 public class TimetableActivity extends Activity
@@ -37,15 +40,12 @@ public class TimetableActivity extends Activity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
-
-		mNavigationDrawerFragment = (NavigationDrawerFragment)
-											getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        ApiAccessor.load(this);
+		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
 
 		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(
-											   R.id.navigation_drawer,
-											   (DrawerLayout) findViewById(R.id.drawer_layout));
+		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 	}
 
 	@Override
@@ -109,6 +109,11 @@ public class TimetableActivity extends Activity
 		if (id == R.id.action_settings) {
 			return true;
 		}
+        else if (id == R.id.action_login) {
+            // log in
+            ApiAccessor.login(this);
+            return true;
+        }
 		return super.onOptionsItemSelected(item);
 	}
 

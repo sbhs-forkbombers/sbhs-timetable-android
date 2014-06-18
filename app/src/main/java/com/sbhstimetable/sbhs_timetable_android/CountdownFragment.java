@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ public class CountdownFragment extends Fragment {
     private static final String ARG_SECTION_NUMBER = "1";
 
     // TODO: Rename and change types of parameters
-    private Integer mSectionNumber;
+    private int mSectionNumber;
 
     private OnFragmentInteractionListener mListener;
 

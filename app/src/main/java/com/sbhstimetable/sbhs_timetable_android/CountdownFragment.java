@@ -9,8 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.Context;
+
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 
 /**
@@ -35,9 +38,6 @@ public class CountdownFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment CountdownFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -56,9 +56,9 @@ public class CountdownFragment extends Fragment {
             mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
 		Context context = getActivity();
-		CharSequence text = "Countdown! School never ends!";
+		String text = "Countdown! School never ends!";
 		int duration = Toast.LENGTH_SHORT;
-
+        Log.i("timetable", "My tag is " + this.getTag());
 		Toast toast = Toast.makeText(context, text, duration);
 		toast.show();
     }
@@ -67,7 +67,23 @@ public class CountdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_countdown, container, false);
+        View v =  inflater.inflate(R.layout.fragment_countdown, container, false);
+        TextView z = (TextView)v.findViewById(R.id.view_text_status);
+        if (z != null) {
+            String b = ApiAccessor.getToday(this.getActivity());
+            if (b != null) {
+                z.setText(b);
+            }
+        }
+        return v;
+    }
+
+    public void doTimetable() {
+        TextView z = (TextView)this.getActivity().findViewById(R.id.view_text_status);
+        String b = ApiAccessor.getToday(this.getActivity());
+        if (b!= null) {
+            z.setText(b);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

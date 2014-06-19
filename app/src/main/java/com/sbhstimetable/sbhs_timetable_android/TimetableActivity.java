@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,13 +20,14 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 
 public class TimetableActivity extends Activity
 		implements NavigationDrawerFragment.NavigationDrawerCallbacks, CountdownFragment.OnFragmentInteractionListener {
-
+    private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -55,7 +57,7 @@ public class TimetableActivity extends Activity
 		switch (position) {
 			case 0:
 				fragmentManager.beginTransaction()
-						.replace(R.id.container, CountdownFragment.newInstance())
+						.replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
 						.commit();
 			default:
 				fragmentManager.beginTransaction()
@@ -113,6 +115,16 @@ public class TimetableActivity extends Activity
             // log in
             ApiAccessor.login(this);
             return true;
+        }
+        else if (id == R.id.action_load_today) {
+            CountdownFragment frag = (CountdownFragment) this.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG);
+            if (frag == null) {
+                return true;
+            }
+            else {
+                Toast.makeText(this, "OK", Toast.LENGTH_LONG);
+                frag.doTimetable();
+            }
         }
 		return super.onOptionsItemSelected(item);
 	}

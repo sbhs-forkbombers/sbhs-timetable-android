@@ -54,16 +54,18 @@ public class TimetableActivity extends Activity
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
-		switch (position) {
+		switch (position) { // USE THE BREAK, LUKE!
 			case 0:
 				fragmentManager.beginTransaction()
 						.replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
 						.commit();
+                break;
 			default:
 				fragmentManager.beginTransaction()
 						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
 						.commit();
-
+                break;
+            // HAVE YOU GOT A PLAN BREAK?
 		}
 	}
 

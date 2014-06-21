@@ -3,25 +3,17 @@ package com.sbhstimetable.sbhs_timetable_android.backend;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.cookie.ClientCookie;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.CharBuffer;
-import java.util.Map;
 
 /**
  * Access remote API calls and stuff
@@ -29,13 +21,15 @@ import java.util.Map;
 public class ApiAccessor {
     public static final String baseURL = "http://nodejs.sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
     public static final String PREFS_NAME = "timetablePrefs";
+    public static final String ACTION_TODAY_JSON = "todayData";
+    public static final String EXTRA_JSON_DATA = "jsonString";
     private static String sessionID = null;
 
     public static void load(Context c) {
         // load stored sessionID and whatnot here
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
         sessionID = s.getString("sessionID", null);
-        Log.i("timetable", "Loaded sessionID " + sessionID);
+        Log.i("apiaccessor", "Loaded sessionID " + sessionID);
     }
 
     public static boolean isLoggedIn() {
@@ -58,16 +52,23 @@ public class ApiAccessor {
             return null;
         }
         try {
-            new DownloadFileTask().execute(new URL(baseURL + "/api/today.json"));
+            new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {
-            Log.e("timetable", "wat", e);
+            Log.e("apiaccessor", "wat", e);
         }
 
         return null;
     }
 
     private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
+        private Context c;
+        private final String intentType;
+
+        public DownloadFileTask(Context c, String type) {
+            this.intentType = type;
+            this.c = c;
+        }
 
         @Override
         protected String doInBackground(URL... urls) {
@@ -84,14 +85,22 @@ public class ApiAccessor {
                         result += l;
                         l = br.readLine();
                     }
-                    Log.i("timetable", "Got it: " + result);
-                    return l;
+                    Log.i("apiaccessor", "Got it: " + result);
+                    return result;
                 }
                 catch (Exception e) {
-                    Log.e("timetable", "failed to load " + i.toString(), e);
+                    Log.e("apiaccessor", "failed to load " + i.toString(), e);
                 }
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Intent i = new Intent(this.intentType);
+            i.putExtra(EXTRA_JSON_DATA, result);
+            Log.i("apiaccessor", "sending broadcast " + result);
+            LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
         }
     }
 

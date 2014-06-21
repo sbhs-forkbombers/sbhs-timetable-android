@@ -5,11 +5,14 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -45,7 +48,7 @@ public class TimetableActivity extends Activity
         ApiAccessor.load(this);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mTitle = getTitle();
-
+        LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 	}
@@ -65,7 +68,7 @@ public class TimetableActivity extends Activity
 						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
 						.commit();
                 break;
-            // HAVE YOU GOT A PLAN BREAK?
+            // HAVE YOU GOT A PLAN BREAK?®
 		}
 	}
 
@@ -125,7 +128,7 @@ public class TimetableActivity extends Activity
             }
             else {
                 Toast.makeText(this, "OK", Toast.LENGTH_LONG);
-                frag.doTimetable();
+                ApiAccessor.getToday(this);
             }
         }
 		return super.onOptionsItemSelected(item);
@@ -176,5 +179,18 @@ public class TimetableActivity extends Activity
 																	getArguments().getInt(ARG_SECTION_NUMBER));
 		}
 	}
+
+    private class ReceiveBroadcast extends BroadcastReceiver {
+        private Activity activity;
+        public ReceiveBroadcast(Activity a) {
+            this.activity = a;
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+                ((CountdownFragment)activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG)).doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+            }
+        }
+    }
 
 }

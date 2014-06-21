@@ -58,7 +58,7 @@ public class CountdownFragment extends Fragment {
 		Context context = getActivity();
 		String text = "Countdown! School never ends!";
 		int duration = Toast.LENGTH_SHORT;
-        Log.i("timetable", "My tag is " + this.getTag());
+        Log.i("countdown", "My tag is " + this.getTag());
 		Toast toast = Toast.makeText(context, text, duration);
 		toast.show();
     }
@@ -78,9 +78,9 @@ public class CountdownFragment extends Fragment {
         return v;
     }
 
-    public void doTimetable() {
+    public void doTimetable(String b) {
+        Log.i("countdown", "got json " + b);
         TextView z = (TextView)this.getActivity().findViewById(R.id.view_text_status);
-        String b = ApiAccessor.getToday(this.getActivity());
         if (b!= null) {
             z.setText(b);
         }

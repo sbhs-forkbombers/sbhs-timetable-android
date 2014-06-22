@@ -19,7 +19,8 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName=".TimetableActivity" >
+            android:parentActivityName=".TimetableActivity"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="TimetableActivity" />

@@ -1,12 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<!-- Base application theme. -->
-	<style name="AppTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-	</style>
-
-    <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
-
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/android:Widget.Holo.ActionBar.Solid</item>
     </style>
 
 </resources>

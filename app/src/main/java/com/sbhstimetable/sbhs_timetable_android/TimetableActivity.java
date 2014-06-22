@@ -63,6 +63,9 @@ public class TimetableActivity extends Activity
 						.replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
 						.commit();
                 break;
+            case 3:
+                ApiAccessor.login(this);
+                break;
 			default:
 				fragmentManager.beginTransaction()
 						.replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
@@ -83,6 +86,9 @@ public class TimetableActivity extends Activity
 			case 3:
 				mTitle = getString(R.string.title_section3);
 				break;
+            case 4:
+                mTitle = getString(R.string.action_login);
+                break;
 		}
 	}
 
@@ -127,7 +133,7 @@ public class TimetableActivity extends Activity
                 return true;
             }
             else {
-                Toast.makeText(this, "OK", Toast.LENGTH_LONG);
+                Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
                 ApiAccessor.getToday(this);
             }
         }

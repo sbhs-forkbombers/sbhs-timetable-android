@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -13,18 +14,22 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
-
-import com.sbhstimetable.sbhs_timetable_android.R;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+
+import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
 
 public class LoginActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        WebView wv = new WebView(this);
         getWindow().requestFeature(Window.FEATURE_PROGRESS);
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setTintColor(Color.parseColor("#455ede"));
+        tintManager.setStatusBarTintEnabled(true);
+        setContentView(R.layout.activity_login);
+        WebView wv = (WebView) findViewById(R.id.loginview);
         final Activity me = this;
         wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebChromeClient(new WebChromeClient() {
@@ -49,7 +54,7 @@ public class LoginActivity extends Activity {
                 }
             }
         });
-        setContentView(wv);
+        //setContentView(wv);
         wv.loadUrl(baseURL + "/try_do_oauth?app=1");
     }
 

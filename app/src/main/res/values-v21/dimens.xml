@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="kk_trans_margin">0dp</dimen>
+    <dimen name="kk_notrans_margin">0dp</dimen>
+</resources>

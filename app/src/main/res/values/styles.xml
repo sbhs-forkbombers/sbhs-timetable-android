@@ -3,7 +3,19 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/android:Widget.Holo.ActionBar.Solid</item>
+        <item name="android:actionBarStyle">@style/AppActionBar</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/drawer</item>
+    </style>
+
+    <style name="AppActionBar" parent="android:Widget.Holo.ActionBar.Solid">
+        <item name="android:height">56dp</item>
+        <item name="android:background">@color/primary</item>
+    </style>
+
+    <style name="LoginTheme" parent="android:Theme.Holo">
+        <item name="android:actionBarStyle">@style/AppActionBar</item>
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
 
 </resources>

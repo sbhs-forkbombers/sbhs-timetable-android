@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 
 import java.io.BufferedReader;

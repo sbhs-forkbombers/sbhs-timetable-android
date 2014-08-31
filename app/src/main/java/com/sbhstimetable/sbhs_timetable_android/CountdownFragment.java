@@ -1,24 +1,20 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Context;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 
 /**
@@ -87,19 +83,14 @@ public class CountdownFragment extends Fragment {
     public void doTimetable(String b) {
         Log.i("countdown", "got json " + b);
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-        JSONParser p = new JSONParser();
-        try {
-            JSONObject obj = (JSONObject)p.parse(b);
-            if (!obj.containsKey("timetable")) {
-            }
-            else {
-                JSONObject timetable = (JSONObject)obj.get("timetable");
-                TodayJSONAdapter adapter = new TodayJSONAdapter(timetable);
-                z.setAdapter(adapter);
-            }
+        JsonParser g = new JsonParser();
+        JsonObject obj = g.parse(b).getAsJsonObject();
+        if (!obj.has("timetable")) {
         }
-        catch (ParseException e) {
-            Log.e("countdown","failed to parse json", e);
+        else {
+            JsonObject timetable = obj.get("timetable").getAsJsonObject();
+            TodayJSONAdapter adapter = new TodayJSONAdapter(timetable);
+            z.setAdapter(adapter);
         }
     }
 

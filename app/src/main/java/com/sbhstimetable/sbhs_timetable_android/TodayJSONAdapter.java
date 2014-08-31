@@ -1,33 +1,30 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
+import android.content.Intent;
 import android.database.DataSetObserver;
-import android.util.Log;
-import android.util.TypedValue;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import org.json.simple.JSONObject;
+import com.google.gson.JsonObject;
 
 /**
  * Created by simon on 30/08/2014.
  */
 public class TodayJSONAdapter implements ListAdapter{
-    private JSONObject timetable;
-    public TodayJSONAdapter(JSONObject tt) {
+    private JsonObject timetable;
+    public TodayJSONAdapter(JsonObject tt) {
         this.timetable = tt;
     }
 
-    private JSONObject getEntry(int i) {
+    private JsonObject getEntry(int i) {
         String key = String.valueOf(i+1);
-        return (JSONObject)timetable.get(key);
+        return timetable.get(key).getAsJsonObject();
     }
 
     @Override
@@ -62,9 +59,9 @@ public class TodayJSONAdapter implements ListAdapter{
 
     @Override
     public View getView(int i, View oldView, ViewGroup viewGroup) {
-        RelativeLayout view;
-        TextView header;
-        TextView subtitle;
+        final RelativeLayout view;
+        final TextView header;
+        final TextView subtitle;
         if (oldView instanceof RelativeLayout) {
             view = (RelativeLayout)oldView;
             header = (TextView)view.findViewWithTag("header");
@@ -73,7 +70,7 @@ public class TodayJSONAdapter implements ListAdapter{
         else {
             view = new RelativeLayout(viewGroup.getContext());
             RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            view.setMinimumHeight(100);
+            view.setMinimumHeight(90);
             RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             view.setLayoutParams(p);
@@ -87,14 +84,23 @@ public class TodayJSONAdapter implements ListAdapter{
             subtitle.setTag("subtitle");
             p2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             subtitle.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Small);
+            view.setPadding(20, 0, 20, 0);
             view.addView(header, p1);
             view.addView(subtitle,p2) ;
 
         }
-        JSONObject b = this.getEntry(i);
-        header.setText((String)b.get("fullName"));
-        subtitle.setText("in " + (String)b.get("room") + " with " + (String)b.get("fullTeacher"));
-
+        final JsonObject b = this.getEntry(i);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), ClassInfoActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putCharSequence("json", b.getAsString());
+                view.getContext().startActivity(i);
+            }
+        });
+        header.setText(b.get("fullName").getAsString());
+        subtitle.setText("in " + b.get("room") + " with " + b.get("fullTeacher"));
         //view.setText((String)b.get("fullName"));
 
         return view;

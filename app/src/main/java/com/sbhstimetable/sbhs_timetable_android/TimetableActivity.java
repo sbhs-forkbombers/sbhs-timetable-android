@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -194,8 +195,13 @@ public class TimetableActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-               ((CountdownFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG))
-                       .doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+               CountdownFragment frag = ((CountdownFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
+               if (frag != null) {
+                   frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+               }
+               else {
+                    Log.i("timetable", "oops");
+               }
             }
         }
     }

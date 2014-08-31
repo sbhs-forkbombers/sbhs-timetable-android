@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/classInfoRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -10,11 +11,13 @@
 
     <TextView
         android:id="@+id/classInfoSubject"
-        android:layout_height="60dp"
+        android:layout_height="100dp"
         android:layout_width="fill_parent"
         android:fontFamily="sans-serif-thin"
-        android:textSize="55dp"
+        android:textSize="60sp"
         android:text="Test"
+        android:layout_marginTop="100dp"
+        android:textColor="#BEBEBE"
         tools:ignore="UnusedAttribute" />
 
 </RelativeLayout>

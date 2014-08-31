@@ -1,9 +1,16 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 public class ClassInfoActivity extends Activity {
@@ -12,6 +19,22 @@ public class ClassInfoActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_class_info);
+        Intent i = this.getIntent();
+        if (!i.hasExtra("json")) {
+            throw new IllegalStateException("RUDE I NEED SOME DATA PLOX");
+        }
+        String json = i.getStringExtra("json");
+        Log.i("classinfo", "json: " + json);
+        JsonObject b = new JsonParser().parse(json).getAsJsonObject();
+        TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
+        subject.setText(b.get("fullName").getAsString());
+        RelativeLayout r = (RelativeLayout)this.findViewById(R.id.classInfoRoot);
+        //r.removeView(subject);
+        subject.setMinimumHeight(300);
+        //RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+       // p.addRule(RelativeLayout.ALIGN_PARENT_START);
+        //r.addView(subject, p);
+//        Log.e("classinfo", "json data is " + savedInstanceState.getString("json"));
     }
 
 

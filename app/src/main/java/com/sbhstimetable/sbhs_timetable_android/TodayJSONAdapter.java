@@ -94,8 +94,7 @@ public class TodayJSONAdapter implements ListAdapter{
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), ClassInfoActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putCharSequence("json", ""+b);
+                i.putExtra("json", ""+b);
                 view.getContext().startActivity(i);
             }
         });

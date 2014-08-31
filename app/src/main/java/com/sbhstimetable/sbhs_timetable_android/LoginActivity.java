@@ -30,6 +30,7 @@ public class LoginActivity extends Activity {
         tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_login);
         WebView wv = (WebView) findViewById(R.id.loginview);
+        wv.setBackgroundColor(Color.parseColor("#000000"));
         final Activity me = this;
         wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebChromeClient(new WebChromeClient() {
@@ -56,6 +57,10 @@ public class LoginActivity extends Activity {
         });
         //setContentView(wv);
         wv.loadUrl(baseURL + "/try_do_oauth?app=1");
+        // something about exiting activity when logged in
+        if (wv.getUrl() == "http://sbhstimetable.tk") {
+            finish();
+        }
     }
 
 

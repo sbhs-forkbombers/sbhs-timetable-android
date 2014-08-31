@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 
 public class ClassInfoActivity extends Activity {
@@ -18,6 +20,9 @@ public class ClassInfoActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setTintColor(Color.parseColor("#455ede"));
+        tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_class_info);
         Intent i = this.getIntent();
         if (!i.hasExtra("json")) {

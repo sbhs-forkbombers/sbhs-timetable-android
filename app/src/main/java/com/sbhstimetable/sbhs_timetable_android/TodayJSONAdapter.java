@@ -95,12 +95,12 @@ public class TodayJSONAdapter implements ListAdapter{
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), ClassInfoActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putCharSequence("json", b.getAsString());
+                bundle.putCharSequence("json", ""+b);
                 view.getContext().startActivity(i);
             }
         });
         header.setText(b.get("fullName").getAsString());
-        subtitle.setText("in " + b.get("room") + " with " + b.get("fullTeacher"));
+        subtitle.setText("in " + b.get("room").getAsString() + " with " + b.get("fullTeacher").getAsString());
         //view.setText((String)b.get("fullName"));
 
         return view;

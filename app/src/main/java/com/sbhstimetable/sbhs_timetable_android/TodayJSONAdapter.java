@@ -7,11 +7,14 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.backend.Compat;
 
 /**
  * Created by simon on 30/08/2014.
@@ -24,7 +27,18 @@ public class TodayJSONAdapter implements ListAdapter{
 
     private JsonObject getEntry(int i) {
         String key = String.valueOf(i+1);
-        return timetable.get(key).getAsJsonObject();
+        JsonElement c = timetable.get(key);
+        if (c != null) {
+            return c.getAsJsonObject();
+        }
+        else {
+            JsonObject b = new JsonObject();
+            b.addProperty("fullName", "Free Period");
+            b.addProperty("room", "N/A");
+            b.addProperty("fullTeacher", "Nobody");
+            b.addProperty("changed", false);
+            return b;
+        }
     }
 
     @Override
@@ -62,10 +76,12 @@ public class TodayJSONAdapter implements ListAdapter{
         final RelativeLayout view;
         final TextView header;
         final TextView subtitle;
+        final ImageView changed;
         if (oldView instanceof RelativeLayout) {
             view = (RelativeLayout)oldView;
             header = (TextView)view.findViewWithTag("header");
             subtitle = (TextView)view.findViewWithTag("subtitle");
+            changed = (ImageView)view.findViewWithTag("changed");
         }
         else {
             view = new RelativeLayout(viewGroup.getContext());
@@ -73,20 +89,32 @@ public class TodayJSONAdapter implements ListAdapter{
             view.setMinimumHeight(90);
             RelativeLayout.LayoutParams p1 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             RelativeLayout.LayoutParams p2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams p3 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
             view.setLayoutParams(p);
             header = new TextView(viewGroup.getContext());
             header.setTag("header");
+            header.setId(Compat.getViewId());
             //header.setHeight(15);
             Context context = viewGroup.getContext();
             header.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Large);
             header.setGravity(Gravity.TOP);
             subtitle = new TextView(viewGroup.getContext());
             subtitle.setTag("subtitle");
-            p2.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            subtitle.setId(Compat.getViewId());
+            p2.addRule(RelativeLayout.BELOW, header.getId());
             subtitle.setTextAppearance(context, android.R.style.TextAppearance_DeviceDefault_Small);
             view.setPadding(20, 0, 20, 0);
             view.addView(header, p1);
-            view.addView(subtitle,p2) ;
+            view.addView(subtitle,p2);
+
+            changed = new ImageView(viewGroup.getContext());
+            changed.setTag("changed");
+            //changed.setPadding(0, 5, 0, 0);
+            changed.setImageResource(android.R.drawable.ic_dialog_alert);
+            changed.setVisibility(View.INVISIBLE);
+            p3.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            p3.addRule(RelativeLayout.CENTER_VERTICAL);
+            view.addView(changed, p3);
 
         }
         final JsonObject b = this.getEntry(i);
@@ -98,8 +126,17 @@ public class TodayJSONAdapter implements ListAdapter{
                 view.getContext().startActivity(i);
             }
         });
+        String room = b.get("room").getAsString();
+        String teacher = b.get("fullTeacher").getAsString();
+        if (b.get("changed").getAsBoolean()) {
+            // variations!
+            changed.setVisibility(View.VISIBLE);
+            if (b.get("hasCasual").getAsBoolean()) {
+                teacher = b.get("casualDisplay").getAsString().trim();
+            }
+        }
         header.setText(b.get("fullName").getAsString());
-        subtitle.setText("in " + b.get("room").getAsString() + " with " + b.get("fullTeacher").getAsString());
+        subtitle.setText("in " + b.get("room").getAsString() + " with " + teacher);
         //view.setText((String)b.get("fullName"));
 
         return view;

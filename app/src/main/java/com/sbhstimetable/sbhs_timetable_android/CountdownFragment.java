@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.TodayJson;
 
 
 /**
@@ -88,8 +89,7 @@ public class CountdownFragment extends Fragment {
         if (!obj.has("timetable")) {
         }
         else {
-            JsonObject timetable = obj.get("timetable").getAsJsonObject();
-            TodayJSONAdapter adapter = new TodayJSONAdapter(timetable);
+            TodayJSONAdapter adapter = new TodayJSONAdapter(new TodayJson(obj));
             z.setAdapter(adapter);
         }
     }

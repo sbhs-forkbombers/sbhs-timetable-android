@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.sbhstimetable.sbhs_timetable_android.backend.TodayJson;
 
 
 public class ClassInfoActivity extends Activity {
@@ -30,9 +31,9 @@ public class ClassInfoActivity extends Activity {
         }
         String json = i.getStringExtra("json");
         Log.i("classinfo", "json: " + json);
-        JsonObject b = new JsonParser().parse(json).getAsJsonObject();
+        TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject());
         TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
-        subject.setText(b.get("fullName").getAsString());
+        subject.setText(b.name());
         RelativeLayout r = (RelativeLayout)this.findViewById(R.id.classInfoRoot);
         //r.removeView(subject);
         subject.setMinimumHeight(300);

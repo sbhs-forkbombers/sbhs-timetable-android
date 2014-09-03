@@ -1,17 +1,19 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class TodayJson {
     private final JsonObject today;
-    private Period periods[] = new Period[7];
+    private Period periods[] = new Period[5];
     public TodayJson(JsonObject obj) {
          this.today = obj;
-         for (int i = 1; i < 6; i++) {
+         for (int i = 0; i < 5; i++) {
 
-             JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i));
+             JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i+1));
              if (j != null) {
                  periods[i] = new Period(j.getAsJsonObject());
              }
@@ -41,7 +43,7 @@ public class TodayJson {
         }
 
         public String fullTeacher() {
-            if (period.get("hasCasual").getAsBoolean()) {
+            if (this.changed() && period.get("hasCasual").getAsBoolean()) {
                 return period.get("casualDisplay").getAsString().trim();
             }
             return period.get("fullTeacher").getAsString();

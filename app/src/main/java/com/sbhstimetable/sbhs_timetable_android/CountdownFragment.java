@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,10 +62,19 @@ public class CountdownFragment extends Fragment {
         // Inflate the layout for this fragment
         FrameLayout f = (FrameLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
-        CountDownTimer timer = new CountDownTimer(10000, 1000) {
+        CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
             @Override
             public void onTick(long l) {
-                t.setText("Time remaining: " + (l/1000));
+                l = (long)Math.floor(l/1000);
+                long sec = l % 60;
+                l -= sec;
+                l /= 60;
+                long mins = l % 60;
+                l -= mins;
+                l /= 60;
+                long hrs = l;
+
+                t.setText("Time remaining: " + hrs + "h " + mins + "m " + sec + "s");
             }
 
             @Override

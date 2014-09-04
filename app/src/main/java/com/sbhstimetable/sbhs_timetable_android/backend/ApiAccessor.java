@@ -7,12 +7,16 @@ import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Access remote API calls and stuff
@@ -47,11 +51,21 @@ public class ApiAccessor {
     }
 
     public static String getToday(Context c) {
+        Date today = new Date();
+        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(today);
+        JsonObject obj = new StorageCache(c).getTodayJson(dateStr);
+        if (obj != null) {
+            Intent i = new Intent(ACTION_TODAY_JSON);
+            i.putExtra(EXTRA_JSON_DATA, obj.toString());
+            Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
+            LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+            return null;
+        }
         if (!isLoggedIn()) {
             return null;
         }
         try {
-            new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
+            new DownloadFileTask(c, dateStr, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "wat", e);
@@ -63,10 +77,12 @@ public class ApiAccessor {
     private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
         private Context c;
         private final String intentType;
+        private final String date;
 
-        public DownloadFileTask(Context c, String type) {
+        public DownloadFileTask(Context c, String date, String type) {
             this.intentType = type;
             this.c = c;
+            this.date = date;
         }
 
         @Override

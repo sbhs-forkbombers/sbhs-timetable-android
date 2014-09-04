@@ -28,6 +28,10 @@ public class TodayJson {
          }
     }
 
+    public String getDate() {
+        return this.today.get("date").getAsString();
+    }
+
     public Period getPeriod(int num) {
         return periods[num];
     }

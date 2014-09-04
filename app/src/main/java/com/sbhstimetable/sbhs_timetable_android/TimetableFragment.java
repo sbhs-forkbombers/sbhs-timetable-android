@@ -45,6 +45,7 @@ public class TimetableFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static TimetableFragment newInstance() {
         TimetableFragment fragment = new TimetableFragment();
+        Log.e("timetableFrag", "new timetableFragment");
         return fragment;
     }
     public TimetableFragment() {
@@ -60,7 +61,7 @@ public class TimetableFragment extends Fragment {
 		Context context = getActivity();
 		String text = "Countdown! School never ends!";
 		int duration = Toast.LENGTH_SHORT;
-        Log.i("countdown", "My tag is " + this.getTag());
+        Log.i("timetable", "My tag is " + this.getTag());
 		Toast toast = Toast.makeText(context, text, duration);
 		toast.show();
     }
@@ -69,12 +70,12 @@ public class TimetableFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_countdown, container, false);
+        View v =  inflater.inflate(R.layout.fragment_timetable, container, false);
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         if (z != null) {
             String b = ApiAccessor.getToday(this.getActivity());
             if (b != null) {
-                Log.i("countdown","swag");
+                Log.i("timetable","swag");
                 this.doTimetable(b);
             }
         }
@@ -82,7 +83,7 @@ public class TimetableFragment extends Fragment {
     }
 
     public void doTimetable(String b) {
-        Log.i("countdown", "got json " + b);
+        Log.i("timetable", "got json " + b);
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         JsonParser g = new JsonParser();
         JsonObject obj = g.parse(b).getAsJsonObject();

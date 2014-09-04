@@ -63,7 +63,7 @@ public class TimetableActivity extends Activity
                         .replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
                         .commit();
                 break;
-            case 2:
+            case 1:
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, TimetableFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
                         .commit();

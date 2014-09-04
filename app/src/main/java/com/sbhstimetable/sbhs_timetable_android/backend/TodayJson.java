@@ -50,6 +50,9 @@ public class TodayJson {
         }
 
         public String room() {
+            if (period.has("roomFrom")) {
+                return period.get("roomTo").getAsString();
+            }
             return period.get("room").getAsString();
         }
 

@@ -34,13 +34,8 @@ public class ClassInfoActivity extends Activity {
         TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject());
         TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
         subject.setText(b.name());
-        RelativeLayout r = (RelativeLayout)this.findViewById(R.id.classInfoRoot);
-        //r.removeView(subject);
-        subject.setMinimumHeight(300);
-        //RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-       // p.addRule(RelativeLayout.ALIGN_PARENT_START);
-        //r.addView(subject, p);
-//        Log.e("classinfo", "json data is " + savedInstanceState.getString("json"));
+        subject.setMinimumHeight(50);
+
     }
 
 

@@ -1,47 +1,53 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.TodayJson;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CountdownFragment.OnFragmentInteractionListener} interface
+ * {@link TimetableFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link CountdownFragment#newInstance} factory method to
+ * Use the {@link TimetableFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
-public class CountdownFragment extends Fragment {
+public class TimetableFragment extends Fragment {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_SECTION_NUMBER = "1";
 
-    private TimetableActivity mListener;
+    // TODO: Rename and change types of parameters
+    private int mSectionNumber;
+
+    private OnFragmentInteractionListener mListener;
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment TimetableFragment.
+     * @return A new instance of fragment CountdownFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CountdownFragment newInstance() {
-        CountdownFragment fragment = new CountdownFragment();
-        Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+    public static TimetableFragment newInstance() {
+        TimetableFragment fragment = new TimetableFragment();
         return fragment;
     }
-    public CountdownFragment() {
+    public TimetableFragment() {
         // Required empty public constructor
     }
 
@@ -49,32 +55,43 @@ public class CountdownFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+		Context context = getActivity();
+		String text = "Countdown! School never ends!";
+		int duration = Toast.LENGTH_SHORT;
+        Log.i("countdown", "My tag is " + this.getTag());
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.show();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        FrameLayout f = (FrameLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
-        final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
-        CountDownTimer timer = new CountDownTimer(10000, 1000) {
-            @Override
-            public void onTick(long l) {
-                t.setText("Time remaining: " + (l/1000));
+        View v =  inflater.inflate(R.layout.fragment_countdown, container, false);
+        ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
+        if (z != null) {
+            String b = ApiAccessor.getToday(this.getActivity());
+            if (b != null) {
+                Log.i("countdown","swag");
+                this.doTimetable(b);
             }
+        }
+        return v;
+    }
 
-            @Override
-            public void onFinish() {
-                t.setText("Time up!");
-
-            }
-        };
-        timer.start();
-        Log.i("countdownFrag", "done");
-        return f;
+    public void doTimetable(String b) {
+        Log.i("countdown", "got json " + b);
+        ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
+        JsonParser g = new JsonParser();
+        JsonObject obj = g.parse(b).getAsJsonObject();
+        if (!obj.has("timetable")) {
+        }
+        else {
+            TodayJSONAdapter adapter = new TodayJSONAdapter(new TodayJson(obj));
+            z.setAdapter(adapter);
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -88,7 +105,7 @@ public class CountdownFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (TimetableActivity) activity;
+            mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");

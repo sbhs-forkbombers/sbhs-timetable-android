@@ -5,10 +5,10 @@
     tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/countdown_countdown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment" />
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/timetable_listview"
-        android:layout_gravity="left|top" />
 </FrameLayout>

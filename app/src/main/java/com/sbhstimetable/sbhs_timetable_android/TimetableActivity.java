@@ -26,7 +26,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 
 public class TimetableActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, CountdownFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, TimetableFragment.OnFragmentInteractionListener {
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -61,6 +61,11 @@ public class TimetableActivity extends Activity
             case 0:
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+                        .commit();
+                break;
+            case 2:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, TimetableFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
                         .commit();
                 break;
             case 3:
@@ -126,8 +131,8 @@ public class TimetableActivity extends Activity
             ApiAccessor.login(this);
             return true;
         } else if (id == R.id.action_load_today) {
-            CountdownFragment frag = (CountdownFragment) this.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG);
-            if (frag == null) {
+            Fragment frag = this.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG);
+            if (frag == null || !(frag instanceof TimetableFragment)) {
                 return true;
             } else {
                 Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
@@ -173,7 +178,7 @@ public class TimetableActivity extends Activity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_timetable, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_placeholder, container, false);
             return rootView;
         }
 
@@ -195,7 +200,7 @@ public class TimetableActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-               CountdownFragment frag = ((CountdownFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
+               TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                if (frag != null) {
                    frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                }

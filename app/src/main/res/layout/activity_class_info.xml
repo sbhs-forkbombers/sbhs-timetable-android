@@ -19,5 +19,11 @@
         android:layout_marginTop="50dp"
         android:textColor="#BEBEBE"
         tools:ignore="UnusedAttribute" />
+    <TextView
+        android:id="@+id/classInfoRoom"
+        android:layout_width="100dp"
+        android:layout_height="15dp"
+        android:layout_below="@id/classInfoSubject"
+        android:text="Room"/>
 
 </RelativeLayout>

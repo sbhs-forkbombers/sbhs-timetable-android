@@ -58,12 +58,8 @@ public class TimetableFragment extends Fragment {
         if (getArguments() != null) {
             mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
-		Context context = getActivity();
-		String text = "Countdown! School never ends!";
-		int duration = Toast.LENGTH_SHORT;
         Log.i("timetable", "My tag is " + this.getTag());
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
+        Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

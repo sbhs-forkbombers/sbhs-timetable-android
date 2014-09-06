@@ -2,12 +2,12 @@
 	  xmlns:tools="http://schemas.android.com/tools"
 	  tools:context=".TimetableActivity" >
     <item android:id="@+id/action_load_today"
-        android:title="load today.json"
+        android:title="@string/load_today_json"
         android:showAsAction="ifRoom|withText"
         />
 	<item android:id="@+id/action_login"
 		  android:title="@string/action_login"
-		  android:showAsAction="never" />
+		  android:showAsAction="ifRoom|withText" />
 	<item android:id="@+id/action_settings"
 		  android:title="@string/action_settings"
 		  android:orderInCategory="100"

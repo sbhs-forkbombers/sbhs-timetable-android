@@ -123,10 +123,12 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
-        SharedPreferences.Editor e = p.edit();
-        e.putString("todayJsonCache", this.today.toString());
-        e.commit();
+        if (this.today != null) {
+            SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
+            SharedPreferences.Editor e = p.edit();
+            e.putString("todayJsonCache", this.today.toString());
+            e.commit();
+        }
 
     }
 

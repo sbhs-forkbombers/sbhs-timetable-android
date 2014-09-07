@@ -39,7 +39,7 @@ public class DateTimeHelper {
     public static long milliSecondsUntilNextEvent() {
         long time = 0;
         GregorianCalendar d = new GregorianCalendar(getYear(), getMonth(), getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0), 9, 5);
-        if (bells == null) {
+        if (bells == null || bells.getNextPeriod() == null) {
             Log.i("datetimehelper", "falling back!");
             d.set(d.HOUR_OF_DAY, 9);
             d.set(d.MINUTE, 5);

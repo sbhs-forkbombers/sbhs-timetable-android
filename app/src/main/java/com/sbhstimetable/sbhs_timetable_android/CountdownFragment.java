@@ -96,7 +96,7 @@ public class CountdownFragment extends Fragment {
         }
         final FrameLayout f = (FrameLayout)this.getView();
         if (f == null) {
-            Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
             return;
         }
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);

@@ -95,6 +95,10 @@ public class CountdownFragment extends Fragment {
             this.timeLeft.cancel();
         }
         final FrameLayout f = (FrameLayout)this.getView();
+        if (f == null) {
+            Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
         CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
             long lastTime = 10000;

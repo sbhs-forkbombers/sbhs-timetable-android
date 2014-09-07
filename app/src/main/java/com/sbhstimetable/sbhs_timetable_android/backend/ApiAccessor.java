@@ -25,6 +25,7 @@ public class ApiAccessor {
     public static final String baseURL = "http://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
     public static final String PREFS_NAME = "timetablePrefs";
     public static final String ACTION_TODAY_JSON = "todayData";
+    public static final String ACTION_BELLTIMES_JSON = "belltimesData";
     public static final String EXTRA_JSON_DATA = "jsonString";
     private static String sessionID = null;
 
@@ -74,6 +75,14 @@ public class ApiAccessor {
         return null;
     }
 
+    public static void getBelltimes(Context c) {
+        try {
+            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString()));
+        } catch (Exception e) {
+            Log.e("apiaccessor", "belltimes wat", e);
+        }
+    }
+
     private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
         private Context c;
         private final String intentType;
@@ -83,6 +92,7 @@ public class ApiAccessor {
             this.intentType = type;
             this.c = c;
             this.date = date;
+            Log.i("downloadfiletask", "download for " + date);
         }
 
         @Override

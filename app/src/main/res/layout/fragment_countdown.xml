@@ -9,6 +9,10 @@
         android:id="@+id/countdown_countdown"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="Loading..."
+        android:fontFamily="sans-serif-thin"
+        android:textSize="60sp"
+        android:height="100dp"
+        android:textAlignment="center"/>
 
 </FrameLayout>

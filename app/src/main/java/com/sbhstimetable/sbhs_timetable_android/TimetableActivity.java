@@ -21,13 +21,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 
 
 public class TimetableActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, TimetableFragment.OnFragmentInteractionListener {
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
+    public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -48,9 +52,13 @@ public class TimetableActivity extends Activity
         ApiAccessor.load(this);
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-        LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
+        IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
+        interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+        // Grab belltimes.json
+        ApiAccessor.getBelltimes(this);
     }
 
     @Override
@@ -207,6 +215,10 @@ public class TimetableActivity extends Activity
                else {
                     Log.i("timetable", "oops");
                }
+            }
+            else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+                DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
         }
     }

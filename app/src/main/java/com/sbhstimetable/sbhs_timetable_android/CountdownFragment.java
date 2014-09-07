@@ -1,11 +1,16 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 
 /**
@@ -29,6 +37,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 public class CountdownFragment extends Fragment {
 
     private TimetableActivity mListener;
+    private CountDownTimer timeLeft;
 
     /**
      * Use this factory method to create a new instance of
@@ -56,6 +65,7 @@ public class CountdownFragment extends Fragment {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE));
         Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
 
@@ -64,8 +74,24 @@ public class CountdownFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FrameLayout f = (FrameLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
+        Log.i("countdownFrag", "done");
+        return f;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        this.updateTimer();
+    }
+
+    public void updateTimer() {
+        if (this.timeLeft != null) {
+            this.timeLeft.cancel();
+        }
+        final FrameLayout f = (FrameLayout)this.getView();
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
         CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
+            long lastTime = 10000;
             @Override
             public void onTick(long l) {
                 l = (long)Math.floor(l/1000);
@@ -76,19 +102,27 @@ public class CountdownFragment extends Fragment {
                 l -= mins;
                 l /= 60;
                 long hrs = l;
-
-                t.setText("Time remaining: " + hrs + "h " + mins + "m " + sec + "s");
+                this.lastTime = l;
+                t.setText(hrs + "h " + mins + "m " + sec + "s");
             }
 
             @Override
             public void onFinish() {
-                t.setText("Time up!");
+                if (this.lastTime <= 1000) {
+                    final Handler h = new Handler();
+                    h.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateTimer();
+                        }
+                    }, 1000);
+                }
+                t.setText("RRRRRIIIING");
 
             }
         };
         timer.start();
-        Log.i("countdownFrag", "done");
-        return f;
+        this.timeLeft = timer;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -128,6 +162,16 @@ public class CountdownFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private class BroadcastListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(TimetableActivity.BELLTIMES_AVAILABLE)) {
+                Log.i("broadcastlistener", "belltimes available!");
+                updateTimer();
+            }
+        }
     }
 
 }

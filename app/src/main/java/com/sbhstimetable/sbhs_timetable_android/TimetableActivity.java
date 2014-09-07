@@ -208,7 +208,7 @@ public class TimetableActivity extends Activity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+            if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON) && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
                TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                if (frag != null) {
                    frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));

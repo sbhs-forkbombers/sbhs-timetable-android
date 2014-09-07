@@ -59,6 +59,7 @@ public class TimetableActivity extends Activity
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
         // Grab belltimes.json
         ApiAccessor.getBelltimes(this);
+        ApiAccessor.getToday(this);
     }
 
     @Override

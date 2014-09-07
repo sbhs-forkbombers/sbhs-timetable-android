@@ -13,6 +13,6 @@
         android:fontFamily="sans-serif-thin"
         android:textSize="60sp"
         android:height="100dp"
-        android:textAlignment="center"/>
+        android:gravity="center"/>
 
 </FrameLayout>

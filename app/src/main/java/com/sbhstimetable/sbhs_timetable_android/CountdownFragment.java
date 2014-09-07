@@ -84,6 +84,12 @@ public class CountdownFragment extends Fragment {
         this.updateTimer();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        this.updateTimer();
+    }
+
     public void updateTimer() {
         if (this.timeLeft != null) {
             this.timeLeft.cancel();

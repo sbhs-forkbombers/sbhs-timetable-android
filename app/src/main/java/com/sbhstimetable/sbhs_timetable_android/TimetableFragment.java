@@ -3,6 +3,7 @@ package com.sbhstimetable.sbhs_timetable_android;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class TimetableFragment extends Fragment {
     private int mSectionNumber;
 
     private OnFragmentInteractionListener mListener;
-
+    private TodayJson today;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -78,15 +79,25 @@ public class TimetableFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
+        if (p.contains("todayJsonCache")) {
+            String json = p.getString("todayJsonCache", "");
+            this.doTimetable(json);
+        }
+    }
+
     public void doTimetable(String b) {
-        Log.i("timetable", "got json " + b);
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         JsonParser g = new JsonParser();
         JsonObject obj = g.parse(b).getAsJsonObject();
         if (!obj.has("timetable")) {
         }
         else {
-            TodayJSONAdapter adapter = new TodayJSONAdapter(new TodayJson(obj));
+            this.today = new TodayJson(obj);
+            TodayJSONAdapter adapter = new TodayJSONAdapter(this.today);
             z.setAdapter(adapter);
         }
     }
@@ -107,6 +118,16 @@ public class TimetableFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
+        SharedPreferences.Editor e = p.edit();
+        e.putString("todayJsonCache", this.today.toString());
+        e.commit();
+
     }
 
     @Override

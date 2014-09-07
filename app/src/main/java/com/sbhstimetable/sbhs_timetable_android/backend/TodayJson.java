@@ -36,6 +36,11 @@ public class TodayJson {
         return periods[num];
     }
 
+    @Override
+    public String toString() {
+        return this.today.toString();
+    }
+
     public static class Period {
         private final JsonObject period;
         public Period(JsonObject obj) {

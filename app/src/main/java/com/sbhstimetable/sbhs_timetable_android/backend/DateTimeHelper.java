@@ -37,12 +37,12 @@ public class DateTimeHelper {
     public static long milliSecondsUntilNextEvent() {
         long time = 0;
         GregorianCalendar d = new GregorianCalendar(getYear(), getMonth(), getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0), 9, 5);
-        if (bells == null || bells.getNextPeriod() == null || getDateOffset() > 0 || needsMidnightCountdown()) { // TODO friday
+        if (bells == null || bells.getNextBell() == null || getDateOffset() > 0 || needsMidnightCountdown()) { // TODO friday
             d.set(d.HOUR_OF_DAY, 9);
             d.set(d.MINUTE, 5);
         }
         else {
-            BelltimesJson.Bell b = bells.getNextPeriod();
+            BelltimesJson.Bell b = bells.getNextBell();
             Integer[] els = b.getBell();
             d.set(d.HOUR_OF_DAY, els[0]);
             d.set(d.MINUTE, els[1]);

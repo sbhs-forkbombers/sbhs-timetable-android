@@ -29,7 +29,7 @@ public class BelltimesJson {
         return hour < DateTimeHelper.getHour() || (hour == DateTimeHelper.getHour() && minute <= DateTimeHelper.getMinute());
     }
 
-    public Bell getNextPeriod() {
+    public Bell getNextBell() {
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
         for (int i = 0; i < belltimes.size(); i++) {
             JsonObject entry = belltimes.get(i).getAsJsonObject();
@@ -45,6 +45,18 @@ public class BelltimesJson {
         }
         return null;
     }
+
+    public Bell getNextPeriod() {
+        Bell b = getNextBell();
+        JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
+        for (int i = b.getIndex(); i < belltimes.size(); i++) {
+            if (belltimes.get(i).getAsJsonObject().get("bell").getAsString().matches("^\\d+$")) {
+                return new Bell(belltimes.get(i).getAsJsonObject(), i);
+            }
+        }
+        return new Bell(belltimes.get(1).getAsJsonObject(), 1);
+    }
+
     public int getMaxIndex() {
         return this.bells.get("bells").getAsJsonArray().size();
     }

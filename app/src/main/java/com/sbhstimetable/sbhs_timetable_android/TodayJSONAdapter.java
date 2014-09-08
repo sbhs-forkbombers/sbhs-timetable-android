@@ -22,7 +22,7 @@ public class TodayJSONAdapter implements ListAdapter{
     }
 
     private TodayJson.Period getEntry(int i) {
-       return timetable.getPeriod(i);
+       return timetable.getPeriod(i+1);
     }
 
     @Override

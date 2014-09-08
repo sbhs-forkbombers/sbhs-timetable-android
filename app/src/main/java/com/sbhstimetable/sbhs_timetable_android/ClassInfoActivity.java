@@ -33,7 +33,7 @@ public class ClassInfoActivity extends Activity {
         subject.setText(b.name());
         //subject.setMinimumHeight(50);
         TextView room = (TextView)this.findViewById(R.id.classInfoRoom);
-        room.setText("in " + b.room());
+        room.setText(b.room());
 
 
     }

@@ -101,32 +101,51 @@ public class CountdownFragment extends Fragment {
             //Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
             return;
         }
+        RelativeLayout extraData = (RelativeLayout)f.findViewById(R.id.countdown_extraData);
+        TextView teacher = (TextView)extraData.findViewById(R.id.countdown_extraData_teacher);
+        teacher.setText("…");
+        TextView room = (TextView)extraData.findViewById(R.id.countdown_extraData_room);
+        room.setText("…");
+        TextView subject = (TextView)extraData.findViewById(R.id.countdown_extraData_subject);
+        subject.setText("…");
         String label = "Something";
         String connector = "happens in";
         if (DateTimeHelper.bells != null) {
-            BelltimesJson.Bell next = DateTimeHelper.bells.getNextPeriod();
+            BelltimesJson.Bell next = DateTimeHelper.bells.getNextBell();
             if (next != null) {
                 BelltimesJson.Bell now = DateTimeHelper.bells.getIndex(next.getIndex() - 1);
-                if (now.isPeriod() && now.getPeriodNumber() < 5) {
+                if (now.isPeriod() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
                     connector = "ends in";
                     if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-                        label = TodayJson.getInstance().getPeriod(now.getPeriodNumber() - 1).name();
+                        TodayJson.Period p = TodayJson.getInstance().getPeriod(now.getPeriodNumber());
+                        label = p.name();
+                        teacher.setText(p.fullTeacher());
+                        room.setText(p.room());
+                        subject.setText(p.name());
+                        extraData.setVisibility(View.VISIBLE);
                     } else {
                         label = now.getLabel();
+                        extraData.setVisibility(View.INVISIBLE);
                     }
-                } else if (now.isPeriod() && now.getPeriodNumber() == 5) {
-                  connector = "in";
+                } else if (now.isPeriod() && now.getPeriodNumber() == 5) { // last period
+                    connector = "in";
                     label = "School ends";
-                } else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) {
+                } else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) { // in a break followed by a period - Lunch 2, Recess, Transition.
                     connector = "starts in";
                     if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-                        label = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber()).name();
+                        TodayJson.Period p = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber());
+                        label = p.name();
+                        teacher.setText(p.fullTeacher());
+                        room.setText(p.room());
+                        subject.setText(p.name());
+                        extraData.setVisibility(View.VISIBLE);
                     } else {
                         label = DateTimeHelper.bells.getIndex(now.getIndex() + 1).getLabel();
+                        extraData.setVisibility(View.VISIBLE);
                     }
 
                 }
-                else {
+                else { // There's consecutive non-periods - i.e lunch 1 -> lunch 2
                     label = now.getLabel();
                     connector = "starts in";
                 }
@@ -135,6 +154,16 @@ public class CountdownFragment extends Fragment {
                 // end of day
                 label = "School starts";
                 connector = "in";
+                if (TodayJson.getInstance() != null) {
+                    extraData.setVisibility(View.VISIBLE);
+                    TodayJson.Period p = TodayJson.getInstance().getPeriod(1);
+                    teacher.setText(p.fullTeacher());
+                    room.setText(p.room());
+                    subject.setText(p.name());
+                }
+                else {
+                    extraData.setVisibility(View.INVISIBLE);
+                }
             }
         }
         final String innerLabel = label;

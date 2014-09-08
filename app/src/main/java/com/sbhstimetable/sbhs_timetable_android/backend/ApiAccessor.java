@@ -3,6 +3,7 @@ package com.sbhstimetable.sbhs_timetable_android.backend;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -51,6 +52,11 @@ public class ApiAccessor {
         e.commit();
     }
 
+    public static boolean hasInternetConnection(Context c) {
+        ConnectivityManager conn = (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return conn.getActiveNetworkInfo() != null && conn.getActiveNetworkInfo().isConnected();
+    }
+
     public static String getToday(Context c) {
         Date today = new Date();
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(today);
@@ -62,7 +68,7 @@ public class ApiAccessor {
             LocalBroadcastManager.getInstance(c).sendBroadcast(i);
             return null;
         }
-        if (!isLoggedIn()) {
+        if (!isLoggedIn() || !hasInternetConnection(c)) {
             return null;
         }
         try {
@@ -76,6 +82,7 @@ public class ApiAccessor {
     }
 
     public static void getBelltimes(Context c) {
+        if (!hasInternetConnection(c)) return; // TODO fallback bells
         try {
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString()));
         } catch (Exception e) {

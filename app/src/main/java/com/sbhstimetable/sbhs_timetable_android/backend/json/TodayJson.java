@@ -38,7 +38,7 @@ public class TodayJson {
     }
 
     public Period getPeriod(int num) {
-        return periods[num];
+        return periods[num-1];
     }
 
     @Override

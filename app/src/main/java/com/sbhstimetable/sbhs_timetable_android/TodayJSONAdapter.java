@@ -1,10 +1,7 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,10 +9,7 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.sbhstimetable.sbhs_timetable_android.backend.Compat;
-import com.sbhstimetable.sbhs_timetable_android.backend.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.Util;
 
 /**

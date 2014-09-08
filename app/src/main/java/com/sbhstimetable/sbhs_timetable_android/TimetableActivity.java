@@ -24,14 +24,16 @@ import android.widget.Toast;
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
 public class TimetableActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, TimetableFragment.OnFragmentInteractionListener {
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
     public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
+    public static final String TODAY_AVAILABLE = "todayIsPresent";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -208,14 +210,19 @@ public class TimetableActivity extends Activity
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON) && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
-               TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
-               if (frag != null) {
-                   frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+            if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+               if (this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
+                   TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
+                   if (frag != null) {
+                       frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                   } else {
+                       Log.i("timetable", "oops");
+                   }
                }
                else {
-                    Log.i("timetable", "oops");
+                   new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject()); // set INSTANCE
                }
+                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                 DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());

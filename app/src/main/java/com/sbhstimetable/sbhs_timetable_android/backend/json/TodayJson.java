@@ -1,7 +1,5 @@
-package com.sbhstimetable.sbhs_timetable_android.backend;
+package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
-
-import android.util.Log;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,6 +7,12 @@ import com.google.gson.JsonObject;
 public class TodayJson {
     private final JsonObject today;
     private Period periods[] = new Period[5];
+    private static TodayJson INSTANCE;
+
+    public static TodayJson getInstance() {
+        return INSTANCE;
+    }
+
     public TodayJson(JsonObject obj) {
          this.today = obj;
          for (int i = 0; i < 5; i++) {
@@ -26,6 +30,7 @@ public class TodayJson {
                  periods[i] = new Period(b);
              }
          }
+        INSTANCE = this;
     }
 
     public String getDate() {

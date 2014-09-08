@@ -7,13 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
-import com.sbhstimetable.sbhs_timetable_android.backend.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
 public class ClassInfoActivity extends Activity {
@@ -30,11 +28,13 @@ public class ClassInfoActivity extends Activity {
             throw new IllegalStateException("RUDE I NEED SOME DATA PLOX");
         }
         String json = i.getStringExtra("json");
-        Log.i("classinfo", "json: " + json);
         TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject());
         TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
         subject.setText(b.name());
-        subject.setMinimumHeight(50);
+        //subject.setMinimumHeight(50);
+        TextView room = (TextView)this.findViewById(R.id.classInfoRoom);
+        room.setText("in " + b.room());
+
 
     }
 

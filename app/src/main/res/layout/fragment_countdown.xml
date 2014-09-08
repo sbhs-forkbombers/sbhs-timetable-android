@@ -1,18 +1,37 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView android:id="@+id/countdown_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="60sp"
+        android:fontFamily="sans-serif-thin"
+        android:height="100dp"
+        android:text="Something happens"/>
+    <TextView android:layout_below="@id/countdown_name"
+        android:id="@+id/countdown_in"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:text="in"
+        />
     <TextView
         android:id="@+id/countdown_countdown"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="Loading..."
         android:fontFamily="sans-serif-thin"
         android:textSize="60sp"
-        android:height="100dp"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_below="@id/countdown_in"/>
 
-</FrameLayout>
+
+
+</RelativeLayout>

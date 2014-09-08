@@ -11,18 +11,17 @@
 
     <TextView
         android:id="@+id/classInfoSubject"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:fontFamily="sans-serif-thin"
         android:textSize="60sp"
         android:text="Test"
-        android:layout_marginTop="50dp"
         android:textColor="#BEBEBE"
         tools:ignore="UnusedAttribute" />
     <TextView
         android:id="@+id/classInfoRoom"
-        android:layout_width="100dp"
-        android:layout_height="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/classInfoSubject"
         android:text="Room"/>
 

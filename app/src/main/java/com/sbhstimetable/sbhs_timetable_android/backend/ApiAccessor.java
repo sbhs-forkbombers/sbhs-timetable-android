@@ -99,7 +99,6 @@ public class ApiAccessor {
         protected String doInBackground(URL... urls) {
             for (URL i : urls) {
                 try {
-                    // Map<String, Object> m = JSON.std.mapFrom("");
                     HttpURLConnection con = (HttpURLConnection) i.openConnection();
                     con.setRequestMethod("GET");
                     con.setRequestProperty("Cookie", "SESSID="+sessionID);
@@ -110,7 +109,6 @@ public class ApiAccessor {
                         result += l;
                         l = br.readLine();
                     }
-                    Log.i("apiaccessor", "Got it: " + result);
                     return result;
                 }
                 catch (Exception e) {
@@ -124,7 +122,6 @@ public class ApiAccessor {
         protected void onPostExecute(String result) {
             Intent i = new Intent(this.intentType);
             i.putExtra(EXTRA_JSON_DATA, result);
-            Log.i("apiaccessor", "sending broadcast " + result);
             LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
         }
     }

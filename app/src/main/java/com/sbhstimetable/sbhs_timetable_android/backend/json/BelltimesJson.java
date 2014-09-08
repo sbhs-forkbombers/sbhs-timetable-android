@@ -1,9 +1,10 @@
-package com.sbhstimetable.sbhs_timetable_android.backend;
+package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 
 public class BelltimesJson {
     private final JsonObject bells;
@@ -21,18 +22,15 @@ public class BelltimesJson {
     }
 
     private static boolean isAfterNow(int hour, int minute) {
-        Log.i("belltimesjson", "is " + DateTimeHelper.getHour() + ":" + DateTimeHelper.getMinute() + " after " + hour + ":" + minute);
         return hour > DateTimeHelper.getHour() || (hour == DateTimeHelper.getHour() && minute > DateTimeHelper.getMinute());
     }
 
     private static boolean isBeforeNow(int hour, int minute) {
-        Log.i("belltimesjson", "is " + DateTimeHelper.getHour() + ":" + DateTimeHelper.getMinute() + " before " + hour + ":" + minute);
         return hour < DateTimeHelper.getHour() || (hour == DateTimeHelper.getHour() && minute <= DateTimeHelper.getMinute());
     }
 
     public Bell getNextPeriod() {
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
-        Log.i("belltimesjson", "let's do this.");
         for (int i = 0; i < belltimes.size(); i++) {
             JsonObject entry = belltimes.get(i).getAsJsonObject();
             Integer[] start = parseTime(entry.get("time").getAsString());
@@ -40,11 +38,19 @@ public class BelltimesJson {
                 JsonObject end = belltimes.get(i+1).getAsJsonObject();
                 Integer[] e = parseTime(end.get("time").getAsString());
                 if (isAfterNow(e[0], e[1])) {
-                    Log.i("belltimesjson", "found our period - " + (i+1) + " name => " + end.get("bell").getAsString());
                     return new Bell(end, i+1);
                 }
             }
 
+        }
+        return null;
+    }
+    public int getMaxIndex() {
+        return this.bells.get("bells").getAsJsonArray().size();
+    }
+    public Bell getIndex(int i) {
+        if (i < this.getMaxIndex()) {
+            return new Bell(this.bells.get("bells").getAsJsonArray().get(i).getAsJsonObject(), i);
         }
         return null;
     }
@@ -64,6 +70,19 @@ public class BelltimesJson {
 
         public Integer[] getBell() {
             return parseTime(this.data.get("time").getAsString());
+        }
+
+        public boolean isPeriod() {
+            return this.data.get("bell").getAsString().matches("^\\d+$");
+        }
+
+        public int getPeriodNumber() {
+            String num = this.data.get("bell").getAsString();
+            if (this.isPeriod()) {
+                int b = Integer.valueOf(num);
+                return b;
+            }
+            return -1;
         }
 
         public String getLabel() {

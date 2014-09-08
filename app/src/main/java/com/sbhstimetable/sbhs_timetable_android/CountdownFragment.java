@@ -15,14 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
-
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
 /**
@@ -65,7 +65,9 @@ public class CountdownFragment extends Fragment {
 //            mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE));
+        IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
+        i.addAction(TimetableActivity.TODAY_AVAILABLE);
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
         Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
 
@@ -73,7 +75,7 @@ public class CountdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        FrameLayout f = (FrameLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
+        RelativeLayout f = (RelativeLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         Log.i("countdownFrag", "done");
         return f;
     }
@@ -94,31 +96,88 @@ public class CountdownFragment extends Fragment {
         if (this.timeLeft != null) {
             this.timeLeft.cancel();
         }
-        final FrameLayout f = (FrameLayout)this.getView();
+        final RelativeLayout f = (RelativeLayout)this.getView();
         if (f == null) {
             //Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
             return;
         }
+        String label = "Something";
+        String connector = "happens in";
+        if (DateTimeHelper.bells != null) {
+            BelltimesJson.Bell next = DateTimeHelper.bells.getNextPeriod();
+            if (next != null) {
+                BelltimesJson.Bell now = DateTimeHelper.bells.getIndex(next.getIndex() - 1);
+                if (now.isPeriod() && now.getPeriodNumber() < 5) {
+                    connector = "ends in";
+                    if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
+                        label = TodayJson.getInstance().getPeriod(now.getPeriodNumber() - 1).name();
+                    } else {
+                        label = now.getLabel();
+                    }
+                } else if (now.isPeriod() && now.getPeriodNumber() == 5) {
+                  connector = "in";
+                    label = "School ends";
+                } else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) {
+                    connector = "starts in";
+                    if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
+                        label = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber()).name();
+                    } else {
+                        label = DateTimeHelper.bells.getIndex(now.getIndex() + 1).getLabel();
+                    }
+
+                }
+                else {
+                    label = now.getLabel();
+                    connector = "starts in";
+                }
+            }
+            else {
+                // end of day
+                label = "School starts";
+                connector = "in";
+            }
+        }
+        final String innerLabel = label;
+        ((TextView)f.findViewById(R.id.countdown_name)).setText(label);
+        ((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
+        t.setText("...");
+        final CountdownFragment frag = this;
         CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
             long lastTime = 10000;
+            boolean isLast = innerLabel == "School ends";
             @Override
             public void onTick(long l) {
                 l = (long)Math.floor(l/1000);
-                long sec = l % 60;
-                l -= sec;
+                String sec = "" + (l % 60);
+                l -= l % 60;
                 l /= 60;
-                long mins = l % 60;
-                l -= mins;
+                String mins = "" + (l % 60);
+                l -= l % 60;
                 l /= 60;
                 long hrs = l;
                 this.lastTime = l;
-                t.setText(hrs + "h " + mins + "m " + sec + "s");
+                if (sec.length() == 1) {
+                    sec = "0" + sec;
+                }
+                if (mins.length() == 1) {
+                    mins = "0" + mins;
+                }
+                if (hrs != 0) {
+                    t.setText(hrs + "h " + mins + "m " + sec + "s");
+                }
+                else {
+                    t.setText(mins + "m " + sec + "s");
+                }
             }
 
             @Override
             public void onFinish() {
                 if (this.lastTime <= 1000) {
+                    if (this.isLast) {
+                        ApiAccessor.getToday(frag.getActivity());
+                        ApiAccessor.getBelltimes(frag.getActivity());
+                    }
                     final Handler h = new Handler();
                     h.postDelayed(new Runnable() {
                         @Override
@@ -127,7 +186,7 @@ public class CountdownFragment extends Fragment {
                         }
                     }, 1000);
                 }
-                t.setText("RRRRRIIIING");
+                t.setText("00m 00s");
 
             }
         };
@@ -179,6 +238,10 @@ public class CountdownFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(TimetableActivity.BELLTIMES_AVAILABLE)) {
                 Log.i("broadcastlistener", "belltimes available!");
+                updateTimer();
+            }
+            else if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
+                Log.i("broadcastlistener", "today.json available!");
                 updateTimer();
             }
         }

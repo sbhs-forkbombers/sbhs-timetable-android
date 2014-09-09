@@ -60,7 +60,7 @@ public class TimetableFragment extends Fragment {
             mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         Log.i("timetable", "My tag is " + this.getTag());
-        Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

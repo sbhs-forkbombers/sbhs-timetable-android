@@ -68,7 +68,7 @@ public class CountdownFragment extends Fragment {
         IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
         i.addAction(TimetableActivity.TODAY_AVAILABLE);
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
-        Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
 
     @Override

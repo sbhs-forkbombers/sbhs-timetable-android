@@ -6,4 +6,11 @@
         android:title="@string/title_cache_status"
         android:showAsAction="always"
         />
+	<item android:id="@+id/action_login"
+		  android:title="@string/action_login"
+		  android:showAsAction="ifRoom|withText" />
+	<item android:id="@+id/action_settings"
+		  android:title="@string/action_settings"
+		  android:orderInCategory="100"
+		  android:showAsAction="never" />
 </menu>

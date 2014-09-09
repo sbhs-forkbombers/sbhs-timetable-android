@@ -163,8 +163,9 @@ public class TimetableActivity extends Activity
             ApiAccessor.getNotices(this);
             ApiAccessor.getToday(this);
             return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void updateCachedStatus(Menu m) {
@@ -173,8 +174,7 @@ public class TimetableActivity extends Activity
         Log.i("timetableactivity", "cachedness: " + ApiAccessor.noticesCached + " " + ApiAccessor.todayCached + " " + ApiAccessor.bellsCached);
         if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
             i.setIcon(android.R.drawable.ic_dialog_alert);
-        }
-        else {
+        } else {
             i.setIcon(android.R.drawable.ic_popup_sync);
         }
     }

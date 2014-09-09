@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJSONAdapter;
@@ -37,7 +40,8 @@ public class TimetableFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private int mSectionNumber;
 
-    private OnFragmentInteractionListener mListener;
+    private Menu menu;
+    private CommonFragmentInterface mListener;
     private TodayJson today;
     /**
      * Use this factory method to create a new instance of
@@ -59,8 +63,17 @@ public class TimetableFragment extends Fragment {
         if (getArguments() != null) {
             mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
         }
+        setHasOptionsMenu(true);
         Log.i("timetable", "My tag is " + this.getTag());
         //Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        Log.i("timetable", ""+menu);
+        super.onCreateOptionsMenu(menu, inflater);
+        mListener.updateCachedStatus(this.menu);
     }
 
     @Override
@@ -106,18 +119,12 @@ public class TimetableFragment extends Fragment {
         z.setAdapter(new TodayJSONAdapter(this.today));
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -139,19 +146,5 @@ public class TimetableFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
 
 }

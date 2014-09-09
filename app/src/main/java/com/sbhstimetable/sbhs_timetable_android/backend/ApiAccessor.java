@@ -30,6 +30,10 @@ public class ApiAccessor {
     public static final String EXTRA_JSON_DATA = "jsonString";
     private static String sessionID = null;
 
+    public static boolean todayCached = true;
+    public static boolean bellsCached = true;
+    public static boolean noticesCached = true;
+
     public static void load(Context c) {
         // load stored sessionID and whatnot here
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
@@ -61,6 +65,7 @@ public class ApiAccessor {
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(today);
         JsonObject obj = StorageCache.getTodayJson(c, dateStr);
         if (obj != null) {
+            todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
             Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
@@ -71,6 +76,7 @@ public class ApiAccessor {
             return null;
         }
         try {
+            todayCached = false;
             new DownloadFileTask(c, dateStr, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {
@@ -83,6 +89,7 @@ public class ApiAccessor {
     public static void getBelltimes(Context c) {
         if (!hasInternetConnection(c)) return; // TODO fallback bells
         try {
+            bellsCached = false;
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString()));
         } catch (Exception e) {
             Log.e("apiaccessor", "belltimes wat", e);
@@ -92,6 +99,7 @@ public class ApiAccessor {
     public static void getNotices(Context c) {
         if (!hasInternetConnection(c)) return;
         try {
+            noticesCached = false;
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString()));
         } catch (Exception e) {
             Log.e("apiaccessor", "notices wat", e);

@@ -19,11 +19,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
@@ -32,7 +34,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
 public class TimetableActivity extends Activity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, TimetableFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, CommonFragmentInterface {
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
     public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
     public static final String TODAY_AVAILABLE = "todayIsPresent";
@@ -40,7 +42,7 @@ public class TimetableActivity extends Activity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-
+    private Menu menu;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -49,6 +51,7 @@ public class TimetableActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setTintColor(Color.parseColor("#455ede"));
         tintManager.setStatusBarTintEnabled(true);
@@ -73,6 +76,8 @@ public class TimetableActivity extends Activity
             }
         });
         t.start();
+        setProgressBarIndeterminateVisibility(true);
+
     }
 
     @Override
@@ -135,6 +140,7 @@ public class TimetableActivity extends Activity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         if (!mNavigationDrawerFragment.isDrawerOpen()) {
             // Only show items in the action bar relevant to this screen
             // if the drawer is not showing. Otherwise, let the drawer
@@ -151,24 +157,26 @@ public class TimetableActivity extends Activity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();if (id == R.id.action_load_today) {
-            Fragment frag = this.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG);
-            if (frag == null || !(frag instanceof TimetableFragment)) {
-                return true;
-            } else {
-                Toast.makeText(this, "OK", Toast.LENGTH_LONG).show();
-                ApiAccessor.getToday(this);
-            }
+
+        int id = item.getItemId();
+        if (id == R.id.action_cache_status) {
+            ApiAccessor.getNotices(this);
+            ApiAccessor.getToday(this);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * TODO
-     */
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public void updateCachedStatus(Menu m) {
+        MenuItem i = this.menu.findItem(R.id.action_cache_status);
+        if (i == null) return;
+        Log.i("timetableactivity", "cachedness: " + ApiAccessor.noticesCached + " " + ApiAccessor.todayCached + " " + ApiAccessor.bellsCached);
+        if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
+            i.setIcon(android.R.drawable.ic_dialog_alert);
+        }
+        else {
+            i.setIcon(android.R.drawable.ic_popup_sync);
+        }
     }
 
     /**
@@ -212,15 +220,16 @@ public class TimetableActivity extends Activity
     }
 
     private class ReceiveBroadcast extends BroadcastReceiver {
-        private Activity activity;
+        private TimetableActivity activity;
 
-        public ReceiveBroadcast(Activity a) {
+        public ReceiveBroadcast(TimetableActivity a) {
             this.activity = a;
         }
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+                activity.setProgressBarIndeterminateVisibility(false);
                if (this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
                    TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                    if (frag != null) {
@@ -235,14 +244,17 @@ public class TimetableActivity extends Activity
                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+                activity.setProgressBarIndeterminateVisibility(false);
                 DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                activity.setProgressBarIndeterminateVisibility(false);
                 Log.i("timetable", "wow much noticesjson");
                 StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                 new NoticesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
             }
+            this.activity.updateCachedStatus(this.activity.menu);
         }
     }
 

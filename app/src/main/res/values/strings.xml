@@ -14,5 +14,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_class_info">Some Class</string>
     <string name="load_today_json">Load today.json</string>
+    <string name="title_cache_status">Cached status</string>
 
 </resources>

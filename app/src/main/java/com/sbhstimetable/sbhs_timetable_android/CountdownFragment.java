@@ -13,6 +13,8 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -36,9 +39,9 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
  */
 public class CountdownFragment extends Fragment {
 
-    private TimetableActivity mListener;
+    private CommonFragmentInterface mListener;
     private CountDownTimer timeLeft;
-
+    private Menu menu;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -61,10 +64,7 @@ public class CountdownFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        setHasOptionsMenu(true);
         IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
         i.addAction(TimetableActivity.TODAY_AVAILABLE);
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
@@ -78,6 +78,13 @@ public class CountdownFragment extends Fragment {
         RelativeLayout f = (RelativeLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         Log.i("countdownFrag", "done");
         return f;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+        this.mListener.updateCachedStatus(this.menu);
     }
 
     @Override
@@ -223,18 +230,11 @@ public class CountdownFragment extends Fragment {
         this.timeLeft = timer;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (TimetableActivity) activity;
+            mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -245,21 +245,6 @@ public class CountdownFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
     }
 
     private class BroadcastListener extends BroadcastReceiver {

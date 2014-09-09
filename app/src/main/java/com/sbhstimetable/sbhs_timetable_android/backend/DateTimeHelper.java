@@ -25,6 +25,10 @@ public class DateTimeHelper {
         return offset;
     }
 
+    /**
+     * get the next school day's date string in YYYY-MM-DD
+     * @return a date in format YYYY-MM-DD
+     */
     public static String getDateString() {
         return getYear() + "-" + (getMonth()+1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
     }

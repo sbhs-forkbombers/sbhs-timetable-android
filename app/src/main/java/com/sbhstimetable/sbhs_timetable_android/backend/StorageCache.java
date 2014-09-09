@@ -15,6 +15,37 @@ public class StorageCache {
     private static boolean isOld(File f) {
         return (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
     }
+
+    private static boolean writeCacheFile(Context c, String date, String type, String json) {
+        File cacheDir = c.getCacheDir();
+        File data = new File(cacheDir, date+"_"+type+".json");
+        try {
+            FileWriter w = new FileWriter(data);
+            w.write(json);
+            w.close();
+            return true;
+        }
+        catch (IOException e) {
+            Log.e("storageCache", "unable to cache json for " + date + "!", e);
+        }
+        return false;
+    }
+
+    private static JsonObject readCacheFile(Context c, String date, String type) {
+        File cacheDir = c.getCacheDir();
+        File data = new File(cacheDir, date+"_"+type+".json");
+        if (data.exists() && data.canRead()) {
+            try {
+                JsonObject res = new JsonParser().parse(new FileReader(data)).getAsJsonObject();
+                return res;
+            }
+            catch (IOException e) {
+                Log.e("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
+            }
+        }
+        return null;
+    }
+
     public static void cleanCache(Context context) {
         File cacheDir = context.getCacheDir();
         for (File f : cacheDir.listFiles()) {
@@ -25,31 +56,18 @@ public class StorageCache {
     }
 
     public static JsonObject getTodayJson(Context context, String date) {
-        File cacheDir = context.getCacheDir();
-        File data = new File(cacheDir, date+"_today.json");
-        if (data.exists() && data.canRead()) {
-            try {
-                JsonObject today = new JsonParser().parse(new FileReader(data)).getAsJsonObject();
-                return today;
-            }
-            catch (IOException e) {
-                Log.e("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
-            }
-        }
-
-        return null;
+        return readCacheFile(context, date, "today");
     }
 
     public static void cacheTodayJson(Context context, String date, String json) {
-        File cacheDir = context.getCacheDir();
-        File data = new File(cacheDir, date+"_today.json");
-        try {
-            FileWriter w = new FileWriter(data);
-            w.write(json);
-            w.close();
-        }
-        catch (IOException e) {
-            Log.e("storageCache", "unable to cache json for " + date + "!", e);
-        }
+        writeCacheFile(context, date, "today", json);
+    }
+
+    public static void cacheBelltimes(Context context, String date, String json) {
+        writeCacheFile(context, date, "belltimes", json);
+    }
+
+    public static JsonObject getBelltimes(Context c, String date) {
+        return readCacheFile(c, date, "belltimes");
     }
 }

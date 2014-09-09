@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -80,24 +81,29 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
-        if (p.contains("todayJsonCache")) {
-            String json = p.getString("todayJsonCache", "");
-            this.doTimetable(json);
+        if (TodayJson.getInstance() != null) {
+            doTimetable(TodayJson.getInstance());
+        }
+        else {
+            JsonObject res = StorageCache.getTodayJson(this.getActivity(), DateTimeHelper.getDateString());
+            if (res != null && res.has("timetable")) {
+                this.doTimetable(new TodayJson(res));
+            }
         }
     }
 
     public void doTimetable(String b) {
-        ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         JsonParser g = new JsonParser();
         JsonObject obj = g.parse(b).getAsJsonObject();
-        if (!obj.has("timetable")) {
+        if (obj.has("timetable")) {
+            doTimetable(new TodayJson(obj));
         }
-        else {
-            this.today = new TodayJson(obj);
-            TodayJSONAdapter adapter = new TodayJSONAdapter(this.today);
-            z.setAdapter(adapter);
-        }
+    }
+
+    public void doTimetable(TodayJson o) {
+        this.today = o;
+        ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
+        z.setAdapter(new TodayJSONAdapter(this.today));
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -122,10 +128,6 @@ public class TimetableFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (this.today != null) {
-            SharedPreferences p = this.getActivity().getSharedPreferences(ApiAccessor.PREFS_NAME, 0);
-            SharedPreferences.Editor e = p.edit();
-            e.putString("todayJsonCache", this.today.toString());
-            e.commit();
             StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
         }
 

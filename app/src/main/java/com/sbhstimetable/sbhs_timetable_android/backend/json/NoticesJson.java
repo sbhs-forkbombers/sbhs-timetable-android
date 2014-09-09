@@ -4,23 +4,44 @@ import android.text.Html;
 import android.text.Spanned;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class NoticesJson {
+    private static NoticesJson INSTANCE;
+    public static NoticesJson getInstance() {
+        return INSTANCE;
+    }
+
     private JsonObject notices;
+    private ArrayList<Notice> n = new ArrayList<Notice>();
     public NoticesJson(JsonObject obj) {
         this.notices = obj;
+        for (Map.Entry<String, JsonElement> i : this.notices.get("notices").getAsJsonObject().entrySet()) {
+            NoticeList l = new NoticeList(i.getValue().getAsJsonArray(), Integer.valueOf(i.getKey()));
+            n.addAll(l.getAllNotices());
+        }
+        INSTANCE = this;
+    }
+
+    public ArrayList<Notice> getNotices() {
+        return this.n;
     }
 
     public static class NoticeList {
         private JsonArray notices;
         private int level;
+        private List<Notice> mine = new ArrayList<Notice>();
         public NoticeList(JsonArray ary, int importance) {
             this.notices = ary;
             this.level = importance;
+            for (int i = 0; i < length(); i++) {
+                mine.add(new Notice(this.notices.get(i).getAsJsonObject(), this.level));
+            }
         }
 
         public int length() {
@@ -29,18 +50,22 @@ public class NoticesJson {
 
         public Notice get(int i) {
             if (i < length()) {
-                return new Notice(this.notices.get(i).getAsJsonObject());
+                return mine.get(i);
             }
             else {
                 throw new ArrayIndexOutOfBoundsException("Nope");
             }
+        }
+
+        public List<Notice> getAllNotices() {
+            return mine;
         }
     }
 
     public static class Notice {
         private JsonObject notice;
         private List<Year> years;
-        public Notice(JsonObject obj) {
+        public Notice(JsonObject obj, int weight) {
             this.notice = obj;
             JsonArray a = this.notice.get("years").getAsJsonArray();
             years = new ArrayList<Year>(a.size());
@@ -98,7 +123,7 @@ public class NoticesJson {
                     case 12:
                         return TWELVE;
                     default:
-                        throw new IllegalArgumentException("Must be a number 7-12 or \"Staff\"");
+                        throw new IllegalArgumentException("Must be a number 7-12 or \"Staff\", not " + i);
                 }
             }
             return STAFF;

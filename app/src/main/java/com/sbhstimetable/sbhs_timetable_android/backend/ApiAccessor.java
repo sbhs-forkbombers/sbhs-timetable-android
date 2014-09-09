@@ -26,6 +26,7 @@ public class ApiAccessor {
     public static final String PREFS_NAME = "timetablePrefs";
     public static final String ACTION_TODAY_JSON = "todayData";
     public static final String ACTION_BELLTIMES_JSON = "belltimesData";
+    public static final String ACTION_NOTICES_JSON = "noticesData";
     public static final String EXTRA_JSON_DATA = "jsonString";
     private static String sessionID = null;
 
@@ -33,7 +34,6 @@ public class ApiAccessor {
         // load stored sessionID and whatnot here
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
         sessionID = s.getString("sessionID", null);
-        Log.i("apiaccessor", "Loaded sessionID " + sessionID);
     }
 
     public static boolean isLoggedIn() {
@@ -89,6 +89,15 @@ public class ApiAccessor {
         }
     }
 
+    public static void getNotices(Context c) {
+        if (!hasInternetConnection(c)) return;
+        try {
+            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString()));
+        } catch (Exception e) {
+            Log.e("apiaccessor", "notices wat", e);
+        }
+    }
+
     private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
         private Context c;
         private final String intentType;
@@ -98,7 +107,7 @@ public class ApiAccessor {
             this.intentType = type;
             this.c = c;
             this.date = date;
-            Log.i("downloadfiletask", "download for " + date);
+            Log.i("downloadfiletask", "download for " + date + " " + type);
         }
 
         @Override
@@ -115,6 +124,7 @@ public class ApiAccessor {
                         result += l;
                         l = br.readLine();
                     }
+                    Log.i("downloadfiletask", " got: " + result);
                     return result;
                 }
                 catch (Exception e) {

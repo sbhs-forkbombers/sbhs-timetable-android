@@ -1,4 +1,4 @@
-package com.sbhstimetable.sbhs_timetable_android;
+package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -9,12 +9,10 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.sbhstimetable.sbhs_timetable_android.ClassInfoActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.Util;
 
-/**
- * Created by simon on 30/08/2014.
- */
 public class TodayJSONAdapter implements ListAdapter{
     private TodayJson timetable;
     public TodayJSONAdapter(TodayJson tt) {

@@ -27,6 +27,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -57,12 +58,14 @@ public class TimetableActivity extends Activity
         mTitle = getTitle();
         IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
         interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
         LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
         // Grab belltimes.json
         ApiAccessor.getBelltimes(this);
         ApiAccessor.getToday(this);
+        ApiAccessor.getNotices(this);
         final Context c = this;
         Thread t = new Thread(new Runnable() {
             public void run() {
@@ -85,6 +88,12 @@ public class TimetableActivity extends Activity
             case 1:
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, TimetableFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+                        .commit();
+                break;
+            case 2:
+                Log.i("timetableActivity", "starting a new noticesFragment");
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, NoticesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
                         .commit();
                 break;
             case 3:
@@ -235,6 +244,11 @@ public class TimetableActivity extends Activity
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                 DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
+            }
+            else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                Log.i("timetable", "wow much noticesjson");
+                StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                new NoticesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
             }
         }
     }

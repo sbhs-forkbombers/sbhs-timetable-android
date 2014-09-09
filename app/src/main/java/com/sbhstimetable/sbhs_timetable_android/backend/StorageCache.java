@@ -70,4 +70,12 @@ public class StorageCache {
     public static JsonObject getBelltimes(Context c, String date) {
         return readCacheFile(c, date, "belltimes");
     }
+
+    public static void cacheNotices(Context c, String date, String json) {
+        writeCacheFile(c, date, "notices", json);
+    }
+
+    public static JsonObject getNotices(Context c, String date) {
+        return readCacheFile(c, date, "notices");
+    }
 }

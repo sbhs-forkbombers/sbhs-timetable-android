@@ -2,7 +2,6 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJSONAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 

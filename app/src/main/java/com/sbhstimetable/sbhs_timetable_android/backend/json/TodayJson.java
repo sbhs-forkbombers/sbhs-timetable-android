@@ -41,6 +41,10 @@ public class TodayJson {
         return periods[num-1];
     }
 
+    public boolean finalised() {
+        return this.today.get("variationsFinalised").getAsBoolean();
+    }
+
     @Override
     public String toString() {
         return this.today.toString();

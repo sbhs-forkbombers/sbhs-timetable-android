@@ -61,23 +61,19 @@ public class ApiAccessor {
     }
 
     public static String getToday(Context c) {
-        Date today = new Date();
-        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(today);
-        JsonObject obj = StorageCache.getTodayJson(c, dateStr);
+        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString());
         if (obj != null) {
             todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
             Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
-            LocalBroadcastManager.getInstance(c).sendBroadcast(i);
-            return null;
+            LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
         }
         if (!isLoggedIn() || !hasInternetConnection(c)) {
             return null;
         }
         try {
-            todayCached = false;
-            new DownloadFileTask(c, dateStr, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "wat", e);
@@ -87,6 +83,13 @@ public class ApiAccessor {
     }
 
     public static void getBelltimes(Context c) {
+        JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString());
+        if (obj != null) {
+            bellsCached = true;
+            Intent i = new Intent(ACTION_BELLTIMES_JSON);
+            i.putExtra(EXTRA_JSON_DATA, obj.toString());
+            LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+        }
         if (!hasInternetConnection(c)) return; // TODO fallback bells
         try {
             bellsCached = false;
@@ -97,7 +100,14 @@ public class ApiAccessor {
     }
 
     public static void getNotices(Context c) {
-        if (!hasInternetConnection(c)) return;
+        JsonObject obj = StorageCache.getNotices(c, DateTimeHelper.getDateString());
+        if (obj != null) {
+            noticesCached = true;
+            Intent i = new Intent(ACTION_NOTICES_JSON);
+            i.putExtra(EXTRA_JSON_DATA, obj.toString());
+            LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+        }
+        if (!isLoggedIn() || !hasInternetConnection(c)) return;
         try {
             noticesCached = false;
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString()));

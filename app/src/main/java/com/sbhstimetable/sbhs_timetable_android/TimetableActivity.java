@@ -169,13 +169,15 @@ public class TimetableActivity extends Activity
     }
 
     public void updateCachedStatus(Menu m) {
+        if (this.menu == null) return;
         MenuItem i = this.menu.findItem(R.id.action_cache_status);
         if (i == null) return;
         Log.i("timetableactivity", "cachedness: " + ApiAccessor.noticesCached + " " + ApiAccessor.todayCached + " " + ApiAccessor.bellsCached);
         if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
-            i.setIcon(android.R.drawable.ic_dialog_alert);
-        } else {
-            i.setIcon(android.R.drawable.ic_popup_sync);
+            i.setVisible(true);
+        }
+        else {
+            i.setVisible(false);
         }
     }
 
@@ -229,7 +231,8 @@ public class TimetableActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-                activity.setProgressBarIndeterminateVisibility(false);
+               ApiAccessor.todayCached = false;
+               this.activity.updateCachedStatus(null);
                if (this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
                    TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                    if (frag != null) {
@@ -239,18 +242,19 @@ public class TimetableActivity extends Activity
                    }
                }
                else {
+                   StorageCache.cacheTodayJson(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                    new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject()); // set INSTANCE
                }
                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                 activity.setProgressBarIndeterminateVisibility(false);
+                StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                 DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
                 activity.setProgressBarIndeterminateVisibility(false);
-                Log.i("timetable", "wow much noticesjson");
                 StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                 new NoticesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
             }

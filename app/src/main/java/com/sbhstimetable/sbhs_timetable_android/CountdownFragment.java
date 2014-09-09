@@ -11,6 +11,7 @@ import android.app.Fragment;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,16 +28,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CountdownFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CountdownFragment#newInstance} factory method to
- * create an instance of this fragment.
- *
- */
 public class CountdownFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
@@ -75,9 +66,23 @@ public class CountdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        RelativeLayout f = (RelativeLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
+        final CountdownFragment me = this;
+        /*final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
+        f.setColorSchemeColors(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ApiAccessor.getNotices(me.getActivity());
+                ApiAccessor.getToday(me.getActivity());
+                ApiAccessor.getBelltimes(me.getActivity());
+            }
+        });
         Log.i("countdownFrag", "done");
-        return f;
+        f.setRefreshing(true);*/
+        return inflater.inflate(R.layout.fragment_countdown, container, false);
     }
 
     @Override
@@ -103,7 +108,7 @@ public class CountdownFragment extends Fragment {
         if (this.timeLeft != null) {
             this.timeLeft.cancel();
         }
-        final RelativeLayout f = (RelativeLayout)this.getView();
+        final View f = this.getView();
         if (f == null) {
             //Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
             return;

@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -45,7 +46,6 @@ public class TimetableFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static TimetableFragment newInstance() {
         TimetableFragment fragment = new TimetableFragment();
-        Log.e("timetableFrag", "new timetableFragment");
         return fragment;
     }
     public TimetableFragment() {
@@ -71,7 +71,6 @@ public class TimetableFragment extends Fragment {
         if (z != null) {
             String b = ApiAccessor.getToday(this.getActivity());
             if (b != null) {
-                Log.i("timetable","swag");
                 this.doTimetable(b);
             }
         }
@@ -127,6 +126,7 @@ public class TimetableFragment extends Fragment {
             SharedPreferences.Editor e = p.edit();
             e.putString("todayJsonCache", this.today.toString());
             e.commit();
+            StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
         }
 
     }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -40,16 +41,15 @@ public class LoginActivity extends Activity {
         });
         wv.setWebViewClient(new WebViewClient() {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                Log.i("timetable", url + " baseURL is " + baseURL);
-                if (url.contains(baseURL + "/mobile_loading")) {
-                    // this would be our JSON!
-                    String[] parts = url.split("/mobile_loading\\?sessionID=");
-                    if (parts.length > 1) {
-                        String sessionID = parts[1];
-                        Log.e("timetable", "I GOTTSS IT! THE PRECIOUSSS! " + sessionID);
-                        Toast.makeText(me, "Got your Session ID - " + sessionID, Toast.LENGTH_LONG);
-                        ApiAccessor.finishedLogin(me, sessionID);
-                        NavUtils.navigateUpFromSameTask(me);
+                if (url.startsWith(baseURL) && (url.endsWith("/") || url.contains("mobile_loading"))) {
+                    // this would be our website!
+                    String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
+                    for (String i : cookies) {
+                        if (i.contains("SESSID")) {
+                            String sessionID = i.split("=")[1];
+                            ApiAccessor.finishedLogin(me, sessionID);
+                            NavUtils.navigateUpFromSameTask(me);
+                        }
                     }
 
                 }
@@ -57,10 +57,6 @@ public class LoginActivity extends Activity {
         });
         //setContentView(wv);
         wv.loadUrl(baseURL + "/try_do_oauth?app=1");
-        // something about exiting activity when logged in
-        if (wv.getUrl() == "http://sbhstimetable.tk") {
-            finish();
-        }
     }
 
 

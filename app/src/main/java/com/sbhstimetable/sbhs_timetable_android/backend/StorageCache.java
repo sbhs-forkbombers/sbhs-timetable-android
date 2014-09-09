@@ -1,26 +1,30 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class StorageCache {
-    private Context context;
-    public StorageCache(Context c) {
-        this.context = c;
+    private static boolean isOld(File f) {
+        return (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
+    }
+    public static void cleanCache(Context context) {
+        File cacheDir = context.getCacheDir();
+        for (File f : cacheDir.listFiles()) {
+            if (isOld(f)) {
+                f.delete();
+            }
+        }
     }
 
-    public JsonObject getTodayJson(String date) {
+    public static JsonObject getTodayJson(Context context, String date) {
         File cacheDir = context.getCacheDir();
         File data = new File(cacheDir, date+"_today.json");
         if (data.exists() && data.canRead()) {
@@ -36,7 +40,7 @@ public class StorageCache {
         return null;
     }
 
-    public void cacheTodayJson(String date, String json) {
+    public static void cacheTodayJson(Context context, String date, String json) {
         File cacheDir = context.getCacheDir();
         File data = new File(cacheDir, date+"_today.json");
         try {

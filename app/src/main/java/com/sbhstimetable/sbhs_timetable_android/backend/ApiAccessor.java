@@ -16,7 +16,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -60,7 +59,7 @@ public class ApiAccessor {
     public static String getToday(Context c) {
         Date today = new Date();
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(today);
-        JsonObject obj = new StorageCache(c).getTodayJson(dateStr);
+        JsonObject obj = StorageCache.getTodayJson(c, dateStr);
         if (obj != null) {
             Intent i = new Intent(ACTION_TODAY_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());

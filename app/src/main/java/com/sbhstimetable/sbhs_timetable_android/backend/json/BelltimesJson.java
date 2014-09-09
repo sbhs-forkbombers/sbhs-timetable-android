@@ -1,7 +1,5 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
-import android.util.Log;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;

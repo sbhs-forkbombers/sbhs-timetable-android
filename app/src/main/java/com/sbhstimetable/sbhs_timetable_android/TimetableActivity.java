@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -62,6 +63,13 @@ public class TimetableActivity extends Activity
         // Grab belltimes.json
         ApiAccessor.getBelltimes(this);
         ApiAccessor.getToday(this);
+        final Context c = this;
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                StorageCache.cleanCache(c);
+            }
+        });
+        t.start();
     }
 
     @Override

@@ -69,4 +69,5 @@ public class DateTimeHelper {
     public static int getDate() {
         return cal().get(Calendar.DAY_OF_MONTH);
     }
+    public static long getTimeMillis() { return System.currentTimeMillis(); }
 }

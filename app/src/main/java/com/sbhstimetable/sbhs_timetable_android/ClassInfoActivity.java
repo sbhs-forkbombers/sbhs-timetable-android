@@ -34,5 +34,15 @@ public class ClassInfoActivity extends Activity {
         //subject.setMinimumHeight(50);
         TextView room = (TextView)this.findViewById(R.id.classInfoRoom);
         room.setText(b.room());
+
+        TextView teacher = (TextView)this.findViewById(R.id.classInfoTeacher);
+        teacher.setText(b.fullTeacher());
+
+        if (b.roomChanged()) {
+            room.setTextColor(getResources().getColor(R.color.standout));
+        }
+        if (b.teacherChanged()) {
+            teacher.setTextColor(getResources().getColor(R.color.standout));
+        }
     }
 }

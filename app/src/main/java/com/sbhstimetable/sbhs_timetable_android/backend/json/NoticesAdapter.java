@@ -2,6 +2,10 @@ package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,7 +57,17 @@ public class NoticesAdapter implements ListAdapter {
         NoticesJson.Notice n = this.notices.getNotices().get(i);
         View res = ((LayoutInflater)viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
         TextView v = (TextView)res.findViewById(R.id.notice_body);
-        v.setText(n.getTextViewNoticeContents());
+        CharSequence s = n.getTextViewNoticeContents();
+        if (n.isMeeting()) {
+            String meetingDate = n.getMeetingDate();
+            String meetingTime = n.getMeetingTime();
+            String meetingPlace = n.getMeetingPlace();
+            String toSpan = "<span><strong>Meeting Date:</strong> " + meetingDate + " at " + meetingTime + "<br />";
+            toSpan += "<span><strong>Meeting Place:</strong> " + meetingPlace + "<br />";
+            Spanned s2 = Html.fromHtml(toSpan);
+            s = TextUtils.concat(s2, s);
+        }
+        v.setText(s);
         TextView title = (TextView)res.findViewById(R.id.notice_title);
         title.setText(n.getNoticeTitle());
         TextView author = (TextView)res.findViewById(R.id.notice_author);

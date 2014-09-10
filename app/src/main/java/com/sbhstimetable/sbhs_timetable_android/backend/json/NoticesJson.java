@@ -1,14 +1,23 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
+import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class NoticesJson {
@@ -21,9 +30,13 @@ public class NoticesJson {
     private ArrayList<Notice> n = new ArrayList<Notice>();
     public NoticesJson(JsonObject obj) {
         this.notices = obj;
+        ArrayList<NoticeList> why = new ArrayList<NoticeList>();
         for (Map.Entry<String, JsonElement> i : this.notices.get("notices").getAsJsonObject().entrySet()) {
             NoticeList l = new NoticeList(i.getValue().getAsJsonArray(), Integer.valueOf(i.getKey()));
-            n.addAll(l.getAllNotices());
+            why.add(l);
+        }
+        for (int i = why.size()-1; i > -1; i--) {
+            n.addAll(why.get(i).getAllNotices());
         }
         INSTANCE = this;
     }
@@ -93,6 +106,44 @@ public class NoticesJson {
 
         public String getNoticeTarget() {
             return this.notice.get("dTarget").getAsString();
+        }
+
+        public boolean isMeeting() {
+            return this.notice.has("isMeeting") && this.notice.get("isMeeting").getAsBoolean();
+        }
+
+        public String getMeetingDate() {
+            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date d = fmt.parse(this.notice.get("meetingDate").getAsString());
+                Calendar c = Calendar.getInstance();
+                c.setTimeInMillis(d.getTime());
+                int DAY = Calendar.DAY_OF_YEAR;
+                Calendar now = Calendar.getInstance();
+                if (c.get(DAY) == now.get(DAY)) {
+                    return "Today";
+                }
+                else if (c.get(DAY) - 1 == now.get(DAY)) {
+                    return "Tomorrow";
+                }
+                else if (c.get(DAY) - 7 >= now.get(DAY)) { // within the next week
+                    return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+                }
+                else {
+                    return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + " " + DateFormat.format("dd", d).toString() + " " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
+                }
+            } catch (ParseException e) {
+                Log.i("NoticesJson", "Failed to parse meeting date: " + this.notice.get("meetingDate").getAsString());
+                return this.notice.get("meetingDate").getAsString();
+            }
+        }
+
+        public String getMeetingTime() {
+            return this.notice.get("meetingTime").getAsString();
+        }
+
+        public String getMeetingPlace() {
+            return this.notice.get("meetingPlace").getAsString();
         }
     }
 

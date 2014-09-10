@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,8 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.ClassInfoActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.Util;
+import com.sbhstimetable.sbhs_timetable_android.R;
 
 public class TodayJSONAdapter implements ListAdapter{
     private TodayJson timetable;
@@ -57,17 +57,19 @@ public class TodayJSONAdapter implements ListAdapter{
     public View getView(int i, View oldView, ViewGroup viewGroup) {
         final RelativeLayout view;
         final TextView header;
-        final TextView subtitle;
+        final TextView roomText;
+        final TextView teacherText;
         final ImageView changed;
         if (oldView instanceof RelativeLayout) {
             view = (RelativeLayout)oldView;
         }
         else {
-            view = Util.generateSubtextView(viewGroup);
+            view = (RelativeLayout)LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
         }
-        header = (TextView)view.findViewWithTag("header");
-        subtitle = (TextView)view.findViewWithTag("subtitle");
-        changed = (ImageView)view.findViewWithTag("changed");
+        header = (TextView)view.findViewById(R.id.timetable_class_header);
+        roomText = (TextView)view.findViewById(R.id.timetable_class_room);
+        teacherText = (TextView)view.findViewById(R.id.timetable_class_teacher);
+        changed = (ImageView)view.findViewById(R.id.timetable_class_changed);
 
         final TodayJson.Period b = this.getEntry(i);
         view.setOnClickListener(new View.OnClickListener() {
@@ -80,12 +82,26 @@ public class TodayJSONAdapter implements ListAdapter{
         });
         String room = b.room();
         String teacher = b.fullTeacher();
+        roomText.setTextColor(viewGroup.getResources().getColor(android.R.color.primary_text_dark));
+        teacherText.setTextColor(viewGroup.getResources().getColor(android.R.color.primary_text_dark));
         if (b.changed()) {
             // variations!
             changed.setVisibility(View.VISIBLE);
+            if (b.roomChanged()) {
+                roomText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
+            }
+
+            if (b.teacherChanged()) {
+                teacherText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
+            }
+
+        }
+        else {
+            changed.setVisibility(View.INVISIBLE);
         }
         header.setText(b.name());
-        subtitle.setText("in " + room + " with " + teacher);
+        roomText.setText(room);
+        teacherText.setText(teacher);
         //view.setText((String)b.get("fullName"));
 
         return view;

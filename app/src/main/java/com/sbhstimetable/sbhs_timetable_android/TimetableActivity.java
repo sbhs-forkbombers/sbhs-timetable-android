@@ -81,6 +81,12 @@ public class TimetableActivity extends Activity
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        this.mNavigationDrawerFragment.updateList();
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
@@ -96,7 +102,6 @@ public class TimetableActivity extends Activity
                         .commit();
                 break;
             case 2:
-                Log.i("timetableActivity", "starting a new noticesFragment");
                 fragmentManager.beginTransaction()
                         .replace(R.id.container, NoticesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
                         .commit();

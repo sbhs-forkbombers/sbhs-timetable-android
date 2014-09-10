@@ -22,6 +22,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -57,6 +62,8 @@ public class NavigationDrawerFragment extends Fragment {
 	private int mCurrentSelectedPosition = 0;
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
+
+    private final ArrayList<String> elements = new ArrayList<String>();
 
 	public NavigationDrawerFragment() {
 	}
@@ -97,19 +104,33 @@ public class NavigationDrawerFragment extends Fragment {
 				selectItem(position);
 			}
 		});
+        this.elements.addAll(Arrays.asList(new String[]{
+                getString(R.string.title_section1),
+                getString(R.string.title_section2),
+                getString(R.string.title_section3),
+                getString(R.string.action_login),
+        }));
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(
-																   getActionBar().getThemedContext(),
-																   android.R.layout.simple_list_item_activated_1,
-																   android.R.id.text1,
-																   new String[]{
-																					   getString(R.string.title_section1),
-																					   getString(R.string.title_section2),
-																					   getString(R.string.title_section3),
-                                                                                       getString(R.string.action_login),
-																   }));
+                getActionBar().getThemedContext(),
+                android.R.layout.simple_list_item_activated_1,
+                this.elements));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 		return mDrawerListView;
 	}
+
+    public void updateList() {
+        ArrayAdapter<String> a = (ArrayAdapter<String>)mDrawerListView.getAdapter();
+        if (ApiAccessor.isLoggedIn()) {
+            if (a.getCount() > 3) {
+                this.elements.remove(3);
+            }
+        }
+        else {
+            if (a.getCount() < 4) {
+                this.elements.add("Login…");
+            }
+        }
+    }
 
 	public boolean isDrawerOpen() {
 		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);

@@ -61,10 +61,18 @@ public class TodayJson {
         }
 
         public String fullTeacher() {
-            if (this.changed() && period.get("hasCasual").getAsBoolean()) {
+            if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean()) {
                 return period.get("casualDisplay").getAsString().trim();
             }
             return period.get("fullTeacher").getAsString();
+        }
+
+        public boolean teacherChanged() {
+            return !this.fullTeacher().equals(period.get("fullTeacher").getAsString());
+        }
+
+        public boolean roomChanged() {
+            return !this.room().equals(period.get("room").getAsString());
         }
 
         public String room() {

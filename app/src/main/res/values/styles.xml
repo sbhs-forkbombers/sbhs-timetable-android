@@ -18,4 +18,12 @@
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
+    <style name="Subtitle" parent="android:Theme.Holo">
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
+    </style>
+
+    <style name="Header" parent="android:Theme.Holo">
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Large</item>
+    </style>
+
 </resources>

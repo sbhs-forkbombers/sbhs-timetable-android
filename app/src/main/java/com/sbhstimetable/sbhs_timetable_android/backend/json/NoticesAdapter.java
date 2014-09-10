@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ListAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
@@ -55,7 +56,13 @@ public class NoticesAdapter implements ListAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         NoticesJson.Notice n = this.notices.getNotices().get(i);
-        View res = ((LayoutInflater)viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
+        View res;
+        if (view instanceof RelativeLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
+            res = view;
+        }
+        else {
+            res = ((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
+        }
         TextView v = (TextView)res.findViewById(R.id.notice_body);
         CharSequence s = n.getTextViewNoticeContents();
         if (n.isMeeting()) {
@@ -72,6 +79,8 @@ public class NoticesAdapter implements ListAdapter {
         title.setText(n.getNoticeTitle());
         TextView author = (TextView)res.findViewById(R.id.notice_author);
         author.setText(n.getNoticeAuthor());
+        TextView targ = (TextView)res.findViewById(R.id.notice_target);
+        targ.setText("("+n.getNoticeTarget()+")");
         return res;
     }
 

@@ -32,8 +32,9 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.activity_login);
         WebView wv = (WebView) findViewById(R.id.loginview);
         wv.setBackgroundColor(Color.parseColor("#000000"));
+        wv.getSettings().setSaveFormData(true);
         final Activity me = this;
-        wv.getSettings().setJavaScriptEnabled(true);
+        //wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebChromeClient(new WebChromeClient() {
             public void onProgressChange(WebView view, int progress) {
                 me.setProgress(progress * 1000);
@@ -49,6 +50,7 @@ public class LoginActivity extends Activity {
                             String sessionID = i.split("=")[1];
                             ApiAccessor.finishedLogin(me, sessionID);
                             NavUtils.navigateUpFromSameTask(me);
+                            view.clearCache(true);
                         }
                     }
 

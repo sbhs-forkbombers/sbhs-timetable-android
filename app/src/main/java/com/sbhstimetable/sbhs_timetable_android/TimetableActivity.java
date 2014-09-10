@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.google.gson.JsonParser;
@@ -107,7 +108,16 @@ public class TimetableActivity extends Activity
                         .commit();
                 break;
             case 3:
-                ApiAccessor.login(this);
+                if (ApiAccessor.isLoggedIn()) {
+                    ApiAccessor.logOut(this);
+                    this.mNavigationDrawerFragment.updateList();
+                    Toast.makeText(this, "Logged out! (You may need to restart the app to remove all your data)", Toast.LENGTH_SHORT).show();
+                    StorageCache.deleteAllCacheFiles(this);
+                    fragmentManager.beginTransaction().commit();
+                }
+                else {
+                    ApiAccessor.login(this);
+                }
                 break;
             default:
                 fragmentManager.beginTransaction()
@@ -165,8 +175,14 @@ public class TimetableActivity extends Activity
 
         int id = item.getItemId();
         if (id == R.id.action_cache_status) {
-            ApiAccessor.getNotices(this);
-            ApiAccessor.getToday(this);
+            if (ApiAccessor.isLoggedIn()) {
+                ApiAccessor.getNotices(this);
+                ApiAccessor.getToday(this);
+            }
+            else {
+                Intent i = new Intent(this, LoginActivity.class);
+                this.startActivity(i);
+            }
             return true;
         } else {
             return super.onOptionsItemSelected(item);

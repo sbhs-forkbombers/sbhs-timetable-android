@@ -50,6 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
 	 */
 	private NavigationDrawerCallbacks mCallbacks;
 
+
 	/**
 	 * Helper component that ties the action bar to the navigation drawer.
 	 */
@@ -121,8 +122,9 @@ public class NavigationDrawerFragment extends Fragment {
     public void updateList() {
         ArrayAdapter<String> a = (ArrayAdapter<String>)mDrawerListView.getAdapter();
         if (ApiAccessor.isLoggedIn()) {
-            if (a.getCount() > 3) {
+            if (a.getCount() > 3 && !a.getItem(3).equals("Logout…")) {
                 this.elements.remove(3);
+                this.elements.add("Logout…");
             }
         }
         else {

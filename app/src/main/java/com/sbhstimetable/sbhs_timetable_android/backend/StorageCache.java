@@ -13,7 +13,12 @@ import java.io.IOException;
 
 public class StorageCache {
     private static boolean isOld(File f) {
-        return (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
+        // don't touch non-JSONs
+        return f.getName().endsWith("json") && (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
+    }
+
+    private static boolean isMine(File f) {
+        return f.getName().endsWith("json");
     }
 
     private static boolean writeCacheFile(Context c, String date, String type, String json) {
@@ -50,6 +55,15 @@ public class StorageCache {
         File cacheDir = context.getCacheDir();
         for (File f : cacheDir.listFiles()) {
             if (isOld(f)) {
+                f.delete();
+            }
+        }
+    }
+
+    public static void deleteAllCacheFiles(Context c) {
+        File cacheDir = c.getCacheDir();
+        for (File f : cacheDir.listFiles()) {
+            if (isMine(f)) {
                 f.delete();
             }
         }

@@ -48,6 +48,12 @@ public class ApiAccessor {
         c.startActivity(new Intent(c, LoginActivity.class));
     }
 
+    public static void logOut(Context c) {
+        sessionID = null;
+        SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
+        s.edit().remove("sessionID").commit();
+    }
+
     public static void finishedLogin(Context c, String id) {
         sessionID = id;
         SharedPreferences.Editor e = c.getSharedPreferences(PREFS_NAME, 0).edit();

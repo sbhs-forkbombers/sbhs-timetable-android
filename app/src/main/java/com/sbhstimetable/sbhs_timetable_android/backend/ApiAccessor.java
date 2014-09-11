@@ -79,7 +79,7 @@ public class ApiAccessor {
             return null;
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString()));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "wat", e);

@@ -47,6 +47,9 @@ public class StorageCache {
             catch (IOException e) {
                 Log.e("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
             }
+            catch (IllegalStateException e) {
+                Log.e("storageCache", "wow wek json", e);
+            }
         }
         return null;
     }

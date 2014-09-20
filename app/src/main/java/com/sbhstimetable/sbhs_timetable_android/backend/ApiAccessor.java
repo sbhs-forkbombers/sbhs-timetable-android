@@ -34,6 +34,10 @@ public class ApiAccessor {
     public static boolean bellsCached = true;
     public static boolean noticesCached = true;
 
+    public static boolean todayLoaded = false;
+    public static boolean bellsLoaded = false;
+    public static boolean noticesLoaded = false;
+
     public static void load(Context c) {
         // load stored sessionID and whatnot here
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
@@ -76,6 +80,7 @@ public class ApiAccessor {
             LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
         }
         if (!isLoggedIn() || !hasInternetConnection(c)) {
+            todayLoaded  = true;
             return null;
         }
         try {
@@ -96,7 +101,10 @@ public class ApiAccessor {
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
             LocalBroadcastManager.getInstance(c).sendBroadcast(i);
         }
-        if (!hasInternetConnection(c)) return; // TODO fallback bells
+        if (!hasInternetConnection(c)) {
+            bellsLoaded = true;
+            return; // TODO fallback bells
+        }
         try {
             bellsCached = false;
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString()));
@@ -113,7 +121,10 @@ public class ApiAccessor {
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
             LocalBroadcastManager.getInstance(c).sendBroadcast(i);
         }
-        if (!isLoggedIn() || !hasInternetConnection(c)) return;
+        if (!isLoggedIn() || !hasInternetConnection(c)) {
+            noticesLoaded = true;
+            return;
+        }
         try {
             noticesCached = false;
             new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString()));

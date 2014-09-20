@@ -147,6 +147,7 @@ public class TimetableActivity extends Activity
 
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
+        if (actionBar == null) return;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
@@ -193,6 +194,12 @@ public class TimetableActivity extends Activity
         if (this.menu == null) return;
         MenuItem i = this.menu.findItem(R.id.action_cache_status);
         if (i == null) return;
+        if (ApiAccessor.noticesLoaded && ApiAccessor.todayLoaded && ApiAccessor.bellsLoaded) {
+            setProgressBarIndeterminateVisibility(false);
+        }
+        else {
+            setProgressBarIndeterminateVisibility(true);
+        }
         Log.i("timetableactivity", "cachedness: " + ApiAccessor.noticesCached + " " + ApiAccessor.todayCached + " " + ApiAccessor.bellsCached);
         if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
             i.setVisible(true);
@@ -252,8 +259,8 @@ public class TimetableActivity extends Activity
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+               ApiAccessor.todayLoaded = true;
                ApiAccessor.todayCached = false;
-               this.activity.updateCachedStatus(null);
                if (this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
                    TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                    if (frag != null) {
@@ -269,13 +276,15 @@ public class TimetableActivity extends Activity
                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-                activity.setProgressBarIndeterminateVisibility(false);
+                //activity.setProgressBarIndeterminateVisibility(false);
+                ApiAccessor.bellsLoaded = true;
                 StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                 DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-                activity.setProgressBarIndeterminateVisibility(false);
+                //activity.setProgressBarIndeterminateVisibility(false);
+                ApiAccessor.noticesLoaded = true;
                 StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                 new NoticesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
             }

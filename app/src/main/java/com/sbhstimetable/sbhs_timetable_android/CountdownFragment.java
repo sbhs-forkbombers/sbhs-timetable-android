@@ -122,6 +122,7 @@ public class CountdownFragment extends Fragment {
         subject.setText("…");
         String label = "Something";
         String connector = "happens in";
+        TodayJson.Period p = null;
         if (DateTimeHelper.bells != null) {
             BelltimesJson.Bell next = DateTimeHelper.bells.getNextBell();
             if (next != null) {
@@ -129,7 +130,7 @@ public class CountdownFragment extends Fragment {
                 if (now.isPeriod() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
                     connector = "ends in";
                     if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-                        TodayJson.Period p = TodayJson.getInstance().getPeriod(now.getPeriodNumber());
+                        p = TodayJson.getInstance().getPeriod(now.getPeriodNumber());
                         label = p.name();
                         teacher.setText(p.fullTeacher());
                         room.setText(p.room());
@@ -145,7 +146,7 @@ public class CountdownFragment extends Fragment {
                 } else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) { // in a break followed by a period - Lunch 2, Recess, Transition.
                     connector = "starts in";
                     if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-                        TodayJson.Period p = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber());
+                        p = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber());
                         label = p.name();
                         teacher.setText(p.fullTeacher());
                         room.setText(p.room());
@@ -168,7 +169,7 @@ public class CountdownFragment extends Fragment {
                 connector = "in";
                 if (TodayJson.getInstance() != null) {
                     extraData.setVisibility(View.VISIBLE);
-                    TodayJson.Period p = TodayJson.getInstance().getPeriod(1);
+                    p = TodayJson.getInstance().getPeriod(1);
                     teacher.setText(p.fullTeacher());
                     room.setText(p.room());
                     subject.setText(p.name());
@@ -178,6 +179,18 @@ public class CountdownFragment extends Fragment {
                 }
             }
         }
+
+        if (p != null) {
+            if (p.teacherChanged())
+                teacher.setTextColor(getActivity().getResources().getColor(R.color.standout));
+            else
+                teacher.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+            if (p.roomChanged())
+                room.setTextColor(getActivity().getResources().getColor(R.color.standout));
+            else
+                room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+        }
+
         final String innerLabel = label;
         ((TextView)f.findViewById(R.id.countdown_name)).setText(label);
         ((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
@@ -186,7 +199,7 @@ public class CountdownFragment extends Fragment {
         final CountdownFragment frag = this;
         CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
             long lastTime = 10000;
-            boolean isLast = innerLabel == "School ends";
+            boolean isLast = innerLabel.equals("School ends");
             @Override
             public void onTick(long l) {
                 l = (long)Math.floor(l/1000);

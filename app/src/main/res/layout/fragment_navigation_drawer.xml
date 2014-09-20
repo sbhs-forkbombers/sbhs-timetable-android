@@ -1,9 +1,32 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context=".NavigationDrawerFragment"
+    android:background="@color/background">
+<ListView android:layout_width="match_parent"
+    android:id="@+id/navdraw_listview"
+    android:layout_alignParentTop="true"
+    android:layout_height="wrap_content"
     android:background="@color/background"
     android:choiceMode="singleChoice"
     android:divider="@color/pressed"
+    android:dividerHeight="1dp" />
+
+<ListView android:id="@+id/navdraw_botlistview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/navdraw_listview"
+    android:background="@color/background"
+    android:divider="@color/pressed"
     android:dividerHeight="1dp"
-    tools:context=".NavigationDrawerFragment" />
+    android:choiceMode="singleChoice">
+    </ListView>
+<TextView android:layout_width="match_parent"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp"
+    android:layout_height="wrap_content"
+    android:id="@+id/navdraw_timestamp"
+    android:layout_below="@id/navdraw_botlistview"
+    />
+</RelativeLayout>

@@ -1,13 +1,17 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
+import android.content.Context;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 
 public class BelltimesJson {
     private final JsonObject bells;
-
-    public BelltimesJson(JsonObject json) {
+    private final Context context;
+    public BelltimesJson(JsonObject json, Context c) {
+        this.context = c;
         this.bells = json;
     }
 
@@ -28,6 +32,9 @@ public class BelltimesJson {
     }
 
     public Bell getNextBell() {
+        if (this.bells.get("bells") == null) {
+            return null;
+        }
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
         for (int i = 0; i < belltimes.size(); i++) {
             JsonObject entry = belltimes.get(i).getAsJsonObject();

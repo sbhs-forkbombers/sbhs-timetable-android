@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -142,7 +143,6 @@ public class ApiAccessor {
             this.intentType = type;
             this.c = c;
             this.date = date;
-            Log.i("downloadfiletask", "download for " + date + " " + type);
         }
 
         @Override
@@ -173,6 +173,10 @@ public class ApiAccessor {
         protected void onPostExecute(String result) {
             Intent i = new Intent(this.intentType);
             i.putExtra(EXTRA_JSON_DATA, result);
+            if (this.c instanceof TimetableActivity) {
+                TimetableActivity a = (TimetableActivity)c;
+                a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("K:m:s a").format(new Date()));
+            }
             LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
         }
     }

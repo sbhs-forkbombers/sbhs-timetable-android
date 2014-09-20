@@ -20,9 +20,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.NavBarFancyAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +67,10 @@ public class NavigationDrawerFragment extends Fragment {
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
+    public TextView lastTimestamp;
+
     private final ArrayList<String> elements = new ArrayList<String>();
+    private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
 
 	public NavigationDrawerFragment() {
 	}
@@ -97,26 +103,44 @@ public class NavigationDrawerFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
-		mDrawerListView = (ListView) inflater.inflate(
-															 R.layout.fragment_navigation_drawer, container, false);
+		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        this.mDrawerListView = (ListView)l.findViewById(R.id.navdraw_listview);
 		mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				selectItem(position);
 			}
 		});
-        this.elements.addAll(Arrays.asList(new String[]{
-                getString(R.string.title_section1),
+        this.elements.addAll(Arrays.asList(getString(R.string.title_section1),
                 getString(R.string.title_section2),
                 getString(R.string.title_section3),
-                getString(R.string.action_login),
-        }));
+                getString(R.string.action_login)
+        ));
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 this.elements));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-		return mDrawerListView;
+
+        ListView smallView = (ListView)l.findViewById(R.id.navdraw_botlistview);
+        smallView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                selectItem(i+elements.size());
+            }
+        });
+        this.botElements.addAll(Arrays.asList(
+                new NavBarFancyAdapter.DrawerEntry(android.R.drawable.ic_menu_preferences,
+                        getString(R.string.action_settings),
+                        this.getActivity())
+        ));
+        smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
+                getActionBar().getThemedContext(),
+                android.R.layout.simple_list_item_activated_1,
+                this.botElements
+        ));
+        this.lastTimestamp = (TextView)l.findViewById(R.id.navdraw_timestamp);
+		return l;
 	}
 
     public void updateList() {

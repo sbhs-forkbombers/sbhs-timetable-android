@@ -269,11 +269,10 @@ public class CountdownFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(TimetableActivity.BELLTIMES_AVAILABLE)) {
-                Log.i("broadcastlistener", "belltimes available!");
                 updateTimer();
             }
             else if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
-                Log.i("broadcastlistener", "today.json available!");
+                ApiAccessor.getBelltimes(context);
                 updateTimer();
             }
         }

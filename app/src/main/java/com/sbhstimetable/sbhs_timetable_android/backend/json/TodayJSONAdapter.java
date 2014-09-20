@@ -72,14 +72,14 @@ public class TodayJSONAdapter implements ListAdapter{
         changed = (ImageView)view.findViewById(R.id.timetable_class_changed);
 
         final TodayJson.Period b = this.getEntry(i);
-        view.setOnClickListener(new View.OnClickListener() {
+        /*view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(view.getContext(), ClassInfoActivity.class);
                 i.putExtra("json", ""+b);
                 view.getContext().startActivity(i);
             }
-        });
+        });*/
         String room = b.room();
         String teacher = b.fullTeacher();
         roomText.setTextColor(viewGroup.getResources().getColor(android.R.color.primary_text_dark));

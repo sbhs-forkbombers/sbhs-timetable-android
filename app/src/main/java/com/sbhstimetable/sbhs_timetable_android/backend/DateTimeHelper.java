@@ -1,6 +1,7 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -10,7 +11,7 @@ public class DateTimeHelper {
         return Calendar.getInstance();
     }
     public static BelltimesJson bells;
-    public static int getDateOffset() {
+    public static int getDateOffset() { // TODO holidays
         int day = getDay();
         int hour = getHour();
         int minute = getMinute();
@@ -30,7 +31,12 @@ public class DateTimeHelper {
      * @return a date in format YYYY-MM-DD
      */
     public static String getDateString() {
-        return getYear() + "-" + (getMonth()+1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
+        if (!ApiAccessor.todayLoaded || TodayJson.getInstance() == null) {
+            return getYear() + "-" + (getMonth() + 1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
+        }
+        else {
+            return TodayJson.getInstance().getDate();
+        }
     }
 
     public static boolean needsMidnightCountdown() {
@@ -43,7 +49,12 @@ public class DateTimeHelper {
         GregorianCalendar d = new GregorianCalendar(getYear(), getMonth(), getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0), 9, 5);
         if (bells == null || bells.getNextBell() == null || getDateOffset() > 0 || needsMidnightCountdown()) { // TODO friday
             d.set(d.HOUR_OF_DAY, 9);
-            d.set(d.MINUTE, 5);
+            if (d.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
+                d.set(d.MINUTE, 30);
+            }
+            else {
+                d.set(d.MINUTE, 5);
+            }
         }
         else {
             BelltimesJson.Bell b = bells.getNextBell();

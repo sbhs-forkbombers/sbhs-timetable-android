@@ -19,7 +19,7 @@ public class TodayJson {
 
              JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i+1));
              if (j != null) {
-                 periods[i] = new Period(j.getAsJsonObject());
+                 periods[i] = new Period(j.getAsJsonObject(), this.finalised());
              }
              else {
                  JsonObject b = new JsonObject();
@@ -27,7 +27,7 @@ public class TodayJson {
                  b.addProperty("room", "N/A");
                  b.addProperty("fullTeacher", "Nobody");
                  b.addProperty("changed", false);
-                 periods[i] = new Period(b);
+                 periods[i] = new Period(b, false);
              }
          }
         INSTANCE = this;
@@ -52,7 +52,9 @@ public class TodayJson {
 
     public static class Period {
         private final JsonObject period;
-        public Period(JsonObject obj) {
+        private boolean finalised = true;
+        public Period(JsonObject obj, boolean finalised) {
+            this.finalised = finalised;
             this.period = obj;
         }
 
@@ -61,10 +63,14 @@ public class TodayJson {
         }
 
         public String fullTeacher() {
-            if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean()) {
+            if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean() && this.finalised) {
                 return period.get("casualDisplay").getAsString().trim();
             }
             return period.get("fullTeacher").getAsString();
+        }
+
+        public String getShortName() {
+            return period.get("year").getAsString() + period.get("title").getAsString();
         }
 
         public boolean teacherChanged() {
@@ -76,7 +82,7 @@ public class TodayJson {
         }
 
         public String room() {
-            if (period.has("roomFrom")) {
+            if (period.has("roomFrom") && this.finalised) {
                 return period.get("roomTo").getAsString();
             }
             return period.get("room").getAsString();

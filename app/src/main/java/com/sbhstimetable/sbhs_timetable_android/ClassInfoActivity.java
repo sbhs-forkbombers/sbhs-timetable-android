@@ -28,7 +28,7 @@ public class ClassInfoActivity extends Activity {
             throw new IllegalStateException("RUDE I NEED SOME DATA PLOX");
         }
         String json = i.getStringExtra("json");
-        TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject());
+        TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject(), true); // TODO
         TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
         subject.setText(b.name());
         //subject.setMinimumHeight(50);

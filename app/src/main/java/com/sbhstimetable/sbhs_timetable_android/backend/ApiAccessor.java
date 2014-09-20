@@ -29,6 +29,7 @@ public class ApiAccessor {
     public static final String ACTION_BELLTIMES_JSON = "belltimesData";
     public static final String ACTION_NOTICES_JSON = "noticesData";
     public static final String EXTRA_JSON_DATA = "jsonString";
+    public static final String GLOBAL_ACTION_TODAY_JSON = "com.sbhstimetable.sbhs_timetable_android."+ACTION_TODAY_JSON;
     private static String sessionID = null;
 
     public static boolean todayCached = true;
@@ -94,13 +95,36 @@ public class ApiAccessor {
         return null;
     }
 
+    public static String getTodayGlobal(Context c) {
+        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString());
+        if (obj != null) {
+            todayCached = true;
+            Intent i = new Intent(ACTION_TODAY_JSON);
+            i.putExtra(EXTRA_JSON_DATA, obj.toString());
+            Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
+            LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
+        }
+        if (!isLoggedIn() || !hasInternetConnection(c)) {
+            todayLoaded  = true;
+            return null;
+        }
+        try {
+            new DownloadFileTask(c, DateTimeHelper.getDateString(), GLOBAL_ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString()));
+        }
+        catch (Exception e) {
+            Log.e("apiaccessor", "wat", e);
+        }
+
+        return null;
+    }
+
     public static void getBelltimes(Context c) {
         JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString());
         if (obj != null) {
             bellsCached = true;
             Intent i = new Intent(ACTION_BELLTIMES_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
-            LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+            c.sendBroadcast(i);
         }
         if (!hasInternetConnection(c)) {
             bellsLoaded = true;
@@ -177,7 +201,12 @@ public class ApiAccessor {
                 TimetableActivity a = (TimetableActivity)c;
                 a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("K:m:s a").format(new Date()));
             }
-            LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
+            if (intentType.equals(GLOBAL_ACTION_TODAY_JSON)) {
+                this.c.sendBroadcast(i);
+            }
+            else {
+                LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
+            }
         }
     }
 

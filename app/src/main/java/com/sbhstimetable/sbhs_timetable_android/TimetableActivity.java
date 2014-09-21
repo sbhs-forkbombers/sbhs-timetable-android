@@ -107,6 +107,11 @@ public class TimetableActivity extends Activity
                         .commit();
                 break;
             case 3:
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, BelltimesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+                        .commit();
+                break;
+            case 4:
                 if (ApiAccessor.isLoggedIn()) {
                     ApiAccessor.logOut(this);
                     this.mNavigationDrawerFragment.updateList();
@@ -139,6 +144,8 @@ public class TimetableActivity extends Activity
                 mTitle = getString(R.string.title_section3);
                 break;
             case 4:
+                mTitle = getString(R.string.title_section4);
+            case 5:
                 mTitle = getString(R.string.action_login);
                 break;
         }

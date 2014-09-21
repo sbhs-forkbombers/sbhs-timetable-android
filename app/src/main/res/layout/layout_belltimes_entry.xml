@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:id="@+id/bell_name"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Period 1"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bell_start_label"
+        android:text="@string/start"
+        android:layout_toRightOf="@id/bell_name"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="0dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bell_start"
+        android:layout_toRightOf="@id/bell_start_label"
+        android:layout_alignParentTop="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bell_end_label"
+        android:text="@string/end"
+        android:layout_below="@id/bell_start_label"
+        android:layout_toRightOf="@id/bell_name"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bell_end"
+        android:layout_toRightOf="@id/bell_start_label"
+        android:layout_below="@id/bell_start_label"/>
+</RelativeLayout>

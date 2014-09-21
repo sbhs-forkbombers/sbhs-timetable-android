@@ -111,6 +111,7 @@ public class NavigationDrawerFragment extends Fragment {
         this.elements.addAll(Arrays.asList(getString(R.string.title_section1),
                 getString(R.string.title_section2),
                 getString(R.string.title_section3),
+                getString(R.string.title_section4),
                 getString(R.string.action_login)
         ));
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(
@@ -143,13 +144,13 @@ public class NavigationDrawerFragment extends Fragment {
     public void updateList() {
         ArrayAdapter<String> a = (ArrayAdapter<String>)mDrawerListView.getAdapter();
         if (ApiAccessor.isLoggedIn()) {
-            if (a.getCount() > 3 && !a.getItem(3).equals("Logout…")) {
-                this.elements.remove(3);
+            if (a.getCount() > 4 && !a.getItem(4).equals("Logout…")) {
+                this.elements.remove(4);
                 this.elements.add("Logout…");
             }
         }
         else {
-            if (a.getCount() < 4) {
+            if (a.getCount() < 5) {
                 this.elements.add("Login…");
             }
         }

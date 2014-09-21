@@ -72,7 +72,10 @@ public class BelltimesJson {
     }
 
     public int getMaxIndex() {
-        return this.bells.get("bells").getAsJsonArray().size();
+        return this.bells
+                .get("bells")
+                .getAsJsonArray()
+                .size();
     }
     public Bell getIndex(int i) {
         if (i < this.getMaxIndex()) {

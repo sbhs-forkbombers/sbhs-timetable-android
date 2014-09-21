@@ -24,6 +24,10 @@ public class StorageCache {
     private static boolean writeCacheFile(Context c, String date, String type, String json) {
         File cacheDir = c.getCacheDir();
         File data = new File(cacheDir, date+"_"+type+".json");
+        if (json == null) {
+            Log.e("storageCache", "not given any data to write!");
+            return false;
+        }
         try {
             FileWriter w = new FileWriter(data);
             w.write(json);

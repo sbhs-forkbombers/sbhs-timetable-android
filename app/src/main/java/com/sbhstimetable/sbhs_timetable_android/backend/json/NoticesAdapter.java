@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,30 +18,60 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NoticesAdapter implements ListAdapter {
-    private final NoticesJson notices;
+    private final NoticesJson noticesJson;
+    private ArrayList<NoticesJson.Notice> notices;
+    private NoticesJson.Year filter = null;
     public NoticesAdapter(NoticesJson n) {
-        this.notices = n;
-        Log.i("noticesAdapter", "size => " + notices.getNotices().size());
+        this.noticesJson = n;
+        this.notices = n.getNotices();
+        Log.i("noticesAdapter", "size => " + n.getNotices().size() + " size2 => " + this.getCount());
     }
+
+    private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
     @Override
     public void registerDataSetObserver(DataSetObserver dataSetObserver) {
+        this.dsos.add(dataSetObserver);
+    }
 
+    private void notifyDSOs() {
+        for (DataSetObserver i : dsos) {
+            i.onChanged();
+        }
+    }
+
+    public void filter(NoticesJson.Year year) {
+        this.filter = year;
+        Log.i("noticesAdapter", "filtering to " + year);
+        this.notices = noticesJson.getNotices();
+        if (year != null) {
+            ArrayList<NoticesJson.Notice> res = new ArrayList<NoticesJson.Notice>();
+            for (NoticesJson.Notice i : notices) {
+                if (i.isForYear(year)) {
+                    res.add(i);
+                }
+            }
+            this.notices = res;
+        }
+        this.notifyDSOs();
     }
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
-
+        this.dsos.remove(dataSetObserver);
     }
 
     @Override
     public int getCount() {
-        return notices.getNotices().size();
+        return notices.size() == 0 ? 1 : notices.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return notices.getNotices().get(i);
+        return notices.get(i);
     }
 
     @Override
@@ -55,7 +86,15 @@ public class NoticesAdapter implements ListAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        NoticesJson.Notice n = this.notices.getNotices().get(i);
+        if (notices.size() == 0) {
+            Log.i("noticesAdapter","the size is 0!");
+            TextView res = new TextView(viewGroup.getContext());
+            res.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
+            res.setGravity(Gravity.CENTER);
+            res.setText("There are no notices!");
+            return res;
+        }
+        NoticesJson.Notice n = this.notices.get(i);
         View res;
         if (view instanceof RelativeLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
             res = view;

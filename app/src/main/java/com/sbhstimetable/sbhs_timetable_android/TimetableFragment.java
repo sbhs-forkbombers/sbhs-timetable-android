@@ -2,7 +2,6 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,12 +10,11 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJSONAdapter;
@@ -94,7 +92,7 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (TodayJson.getInstance() != null) {
+        if (TodayJson.getInstance() != null && TodayJson.getInstance().getPeriod(1) != null) {
             doTimetable(TodayJson.getInstance());
         }
         else {

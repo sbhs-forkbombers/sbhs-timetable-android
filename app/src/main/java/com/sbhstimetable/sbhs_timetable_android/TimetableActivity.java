@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -20,13 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
@@ -44,6 +42,7 @@ public class TimetableActivity extends Activity
      */
     public NavigationDrawerFragment mNavigationDrawerFragment;
     private Menu menu;
+    private int navStyle = ActionBar.NAVIGATION_MODE_STANDARD;
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
@@ -145,10 +144,16 @@ public class TimetableActivity extends Activity
         }
     }
 
+    @Override
+    public void setNavigationStyle(int s) {
+        getActionBar().setNavigationMode(s);
+        this.navStyle = s;
+    }
+
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         if (actionBar == null) return;
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        actionBar.setNavigationMode(this.navStyle);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }

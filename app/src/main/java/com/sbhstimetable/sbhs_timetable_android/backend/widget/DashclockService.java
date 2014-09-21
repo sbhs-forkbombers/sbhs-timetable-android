@@ -1,4 +1,4 @@
-package com.sbhstimetable.sbhs_timetable_android.backend;
+package com.sbhstimetable.sbhs_timetable_android.backend.widget;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +12,7 @@ import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 

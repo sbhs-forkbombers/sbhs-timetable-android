@@ -16,18 +16,29 @@ public class TodayJson {
     public TodayJson(JsonObject obj) {
          this.today = obj;
          for (int i = 0; i < 5; i++) {
-
-             JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i+1));
-             if (j != null) {
-                 periods[i] = new Period(j.getAsJsonObject(), this.finalised());
+             try {
+                 JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
+                 if (j != null) {
+                     periods[i] = new Period(j.getAsJsonObject(), this.finalised());
+                 } else {
+                     JsonObject b = new JsonObject();
+                     b.addProperty("fullName", "Free Period");
+                     b.addProperty("room", "N/A");
+                     b.addProperty("fullTeacher", "Nobody");
+                     b.addProperty("changed", false);
+                     b.addProperty("year", "");
+                     b.addProperty("title", "");
+                     periods[i] = new Period(b, false);
+                 }
              }
-             else {
-                 JsonObject b = new JsonObject();
-                 b.addProperty("fullName", "Free Period");
-                 b.addProperty("room", "N/A");
-                 b.addProperty("fullTeacher", "Nobody");
+             catch (NullPointerException e) {
+                JsonObject b = new JsonObject();
+                 b.addProperty("fullName", "…");
+                 b.addProperty("room", "…");
+                 b.addProperty("fullTeacher", "…");
                  b.addProperty("changed", false);
-                 periods[i] = new Period(b, false);
+                 b.addProperty("year", "");
+                 b.addProperty("title", "");
              }
          }
         INSTANCE = this;

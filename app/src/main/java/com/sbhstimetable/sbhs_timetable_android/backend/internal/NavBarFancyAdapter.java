@@ -1,7 +1,6 @@
-package com.sbhstimetable.sbhs_timetable_android.backend;
+package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

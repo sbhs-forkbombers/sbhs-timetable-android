@@ -199,7 +199,7 @@ public class ApiAccessor {
             i.putExtra(EXTRA_JSON_DATA, result);
             if (this.c instanceof TimetableActivity) {
                 TimetableActivity a = (TimetableActivity)c;
-                a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("K:m:s a").format(new Date()));
+                a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));
             }
             if (intentType.equals(GLOBAL_ACTION_TODAY_JSON)) {
                 this.c.sendBroadcast(i);

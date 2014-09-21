@@ -8,11 +8,17 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 
 public class BelltimesJson {
+    private static BelltimesJson INSTANCE;
     private final JsonObject bells;
     private final Context context;
     public BelltimesJson(JsonObject json, Context c) {
         this.context = c;
         this.bells = json;
+        INSTANCE = this;
+    }
+
+    public static BelltimesJson getInstance() {
+        return INSTANCE;
     }
 
     private static Integer[] parseTime(String time) {
@@ -32,7 +38,7 @@ public class BelltimesJson {
     }
 
     public Bell getNextBell() {
-        if (this.bells.get("bells") == null) {
+        if (this.bells.get("bells") == null || DateTimeHelper.getDateOffset() > 0 || DateTimeHelper.needsMidnightCountdown()) {
             return null;
         }
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
@@ -54,6 +60,9 @@ public class BelltimesJson {
     public Bell getNextPeriod() {
         Bell b = getNextBell();
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();
+        if (b == null) {
+            b = this.getIndex(0);
+        }
         for (int i = b.getIndex(); i < belltimes.size(); i++) {
             if (belltimes.get(i).getAsJsonObject().get("bell").getAsString().matches("^\\d+$")) {
                 return new Bell(belltimes.get(i).getAsJsonObject(), i);

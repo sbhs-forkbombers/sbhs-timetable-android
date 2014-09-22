@@ -13,7 +13,9 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,12 +27,31 @@ public class TimetableAppWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-        //for (int i : appWidgetIds) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
-        views.setTextViewText(R.id.widget_next_period, new SimpleDateFormat("hh:mm:ss").format(new Date()));
-        appWidgetManager.updateAppWidget(appWidgetIds, views);
-        //}
 
+        // TODO add a non-battery-eating option.
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
+        BelltimesJson b = BelltimesJson.getInstance();
+        if (b == null) {
+            ApiAccessor.getBelltimes(context);
+            views.setTextViewText(R.id.widget_next_period, "Loading…");
+        }
+        else {
+            if (DateTimeHelper.bells == null) {
+                DateTimeHelper.bells = b;
+            }
+            long time = DateTimeHelper.milliSecondsUntilNextEvent();
+            BelltimesJson.Bell bell = b.getNextBell();
+            String label = "School starts";
+            String in = "in";
+            if (bell != null) {
+                label = bell.getLabel();
+                in = "ends in";
+            }
+            views.setTextViewText(R.id.widget_label, label);
+            views.setTextViewText(R.id.widget_in, in);
+            views.setTextViewText(R.id.widget_next_period, DateTimeHelper.formatToCountdown(time));
+        }
+        appWidgetManager.updateAppWidget(appWidgetIds, views);
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         Intent m = new Intent(context, this.getClass());
         m.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);

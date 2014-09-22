@@ -202,27 +202,8 @@ public class CountdownFragment extends Fragment {
             boolean isLast = innerLabel.equals("School ends");
             @Override
             public void onTick(long l) {
-                l = (long)Math.floor(l/1000);
-                String sec = "" + (l % 60);
-                l -= l % 60;
-                l /= 60;
-                String mins = "" + (l % 60);
-                l -= l % 60;
-                l /= 60;
-                long hrs = l;
-                this.lastTime = l;
-                if (sec.length() == 1) {
-                    sec = "0" + sec;
-                }
-                if (mins.length() == 1) {
-                    mins = "0" + mins;
-                }
-                if (hrs != 0) {
-                    t.setText(hrs + "h " + mins + "m " + sec + "s");
-                }
-                else {
-                    t.setText(mins + "m " + sec + "s");
-                }
+                lastTime = l;
+                t.setText(DateTimeHelper.formatToCountdown(l));
             }
 
             @Override

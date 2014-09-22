@@ -99,4 +99,27 @@ public class DateTimeHelper {
     public static int getSeconds() {
         return cal().get(Calendar.SECOND);
     }
+
+    public static String formatToCountdown(long millis) {
+        millis = (long)Math.floor(millis/1000);
+        String sec = "" + (millis % 60);
+        millis -= millis % 60;
+        millis /= 60;
+        String mins = "" + (millis % 60);
+        millis -= millis % 60;
+        millis /= 60;
+        long hrs = millis;
+        if (sec.length() == 1) {
+            sec = "0" + sec;
+        }
+        if (mins.length() == 1) {
+            mins = "0" + mins;
+        }
+        if (hrs != 0) {
+            return hrs + "h " + mins + "m " + sec + "s";
+        }
+        else {
+            return mins + "m " + sec + "s";
+        }
+    }
 }

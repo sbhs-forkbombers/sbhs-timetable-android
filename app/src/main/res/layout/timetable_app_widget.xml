@@ -2,10 +2,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/widget_margin"
-    android:background="#09C" >
-
+    android:background="#00FFFFFF" >
     <TextView
-        android:id="@+id/widget_next_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/widget_in"
+        android:text="Something happens"
+        android:textColor="#ffffff"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold|italic"
+        android:textSize="24sp"
+        android:id="@+id/widget_label"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@id/widget_in"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"
+        android:text="in"
+        android:textStyle="bold|italic"
+        android:layout_above="@+id/widget_next_period"/>
+    <TextView
+        android:id="@id/widget_next_period"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -15,7 +35,6 @@
         android:textSize="24sp"
         android:textStyle="bold|italic"
         android:layout_margin="8dp"
-        android:contentDescription="@string/appwidget_text"
-        android:background="#09C"/>
+        android:contentDescription="@string/appwidget_text"/>
 
 </RelativeLayout>

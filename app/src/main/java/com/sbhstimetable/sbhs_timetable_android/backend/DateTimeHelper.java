@@ -1,5 +1,8 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -26,13 +29,20 @@ public class DateTimeHelper {
         return offset;
     }
 
+    public static String getGuessedDateString() {
+        return getYear() + "-" + (getMonth() + 1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
+    }
+
     /**
      * get the next school day's date string in YYYY-MM-DD
      * @return a date in format YYYY-MM-DD
      */
-    public static String getDateString() {
+    public static String getDateString(Context optionalCon) {
         if (!ApiAccessor.todayLoaded || TodayJson.getInstance() == null) {
-            return getYear() + "-" + (getMonth() + 1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
+            if (optionalCon != null) {
+                return StorageCache.getCachedDate(optionalCon);
+            }
+            return getGuessedDateString();
         }
         else {
             return TodayJson.getInstance().getDate();

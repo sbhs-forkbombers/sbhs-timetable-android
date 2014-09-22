@@ -46,6 +46,10 @@ public class ApiAccessor {
         sessionID = s.getString("sessionID", null);
     }
 
+    public static String getSessionID() {
+        return sessionID;
+    }
+
     public static boolean isLoggedIn() {
         return sessionID != null;
     }
@@ -73,7 +77,7 @@ public class ApiAccessor {
     }
 
     public static String getToday(Context c) {
-        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString());
+        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
         if (obj != null) {
             todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
@@ -86,7 +90,7 @@ public class ApiAccessor {
             return null;
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString()));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "wat", e);
@@ -96,7 +100,7 @@ public class ApiAccessor {
     }
 
     public static String getTodayGlobal(Context c) {
-        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString());
+        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
         if (obj != null) {
             todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
@@ -109,7 +113,7 @@ public class ApiAccessor {
             return null;
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(), GLOBAL_ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString()));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(c), GLOBAL_ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "wat", e);
@@ -119,9 +123,11 @@ public class ApiAccessor {
     }
 
     public static void getBelltimes(Context c) {
-        JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString());
+        Log.i("ApiAccessor", "datestring => " + DateTimeHelper.getDateString(c));
+        JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString(c));
         if (obj != null) {
             bellsCached = true;
+            bellsLoaded = true;
             Intent i = new Intent(ACTION_BELLTIMES_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
             c.sendBroadcast(i);
@@ -131,15 +137,14 @@ public class ApiAccessor {
             return; // TODO fallback bells
         }
         try {
-            bellsCached = false;
-            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString()));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString(c)));
         } catch (Exception e) {
             Log.e("apiaccessor", "belltimes wat", e);
         }
     }
 
     public static void getNotices(Context c) {
-        JsonObject obj = StorageCache.getNotices(c, DateTimeHelper.getDateString());
+        JsonObject obj = StorageCache.getNotices(c, DateTimeHelper.getDateString(c));
         if (obj != null) {
             noticesCached = true;
             Intent i = new Intent(ACTION_NOTICES_JSON);
@@ -151,8 +156,7 @@ public class ApiAccessor {
             return;
         }
         try {
-            noticesCached = false;
-            new DownloadFileTask(c, DateTimeHelper.getDateString(), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString()));
+            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString(c)));
         } catch (Exception e) {
             Log.e("apiaccessor", "notices wat", e);
         }
@@ -195,18 +199,37 @@ public class ApiAccessor {
 
         @Override
         protected void onPostExecute(String result) {
+            if (result == null) {
+                Log.e("downloadfiletask","failed to download a result for " + this.intentType);
+                return;
+            }
+
+            if (intentType.equals(ACTION_BELLTIMES_JSON)) {
+                bellsCached = false;
+            }
+            else if (intentType.equals(ACTION_NOTICES_JSON)) {
+                noticesCached = false;
+            }
+            else if (intentType.equals(ACTION_TODAY_JSON)) {
+                todayCached = false;
+            }
+
             Intent i = new Intent(this.intentType);
             i.putExtra(EXTRA_JSON_DATA, result);
             if (this.c instanceof TimetableActivity) {
                 TimetableActivity a = (TimetableActivity)c;
                 a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));
             }
+
+
             if (intentType.equals(GLOBAL_ACTION_TODAY_JSON)) {
                 this.c.sendBroadcast(i);
             }
             else {
                 LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
             }
+
+
         }
     }
 

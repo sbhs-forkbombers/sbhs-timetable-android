@@ -6,10 +6,13 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.Arrays;
 
 public class StorageCache {
     private static boolean isOld(File f) {
@@ -98,5 +101,40 @@ public class StorageCache {
 
     public static JsonObject getNotices(Context c, String date) {
         return readCacheFile(c, date, "notices");
+    }
+
+    public static boolean hasCachedDate(Context c) {
+        return new File(c.getCacheDir(), "date-"+DateTimeHelper.getGuessedDateString()+".json").exists();
+    }
+
+    public static String getCachedDate(Context c) {
+        File f = new File(c.getCacheDir(), "date-"+DateTimeHelper.getGuessedDateString()+".json");
+        if (!f.exists()) {
+            return DateTimeHelper.getGuessedDateString();
+        }
+        try {
+            FileReader r = new FileReader(f);
+            char[] s = new char[10];
+            int max = r.read(s);
+            String date = String.valueOf(Arrays.copyOfRange(s, 0, max));
+            r.close();
+            return date;
+        }
+        catch (IOException e) {
+            //meh
+        }
+        return DateTimeHelper.getGuessedDateString();
+    }
+
+    public static void writeCachedDate(Context c, String s) {
+        File f = new File(c.getCacheDir(), "date-"+DateTimeHelper.getGuessedDateString()+".json");
+        try {
+            FileWriter w = new FileWriter(f);
+            w.write(s);
+            w.close();
+        }
+        catch (IOException e) {
+
+        }
     }
 }

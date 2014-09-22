@@ -68,7 +68,8 @@ public class BelltimesAdapter implements ListAdapter {
             r = (RelativeLayout) LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_belltimes_entry, null);
         }
         Integer[] a = b.getIndex(i+1).getBell();
-        BellWithEnd bell = new BellWithEnd(b.getIndex(i),a[0] + ":" + a[1]);
+        String e = String.format("%02d:%02d", a);
+        BellWithEnd bell = new BellWithEnd(b.getIndex(i),e);
         TextView start = (TextView)r.findViewById(R.id.bell_start);
         TextView end = (TextView)r.findViewById(R.id.bell_end);
         TextView label = (TextView)r.findViewById(R.id.bell_name);
@@ -102,7 +103,7 @@ public class BelltimesAdapter implements ListAdapter {
         }
 
         public String getStart() {
-            return this.start.getBell()[0] + ":" + this.start.getBell()[1];
+            return String.format("%02d:%02d", this.start.getBell());
         }
 
         public String getEnd() {

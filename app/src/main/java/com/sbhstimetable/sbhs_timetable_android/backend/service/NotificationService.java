@@ -1,8 +1,21 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
+import android.support.v4.app.NotificationCompat;
+
+import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -12,14 +25,12 @@ import android.content.Context;
  * helper methods.
  */
 public class NotificationService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.FOO";
-    private static final String ACTION_BAZ = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.BAZ";
+    private static final String ACTION_CHECK_UPDATES = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.CHECK_UPDATES";
+    private static final String ACTION_UPDATE_NOTIFICATION = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.UPDATE_NOTIFICATION";
 
     // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM2";
+    private static final String EXTRA_SESSID = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM1";
+    private static final String EXTRA_SHOULD_DO_ALL = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM2";
 
     /**
      * Starts this service to perform action Foo with the given parameters. If
@@ -28,11 +39,11 @@ public class NotificationService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startCheckUpdate(Context context, String sessID, boolean doEverything) {
         Intent intent = new Intent(context, NotificationService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_CHECK_UPDATES);
+        intent.putExtra(EXTRA_SESSID, sessID);
+        intent.putExtra(EXTRA_SHOULD_DO_ALL, doEverything);
         context.startService(intent);
     }
 
@@ -43,11 +54,10 @@ public class NotificationService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startUpdatingNotification(Context context, String param1) {
         Intent intent = new Intent(context, NotificationService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_UPDATE_NOTIFICATION);
+        intent.putExtra(EXTRA_SESSID, param1);
         context.startService(intent);
     }
 
@@ -59,14 +69,13 @@ public class NotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            if (ACTION_CHECK_UPDATES.equals(action)) {
+                final String param1 = intent.getStringExtra(EXTRA_SESSID);
+                final boolean doAll = intent.getBooleanExtra(EXTRA_SHOULD_DO_ALL, false);
+                handleCheckUpdate(param1, doAll);
+            } else if (ACTION_UPDATE_NOTIFICATION.equals(action)) {
+                final String param1 = intent.getStringExtra(EXTRA_SESSID);
+                handleNotificationUpdate(param1);
             }
         }
     }
@@ -75,17 +84,40 @@ public class NotificationService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
+    private void handleCheckUpdate(String param1, boolean all) {
         // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+        ApiAccessor.load(this);
+        ApiAccessor.getToday(this);
+        if (all) {
+            ApiAccessor.getNotices(this);
+            ApiAccessor.getBelltimes(this);
+        }
     }
 
     /**
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleNotificationUpdate(String param1) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ic_launcher);
+        if (BelltimesJson.getInstance() == null) return;
+        BelltimesJson.Bell next = BelltimesJson.getInstance().getNextBell();
+        String title = next.getLabel();
+        Integer[] b = next.getBell();
+        b[0] = b[0] % 12;
+        if (b[0] == 0) b[0] = 12;
+        String subText = "at " + String.format("%02d:%02d", b);
+        subText += (next.getBell()[0] >= 12 ? "pm" : "am");
+        if (next.isPeriod() && TodayJson.getInstance() != null) {
+            TodayJson.Period p = TodayJson.getInstance().getPeriod(next.getPeriodNumber());
+            title = p.name() + " in " + p.room();
+            subText += " with " + p.fullTeacher();
+        }
+        builder.setContentTitle(title);
+        builder.setContentText(subText);
+
+        NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        m.notify(1, builder.build());
     }
 }

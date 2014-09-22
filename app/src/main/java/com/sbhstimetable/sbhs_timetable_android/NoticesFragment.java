@@ -81,7 +81,7 @@ public class NoticesFragment extends Fragment {
         // Inflate the layout for this fragment
         View res = inflater.inflate(R.layout.fragment_notices, container, false);
         ListView v = (ListView)res.findViewById(R.id.notices_listview);
-        JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString());
+        JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString(getActivity()));
         NoticesJson n = NoticesJson.getInstance();
         if (n == null && o != null) {
             n = new NoticesJson(o);

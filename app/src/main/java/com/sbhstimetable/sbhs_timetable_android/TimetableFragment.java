@@ -96,7 +96,7 @@ public class TimetableFragment extends Fragment {
             doTimetable(TodayJson.getInstance());
         }
         else {
-            JsonObject res = StorageCache.getTodayJson(this.getActivity(), DateTimeHelper.getDateString());
+            JsonObject res = StorageCache.getTodayJson(this.getActivity(), DateTimeHelper.getDateString(getActivity()));
             if (res != null && res.has("timetable")) {
                 this.doTimetable(new TodayJson(res));
             }

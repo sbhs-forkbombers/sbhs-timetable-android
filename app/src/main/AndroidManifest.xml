@@ -38,20 +38,28 @@
                 android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
         </activity>
 
-        <service android:name=".backend.widget.DashclockService"
+        <service
+            android:name=".backend.service.DashclockService"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
-            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA">
+            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA" >
             <intent-filter>
                 <action android:name="com.google.android.apps.dashclock.Extension" />
             </intent-filter>
-            <meta-data android:name="protocolVersion" android:value="2" />
-            <meta-data android:name="worldReadable" android:value="true" />
-            <meta-data android:name="description"
+
+            <meta-data
+                android:name="protocolVersion"
+                android:value="2" />
+            <meta-data
+                android:name="worldReadable"
+                android:value="true" />
+            <meta-data
+                android:name="description"
                 android:value="@string/dashclock_desc" />
         </service>
 
-        <!--<receiver android:name=".TimetableAppWidget" >
+        <!--
+        <receiver android:name=".TimetableAppWidget" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -62,7 +70,12 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/timetable_app_widget_info" />
-        </receiver>-->
+        </receiver>
+        -->
+        <service
+            android:name=".backend.service.NotificationService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

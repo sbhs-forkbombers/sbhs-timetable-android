@@ -10,6 +10,7 @@ import android.app.Fragment;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,6 +55,9 @@ public class CountdownFragment extends Fragment {
         setHasOptionsMenu(true);
         IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
         i.addAction(TimetableActivity.TODAY_AVAILABLE);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        Log.e("countdownfragment","I AM HERE");
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
         //Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
@@ -264,12 +268,11 @@ public class CountdownFragment extends Fragment {
     private class BroadcastListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(TimetableActivity.BELLTIMES_AVAILABLE)) {
-                updateTimer();
-            }
-            else if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
+            Log.i("countdownfragment", "got " + intent.getAction());
+            updateTimer();
+            if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
                 ApiAccessor.getBelltimes(context);
-                updateTimer();
+
             }
         }
     }

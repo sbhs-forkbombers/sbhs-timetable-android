@@ -4,13 +4,15 @@
     android:layout_width="match_parent" android:layout_height="match_parent">
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_height="fill_parent"
+        android:gravity="left|center_vertical"
+        android:layout_alignParentBottom="true"
         android:id="@+id/bell_name"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Period 1"/>
+        android:text="Transition"
+        android:minWidth="110dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,11 +21,12 @@
         android:layout_toRightOf="@id/bell_name"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="2dp"
-        android:layout_marginRight="0dp"/>
+        android:layout_marginRight="2dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/bell_start"
+        android:textColor="@android:color/primary_text_dark"
         android:layout_toRightOf="@id/bell_start_label"
         android:layout_alignParentTop="true"/>
     <TextView
@@ -31,12 +34,16 @@
         android:layout_height="wrap_content"
         android:id="@+id/bell_end_label"
         android:text="@string/end"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
         android:layout_below="@id/bell_start_label"
         android:layout_toRightOf="@id/bell_name"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/bell_end"
+        android:textColor="@android:color/primary_text_dark"
         android:layout_toRightOf="@id/bell_start_label"
-        android:layout_below="@id/bell_start_label"/>
+        android:layout_below="@id/bell_start_label"
+        android:text="Demo"/>
 </RelativeLayout>

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -24,6 +26,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 public class BelltimesFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
+    private Menu menu;
 
     public static BelltimesFragment newInstance() {
         BelltimesFragment fragment = new BelltimesFragment();
@@ -36,6 +39,14 @@ public class BelltimesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+        this.mListener.updateCachedStatus(this.menu);
     }
 
     @Override

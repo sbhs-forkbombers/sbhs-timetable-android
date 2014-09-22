@@ -76,6 +76,15 @@
             android:name=".backend.service.NotificationService"
             android:exported="false" >
         </service>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".TimetableActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
+        </activity>
     </application>
 
 </manifest>

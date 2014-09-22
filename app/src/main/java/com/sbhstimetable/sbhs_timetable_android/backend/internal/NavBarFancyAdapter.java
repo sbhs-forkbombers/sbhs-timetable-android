@@ -39,11 +39,7 @@ public class NavBarFancyAdapter<T> extends ArrayAdapter<T> {
 
         public View getView() {
             View res = LayoutInflater.from(c).inflate(R.layout.layout_navbar_entry,null);
-            ImageView v = (ImageView)res.findViewById(R.id.navbar_icon);
-            v.setImageResource(this.drawableID);
-            TextView t = (TextView)res.findViewById(R.id.navbar_label);
-            t.setText(name);
-            return res;
+            return this.getView(res);
         }
 
         public View getView(View res) {

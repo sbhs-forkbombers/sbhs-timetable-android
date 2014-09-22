@@ -6,6 +6,7 @@
         <item name="android:actionBarStyle">@style/AppActionBar</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:activatedBackgroundIndicator">@drawable/drawer</item>
+        <item name="android:fitsSystemWindows">false</item>
     </style>
 
     <style name="AppActionBar" parent="android:Widget.Holo.ActionBar.Solid">

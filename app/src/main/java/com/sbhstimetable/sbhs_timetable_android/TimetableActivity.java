@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
@@ -126,6 +127,10 @@ public class TimetableActivity extends Activity
                 else {
                     ApiAccessor.login(this);
                 }
+                break;
+            case 5:
+                Intent settings = new Intent(this, SettingsActivity.class);
+                this.startActivity(settings);
                 break;
             default:
                 fragmentManager.beginTransaction()
@@ -293,9 +298,14 @@ public class TimetableActivity extends Activity
                    }
                }
                else {
+                   JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+                   if (o.has("error")) {
+                       // reject it silently/
+                       return;
+                   }
                    StorageCache.cacheTodayJson(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 
-                   TodayJson j = new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject()); // set INSTANCE
+                   TodayJson j = new TodayJson(o); // set INSTANCE
                    StorageCache.writeCachedDate(context, j.getDate());
                }
                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));

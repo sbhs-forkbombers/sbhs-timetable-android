@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
@@ -16,6 +18,9 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -31,6 +36,8 @@ public class NotificationService extends IntentService {
     // TODO: Rename parameters
     private static final String EXTRA_SESSID = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM1";
     private static final String EXTRA_SHOULD_DO_ALL = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM2";
+
+    public static final int NOTIFICATION_NEXT = 1;
 
     /**
      * Starts this service to perform action Foo with the given parameters. If
@@ -98,11 +105,23 @@ public class NotificationService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleNotificationUpdate(String param1) {
+    private void handleNotificationUpdate(final String param1) {
+        Log.i("notificationservice","handling update");
+        NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_enable", false)) {
+            // only show a notification if it's configured
+            m.cancel(NOTIFICATION_NEXT);
+            return;
+        }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.drawable.ic_launcher);
         if (BelltimesJson.getInstance() == null) return;
         BelltimesJson.Bell next = BelltimesJson.getInstance().getNextBell();
+        if (next == null) {
+            // Don't show anything?
+            m.cancel(NOTIFICATION_NEXT);
+            return;
+        }
         String title = next.getLabel();
         Integer[] b = next.getBell();
         b[0] = b[0] % 12;
@@ -117,7 +136,16 @@ public class NotificationService extends IntentService {
         builder.setContentTitle(title);
         builder.setContentText(subText);
 
-        NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        m.notify(1, builder.build());
+
+        ScheduledExecutorService ses = new ScheduledThreadPoolExecutor(1);
+        m.notify(NOTIFICATION_NEXT, builder.build());
+        final Context con = this;
+        ses.schedule(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("notificationService", "updating notification");
+                NotificationService.startUpdatingNotification(con, param1);
+            }
+        }, DateTimeHelper.milliSecondsUntilNextEvent(), TimeUnit.MILLISECONDS);
     }
 }

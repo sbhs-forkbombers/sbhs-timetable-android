@@ -58,8 +58,7 @@
                 android:value="@string/dashclock_desc" />
         </service>
 
-
-        <receiver android:name=".backend.service.TimetableAppWidget" >
+        <receiver android:name=".backend.service.TimetableAppWidget" android:label="SBHS Timetable - Countdown">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -82,6 +81,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
         </activity>
+
+        <receiver android:name=".backend.service.TodayAppWidget" android:label="SBHS Timetable - Today" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_app_widget_info" />
+        </receiver>
+
+        <service android:name=".backend.service.TodayWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
     </application>
 
 </manifest>

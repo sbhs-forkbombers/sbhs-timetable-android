@@ -58,20 +58,17 @@
                 android:value="@string/dashclock_desc" />
         </service>
 
-        <!--
-        <receiver android:name=".TimetableAppWidget" >
+
+        <receiver android:name=".backend.service.TimetableAppWidget" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.sbhstimetable.sbhs_timetable_android.updateWidget" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/timetable_app_widget_info" />
         </receiver>
-        -->
+
         <service
             android:name=".backend.service.NotificationService"
             android:exported="false" >

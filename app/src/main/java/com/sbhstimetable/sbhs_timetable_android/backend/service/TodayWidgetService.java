@@ -75,7 +75,6 @@ public class TodayWidgetService extends RemoteViewsService {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
                 String res = today.finalised() ? "This info is final" : "This info may change";
                 r.setTextViewText(R.id.label, res);
-                Log.i("TodayWidget", "set TextViewText to " + res);
                 r.setTextColor(R.id.label, getResources().getColor(R.color.standout));
                 return r;
             }
@@ -90,7 +89,6 @@ public class TodayWidgetService extends RemoteViewsService {
         @Override
         public RemoteViews getLoadingView() {
             RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
-            Log.i("TodayWidget", "Loading...");
             r.setTextViewText(R.id.label, "Loading…");
             return r;
         }

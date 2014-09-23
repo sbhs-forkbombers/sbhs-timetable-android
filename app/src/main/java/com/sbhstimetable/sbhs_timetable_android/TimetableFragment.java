@@ -24,21 +24,15 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link TimetableFragment.OnFragmentInteractionListener} interface
+ * {@link TimetableFragment} interface
  * to handle interaction events.
  * Use the {@link TimetableFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
 public class TimetableFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_SECTION_NUMBER = "1";
 
-    // TODO: Rename and change types of parameters
-    private int mSectionNumber;
 
-    private Menu menu;
     private CommonFragmentInterface mListener;
     private TodayJson today;
     /**
@@ -46,10 +40,8 @@ public class TimetableFragment extends Fragment {
      * this fragment using the provided parameters.
      * @return A new instance of fragment CountdownFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static TimetableFragment newInstance() {
-        TimetableFragment fragment = new TimetableFragment();
-        return fragment;
+        return new TimetableFragment();
     }
     public TimetableFragment() {
         // Required empty public constructor
@@ -58,20 +50,14 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mSectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-        }
         setHasOptionsMenu(true);
-        Log.i("timetable", "My tag is " + this.getTag());
         //Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
-        Log.i("timetable", ""+menu);
         super.onCreateOptionsMenu(menu, inflater);
-        mListener.updateCachedStatus(this.menu);
+        mListener.updateCachedStatus(menu);
     }
 
     @Override

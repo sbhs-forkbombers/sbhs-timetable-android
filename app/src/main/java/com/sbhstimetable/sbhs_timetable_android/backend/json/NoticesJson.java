@@ -1,6 +1,5 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
-import android.content.Context;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateFormat;
@@ -15,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,7 +23,7 @@ public class NoticesJson {
     public static NoticesJson getInstance() {
         return INSTANCE;
     }
-
+    @SuppressWarnings("all")
     private JsonObject notices;
     private ArrayList<Notice> n = new ArrayList<Notice>();
     public NoticesJson(JsonObject obj) {
@@ -60,7 +58,7 @@ public class NoticesJson {
         public int length() {
             return notices.size();
         }
-
+        @SuppressWarnings("unused")
         public Notice get(int i) {
             if (i < length()) {
                 return mine.get(i);
@@ -78,6 +76,7 @@ public class NoticesJson {
     public static class Notice {
         private JsonObject notice;
         private List<Year> years;
+        private int weight;
         public Notice(JsonObject obj, int weight) {
             this.notice = obj;
             JsonArray a = this.notice.get("years").getAsJsonArray();
@@ -85,7 +84,12 @@ public class NoticesJson {
             for (int i = 0; i < a.size(); i++) {
                 years.add(i, Year.fromString(a.get(i).getAsString()));
             }
+            this.weight = weight;
 
+        }
+        @SuppressWarnings("unused")
+        public int getWeight() {
+            return this.weight;
         }
 
         public boolean isForYear(Year y) {
@@ -133,7 +137,7 @@ public class NoticesJson {
                     return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + " " + DateFormat.format("dd", d).toString() + " " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
                 }
             } catch (ParseException e) {
-                Log.i("NoticesJson", "Failed to parse meeting date: " + this.notice.get("meetingDate").getAsString());
+                Log.e("NoticesJson", "Failed to parse meeting date: " + this.notice.get("meetingDate").getAsString());
                 return this.notice.get("meetingDate").getAsString();
             }
         }

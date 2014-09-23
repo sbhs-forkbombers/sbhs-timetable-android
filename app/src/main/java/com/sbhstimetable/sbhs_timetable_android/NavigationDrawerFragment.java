@@ -139,6 +139,7 @@ public class NavigationDrawerFragment extends Fragment {
 		return l;
 	}
 
+    @SuppressWarnings("unchecked")
     public void updateList() {
         ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
         if (ApiAccessor.isLoggedIn()) {
@@ -274,23 +275,19 @@ public class NavigationDrawerFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (mDrawerToggle.onOptionsItemSelected(item)) {
-			return true;
-		} else {
-            return super.onOptionsItemSelected(item);
-        }
+		return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
 	}
 
 	/**
 	 * Per the navigation drawer design guidelines, updates the action bar to show the global app
 	 * 'context', rather than just what's in the current screen.
-	 */
+	 *
 	private void showGlobalContextActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowTitleEnabled(true);
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 		actionBar.setTitle(R.string.app_name);
-	}
+	}*/
 
 	private ActionBar getActionBar() {
 		return getActivity().getActionBar();

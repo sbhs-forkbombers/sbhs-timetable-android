@@ -1,9 +1,9 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,7 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,7 +27,6 @@ public class NoticesAdapter implements ListAdapter {
     public NoticesAdapter(NoticesJson n) {
         this.noticesJson = n;
         this.notices = n.getNotices();
-        Log.i("noticesAdapter", "size => " + n.getNotices().size() + " size2 => " + this.getCount());
     }
 
     private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
@@ -45,7 +43,6 @@ public class NoticesAdapter implements ListAdapter {
 
     public void filter(NoticesJson.Year year) {
         this.filter = year;
-        Log.i("noticesAdapter", "filtering to " + year);
         this.notices = noticesJson.getNotices();
         if (year != null) {
             ArrayList<NoticesJson.Notice> res = new ArrayList<NoticesJson.Notice>();
@@ -85,9 +82,9 @@ public class NoticesAdapter implements ListAdapter {
     }
 
     @Override
+    @SuppressLint("all")
     public View getView(int i, View view, ViewGroup viewGroup) {
         if (notices.size() == 0) {
-            Log.i("noticesAdapter","the size is 0!");
             TextView res = new TextView(viewGroup.getContext());
             res.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
             res.setGravity(Gravity.CENTER);

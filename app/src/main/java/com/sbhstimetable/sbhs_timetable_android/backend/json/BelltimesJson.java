@@ -1,18 +1,13 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
-import android.content.Context;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 
 public class BelltimesJson {
     private static BelltimesJson INSTANCE;
     private final JsonObject bells;
-    private final Context context;
-    public BelltimesJson(JsonObject json, Context c) {
-        this.context = c;
+    public BelltimesJson(JsonObject json) {
         this.bells = json;
         INSTANCE = this;
     }
@@ -112,8 +107,7 @@ public class BelltimesJson {
         public int getPeriodNumber() {
             String num = this.data.get("bell").getAsString();
             if (this.isPeriod()) {
-                int b = Integer.valueOf(num);
-                return b;
+                return Integer.valueOf(num);
             }
             return -1;
         }

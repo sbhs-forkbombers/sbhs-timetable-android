@@ -26,11 +26,10 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 public class BelltimesFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
-    private Menu menu;
+    //private Menu menu;
 
     public static BelltimesFragment newInstance() {
-        BelltimesFragment fragment = new BelltimesFragment();
-        return fragment;
+        return new BelltimesFragment();
     }
     public BelltimesFragment() {
         // Required empty public constructor
@@ -44,9 +43,9 @@ public class BelltimesFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
+        //this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
-        this.mListener.updateCachedStatus(this.menu);
+        this.mListener.updateCachedStatus(menu);
     }
 
     @Override

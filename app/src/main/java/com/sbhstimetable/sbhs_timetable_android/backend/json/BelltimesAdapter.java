@@ -1,5 +1,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
+import android.annotation.SuppressLint;
 import android.database.DataSetObserver;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -60,6 +61,7 @@ public class BelltimesAdapter implements ListAdapter {
     }
 
     @Override
+    @SuppressLint("all")
     public View getView(int i, View view, ViewGroup viewGroup) {
         RelativeLayout r;
         if (!b.valid()) {

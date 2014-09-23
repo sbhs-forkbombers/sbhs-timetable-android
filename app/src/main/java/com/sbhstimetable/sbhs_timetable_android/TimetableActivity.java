@@ -155,7 +155,8 @@ public class TimetableActivity extends Activity
 
     @Override
     public void setNavigationStyle(int s) {
-        getActionBar().setNavigationMode(s);
+        if (getActionBar() != null)
+            getActionBar().setNavigationMode(s);
         this.navStyle = s;
     }
 
@@ -220,7 +221,6 @@ public class TimetableActivity extends Activity
         else {
             setProgressBarIndeterminateVisibility(true);
         }
-        Log.i("timetableactivity", "cachedness: " + ApiAccessor.noticesCached + " " + ApiAccessor.todayCached + " " + ApiAccessor.bellsCached);
         if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
             i.setVisible(true);
         }
@@ -257,8 +257,7 @@ public class TimetableActivity extends Activity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_placeholder, container, false);
-            return rootView;
+            return inflater.inflate(R.layout.fragment_placeholder, container, false);
         }
 
         @Override
@@ -286,8 +285,6 @@ public class TimetableActivity extends Activity
                     TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
                     if (frag != null) {
                         frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-                    } else {
-                        Log.i("timetable", "oops");
                     }
                 }
                 else {
@@ -307,7 +304,7 @@ public class TimetableActivity extends Activity
                 //activity.setProgressBarIndeterminateVisibility(false);
                 ApiAccessor.bellsLoaded = true;
                 StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-                DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject(), context);
+                DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {

@@ -45,6 +45,7 @@ public class NoticesFragment extends Fragment {
     }
 
     @Override
+    @SuppressWarnings("all")
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
@@ -57,7 +58,6 @@ public class NoticesFragment extends Fragment {
                 if (adapter == null) {
                     return true;
                 }
-                Log.i("onNavListener", "getting - " + i + " (that's " + spinnerAdapter.getItem(i) + ")");
                 if (i == 0) {
                     adapter.filter(null);
                 }
@@ -88,7 +88,6 @@ public class NoticesFragment extends Fragment {
             n = new NoticesJson(o);
         }
         if (n == null) {
-            Log.i("noticesFrag", "FOILED AGAIN :'(");
             Toast.makeText(getActivity(), "Not ready yet!", Toast.LENGTH_SHORT);
         }
         else {

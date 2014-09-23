@@ -2,22 +2,18 @@ package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +29,6 @@ public class NotificationService extends IntentService {
     private static final String ACTION_CHECK_UPDATES = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.CHECK_UPDATES";
     private static final String ACTION_UPDATE_NOTIFICATION = "com.sbhstimetable.sbhs_timetable_android.backend.service.action.UPDATE_NOTIFICATION";
 
-    // TODO: Rename parameters
     private static final String EXTRA_SESSID = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM1";
     private static final String EXTRA_SHOULD_DO_ALL = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM2";
 
@@ -44,15 +39,14 @@ public class NotificationService extends IntentService {
      * the service is already performing a task this action will be queued.
      *
      * @see IntentService
-     */
-    // TODO: Customize helper method
+
     public static void startCheckUpdate(Context context, String sessID, boolean doEverything) {
         Intent intent = new Intent(context, NotificationService.class);
         intent.setAction(ACTION_CHECK_UPDATES);
         intent.putExtra(EXTRA_SESSID, sessID);
         intent.putExtra(EXTRA_SHOULD_DO_ALL, doEverything);
         context.startService(intent);
-    }
+    }*/
 
     /**
      * Starts this service to perform action Baz with the given parameters. If
@@ -60,7 +54,6 @@ public class NotificationService extends IntentService {
      *
      * @see IntentService
      */
-    // TODO: Customize helper method
     public static void startUpdatingNotification(Context context, String param1) {
         Intent intent = new Intent(context, NotificationService.class);
         intent.setAction(ACTION_UPDATE_NOTIFICATION);
@@ -77,12 +70,11 @@ public class NotificationService extends IntentService {
         if (intent != null) {
             final String action = intent.getAction();
             if (ACTION_CHECK_UPDATES.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_SESSID);
                 final boolean doAll = intent.getBooleanExtra(EXTRA_SHOULD_DO_ALL, false);
-                handleCheckUpdate(param1, doAll);
+                handleCheckUpdate(doAll);
             } else if (ACTION_UPDATE_NOTIFICATION.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_SESSID);
-                handleNotificationUpdate(param1);
+                final String sessID = intent.getStringExtra(EXTRA_SESSID);
+                handleNotificationUpdate(sessID);
             }
         }
     }
@@ -91,8 +83,7 @@ public class NotificationService extends IntentService {
      * Handle action Foo in the provided background thread with the provided
      * parameters.
      */
-    private void handleCheckUpdate(String param1, boolean all) {
-        // TODO: Handle action Foo
+    private void handleCheckUpdate(boolean all) {
         ApiAccessor.load(this);
         ApiAccessor.getToday(this);
         if (all) {
@@ -106,7 +97,6 @@ public class NotificationService extends IntentService {
      * parameters.
      */
     private void handleNotificationUpdate(final String param1) {
-        Log.i("notificationservice","handling update");
         NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_enable", false)) {
             // only show a notification if it's configured
@@ -143,7 +133,6 @@ public class NotificationService extends IntentService {
         ses.schedule(new Runnable() {
             @Override
             public void run() {
-                Log.e("notificationService", "updating notification");
                 NotificationService.startUpdatingNotification(con, param1);
             }
         }, DateTimeHelper.milliSecondsUntilNextEvent(), TimeUnit.MILLISECONDS);

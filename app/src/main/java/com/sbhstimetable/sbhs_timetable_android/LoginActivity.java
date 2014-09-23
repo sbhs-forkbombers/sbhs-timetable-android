@@ -32,8 +32,10 @@ public class LoginActivity extends Activity {
         final Activity me = this;
         //wv.getSettings().setJavaScriptEnabled(true);
         wv.setWebChromeClient(new WebChromeClient() {
-            public void onProgressChange(WebView view, int progress) {
-                me.setProgress(progress * 1000);
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                me.setProgress(newProgress * 1000);
             }
         });
         wv.setWebViewClient(new WebViewClient() {

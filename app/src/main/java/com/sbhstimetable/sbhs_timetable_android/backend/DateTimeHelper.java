@@ -1,7 +1,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -14,7 +13,7 @@ public class DateTimeHelper {
         return Calendar.getInstance();
     }
     public static BelltimesJson bells;
-    public static int getDateOffset() { // TODO holidays
+    public static int getDateOffset() { // TODO holidays - these work when done
         int day = getDay();
         int hour = getHour();
         int minute = getMinute();
@@ -55,22 +54,22 @@ public class DateTimeHelper {
     }
 
     public static long milliSecondsUntilNextEvent() {
-        long time = 0;
+        long time;
         GregorianCalendar d = new GregorianCalendar(getYear(), getMonth(), getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0), 9, 5);
-        if (bells == null || bells.getNextBell() == null || getDateOffset() > 0 || needsMidnightCountdown()) { // TODO friday
-            d.set(d.HOUR_OF_DAY, 9);
+        if (bells == null || bells.getNextBell() == null || getDateOffset() > 0 || needsMidnightCountdown()) {
+            d.set(Calendar.HOUR_OF_DAY, 9);
             if (d.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
-                d.set(d.MINUTE, 30);
+                d.set(Calendar.MINUTE, 30);
             }
             else {
-                d.set(d.MINUTE, 5);
+                d.set(Calendar.MINUTE, 5);
             }
         }
         else {
             BelltimesJson.Bell b = bells.getNextBell();
             Integer[] els = b.getBell();
-            d.set(d.HOUR_OF_DAY, els[0]);
-            d.set(d.MINUTE, els[1]);
+            d.set(Calendar.HOUR_OF_DAY, els[0]);
+            d.set(Calendar.MINUTE, els[1]);
         }
         time = d.getTimeInMillis() - cal().getTimeInMillis();
         return time;
@@ -95,10 +94,6 @@ public class DateTimeHelper {
         return cal().get(Calendar.DAY_OF_MONTH);
     }
     public static long getTimeMillis() { return System.currentTimeMillis(); }
-
-    public static int getSeconds() {
-        return cal().get(Calendar.SECOND);
-    }
 
     public static String formatToCountdown(long millis) {
         millis = (long)Math.floor(millis/1000);

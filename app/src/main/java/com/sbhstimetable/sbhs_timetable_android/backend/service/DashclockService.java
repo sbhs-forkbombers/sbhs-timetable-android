@@ -38,7 +38,7 @@ public class DashclockService extends DashClockExtension {
                 if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
                     mine = new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 } else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-                    bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject(), context);
+                    bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
                 }
             }
         }, wanted);
@@ -56,7 +56,6 @@ public class DashclockService extends DashClockExtension {
             else {
                 num = b.getPeriodNumber();
             }
-            Log.i("dashclockservice",num+"");
         }
         else {
             publishUpdate(new ExtensionData().visible(false));

@@ -29,14 +29,12 @@ public class CountdownFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
     private CountDownTimer timeLeft;
-    private Menu menu;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
      * @return A new instance of fragment TimetableFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static CountdownFragment newInstance() {
         CountdownFragment fragment = new CountdownFragment();
         Bundle args = new Bundle();
@@ -57,7 +55,6 @@ public class CountdownFragment extends Fragment {
         i.addAction(TimetableActivity.TODAY_AVAILABLE);
         i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
         i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-        Log.e("countdownfragment","I AM HERE");
         LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
         //Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
@@ -66,7 +63,7 @@ public class CountdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final CountdownFragment me = this;
+        //final CountdownFragment me = this;
         /*final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         f.setColorSchemeColors(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -87,9 +84,8 @@ public class CountdownFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.menu = menu;
         super.onCreateOptionsMenu(menu, inflater);
-        this.mListener.updateCachedStatus(this.menu);
+        this.mListener.updateCachedStatus(menu);
     }
 
     @Override
@@ -249,7 +245,6 @@ public class CountdownFragment extends Fragment {
     private class BroadcastListener extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("countdownfragment", "got " + intent.getAction());
             updateTimer();
             if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
                 ApiAccessor.getBelltimes(context);

@@ -6,12 +6,10 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.Arrays;
 
 public class StorageCache {
@@ -48,8 +46,7 @@ public class StorageCache {
         File data = new File(cacheDir, date+"_"+type+".json");
         if (data.exists() && data.canRead()) {
             try {
-                JsonObject res = new JsonParser().parse(new FileReader(data)).getAsJsonObject();
-                return res;
+                return new JsonParser().parse(new FileReader(data)).getAsJsonObject();
             }
             catch (IOException e) {
                 Log.e("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
@@ -60,7 +57,7 @@ public class StorageCache {
         }
         return null;
     }
-
+    @SuppressWarnings("all")
     public static void cleanCache(Context context) {
         File cacheDir = context.getCacheDir();
         for (File f : cacheDir.listFiles()) {
@@ -70,6 +67,7 @@ public class StorageCache {
         }
     }
 
+    @SuppressWarnings("all")
     public static void deleteAllCacheFiles(Context c) {
         File cacheDir = c.getCacheDir();
         for (File f : cacheDir.listFiles()) {
@@ -103,6 +101,7 @@ public class StorageCache {
         return readCacheFile(c, date, "notices");
     }
 
+    @SuppressWarnings("unused")
     public static boolean hasCachedDate(Context c) {
         return new File(c.getCacheDir(), "date-"+DateTimeHelper.getGuessedDateString()+".json").exists();
     }
@@ -134,7 +133,7 @@ public class StorageCache {
             w.close();
         }
         catch (IOException e) {
-
+            Log.e("StorageCache", "failed to write cached date", e);
         }
     }
 }

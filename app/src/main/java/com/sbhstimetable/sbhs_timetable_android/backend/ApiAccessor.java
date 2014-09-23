@@ -61,14 +61,14 @@ public class ApiAccessor {
     public static void logOut(Context c) {
         sessionID = null;
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
-        s.edit().remove("sessionID").commit();
+        s.edit().remove("sessionID").apply();
     }
 
     public static void finishedLogin(Context c, String id) {
         sessionID = id;
         SharedPreferences.Editor e = c.getSharedPreferences(PREFS_NAME, 0).edit();
         e.putString("sessionID", sessionID);
-        e.commit();
+        e.apply();
     }
 
     public static boolean hasInternetConnection(Context c) {
@@ -82,7 +82,6 @@ public class ApiAccessor {
             todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
-            Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
             LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
         }
         if (!isLoggedIn() || !hasInternetConnection(c)) {
@@ -90,40 +89,16 @@ public class ApiAccessor {
             return null;
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
+            new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
         }
         catch (Exception e) {
-            Log.e("apiaccessor", "wat", e);
-        }
-
-        return null;
-    }
-
-    public static String getTodayGlobal(Context c) {
-        JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
-        if (obj != null) {
-            todayCached = true;
-            Intent i = new Intent(ACTION_TODAY_JSON);
-            i.putExtra(EXTRA_JSON_DATA, obj.toString());
-            Log.i("apiaccessor", "sending broadcast from cache" + obj.toString());
-            LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
-        }
-        if (!isLoggedIn() || !hasInternetConnection(c)) {
-            todayLoaded  = true;
-            return null;
-        }
-        try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(c), GLOBAL_ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
-        }
-        catch (Exception e) {
-            Log.e("apiaccessor", "wat", e);
+            Log.e("apiaccessor", "today.json dl failed", e);
         }
 
         return null;
     }
 
     public static void getBelltimes(Context c) {
-        Log.i("ApiAccessor", "datestring => " + DateTimeHelper.getDateString(c));
         JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString(c));
         if (obj != null) {
             bellsCached = true;
@@ -137,9 +112,9 @@ public class ApiAccessor {
             return; // TODO fallback bells
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString(c)));
+            new DownloadFileTask(c, ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString(c)));
         } catch (Exception e) {
-            Log.e("apiaccessor", "belltimes wat", e);
+            Log.e("apiaccessor", "belltimes failed", e);
         }
     }
 
@@ -156,7 +131,7 @@ public class ApiAccessor {
             return;
         }
         try {
-            new DownloadFileTask(c, DateTimeHelper.getDateString(c), ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString(c)));
+            new DownloadFileTask(c, ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString(c)));
         } catch (Exception e) {
             Log.e("apiaccessor", "notices wat", e);
         }
@@ -165,12 +140,10 @@ public class ApiAccessor {
     private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
         private Context c;
         private final String intentType;
-        private final String date;
 
-        public DownloadFileTask(Context c, String date, String type) {
+        public DownloadFileTask(Context c, String type) {
             this.intentType = type;
             this.c = c;
-            this.date = date;
         }
 
         @Override
@@ -187,7 +160,6 @@ public class ApiAccessor {
                         result += l;
                         l = br.readLine();
                     }
-                    Log.i("downloadfiletask", " got: " + result);
                     return result;
                 }
                 catch (Exception e) {

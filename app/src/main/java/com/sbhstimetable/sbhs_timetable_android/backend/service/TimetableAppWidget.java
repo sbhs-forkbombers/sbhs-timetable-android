@@ -9,16 +9,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 
 public class TimetableAppWidget extends AppWidgetProvider {
@@ -28,7 +24,6 @@ public class TimetableAppWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
-        // TODO add a non-battery-eating option.
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
         BelltimesJson b = BelltimesJson.getInstance();
         if (b == null) {

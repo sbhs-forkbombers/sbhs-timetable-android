@@ -1,6 +1,5 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
-import android.content.Intent;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.sbhstimetable.sbhs_timetable_android.ClassInfoActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 
 public class TodayJSONAdapter implements ListAdapter{

@@ -2,18 +2,29 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
@@ -27,6 +38,9 @@ public class NoticesFragment extends Fragment {
     private Menu menu;
     private NoticesAdapter adapter;
     private NoticesDropDownAdapter spinnerAdapter;
+    private Handler h;
+    private Runnable runnable;
+    private SwipeRefreshLayout layout;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -80,21 +94,61 @@ public class NoticesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View res = inflater.inflate(R.layout.fragment_notices, container, false);
-        ListView v = (ListView)res.findViewById(R.id.notices_listview);
+        final SwipeRefreshLayout res = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_notices, container, false);
+        this.layout = res;
+        final ListView v = (ListView)res.findViewById(R.id.notices_listview);
+        IntentFilter i = new IntentFilter();
+        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(this), i);
+        v.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+                int topRowVerticalPosition =
+                        (v == null || v.getChildCount() == 0) ?
+                                0 : v.getChildAt(0).getTop();
+                res.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
+        final Context c = this.getActivity();
+        h = new Handler();
+        res.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!ApiAccessor.hasInternetConnection(c)) {
+                    Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
+                    res.setRefreshing(false);
+                    return;
+                }
+                ApiAccessor.getBelltimes(c, false);
+                ApiAccessor.getNotices(c, false);
+                ApiAccessor.getToday(c, false);
+                h.removeCallbacks(runnable);
+                runnable = new CountdownFragment.StopSwiping(res);
+                h.postDelayed(runnable, 10000);
+            }
+        });
+        Resources r = this.getResources();
+        res.setColorSchemeColors(r.getColor(R.color.green),
+                r.getColor(R.color.red),
+                r.getColor(R.color.blue),
+                r.getColor(R.color.yellow));
         JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString(getActivity()));
         NoticesJson n = NoticesJson.getInstance();
-        if (n == null && o != null) {
+        if (o != null) {
             n = new NoticesJson(o);
         }
-        if (n == null) {
-            Toast.makeText(getActivity(), "Not ready yet!", Toast.LENGTH_SHORT);
-        }
-        else {
+
+        if (n != null) {
             NoticesAdapter a = new NoticesAdapter(n);
             this.adapter = a;
             v.setAdapter(a);
-            Toast.makeText(getActivity(), "WEW", Toast.LENGTH_SHORT);
         }
 
         return res;
@@ -121,6 +175,34 @@ public class NoticesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private class BroadcastListener extends BroadcastReceiver {
+        private SwipeRefreshLayout f;
+        private NoticesFragment frag;
+        BroadcastListener(NoticesFragment f) {
+            this.f = f.layout;
+            this.frag = f;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String act = intent.getAction();
+            if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                if (this.f == null) return;
+                this.f.setRefreshing(false);
+                this.frag.h.removeCallbacks(this.frag.runnable);
+                Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+                if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                    JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+                    if (o.has("notices")) {
+                        NoticesJson nj = new NoticesJson(o);
+                        this.frag.adapter.update(nj);
+                    }
+
+                }
+            }
+        }
     }
 
 

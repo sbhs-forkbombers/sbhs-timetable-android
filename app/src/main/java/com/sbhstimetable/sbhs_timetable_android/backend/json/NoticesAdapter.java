@@ -21,15 +21,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NoticesAdapter implements ListAdapter {
-    private final NoticesJson noticesJson;
+    private NoticesJson noticesJson;
     private ArrayList<NoticesJson.Notice> notices;
     private NoticesJson.Year filter = null;
+    private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
+
     public NoticesAdapter(NoticesJson n) {
         this.noticesJson = n;
         this.notices = n.getNotices();
     }
 
-    private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
+    public void update(NoticesJson n) {
+        this.noticesJson = n;
+        this.notices = n.getNotices();
+        this.notifyDSOs();
+    }
+
     @Override
     public void registerDataSetObserver(DataSetObserver dataSetObserver) {
         this.dsos.add(dataSetObserver);

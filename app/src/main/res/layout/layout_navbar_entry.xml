@@ -5,23 +5,26 @@
     android:layout_height="wrap_content"
     android:padding="5dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp"><!--    android:layout_marginLeft="5dp"
-    android:layout_marginRight="5dp"-->
+    android:paddingBottom="10dp">
+
     <ImageView android:id="@+id/navbar_icon" android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
         />
+
     <TextView android:id="@+id/navbar_label"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_toRightOf="@id/navbar_icon"
+        android:layout_toEndOf="@id/navbar_icon"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
         android:gravity="center|center_vertical"
         android:textAllCaps="true"
         android:text="Hello"
         />
+
 </RelativeLayout>

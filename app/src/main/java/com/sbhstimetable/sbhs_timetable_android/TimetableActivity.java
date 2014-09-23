@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +22,6 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
@@ -55,9 +53,6 @@ public class TimetableActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setTintColor(Color.parseColor("#455ede"));
-        tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_timetable);
         ApiAccessor.load(this);
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -117,6 +112,10 @@ public class TimetableActivity extends Activity
                         .commit();
                 break;
             case 4:
+                Intent settings = new Intent(this, SettingsActivity.class);
+                this.startActivity(settings);
+                break;
+            case 5:
                 if (ApiAccessor.isLoggedIn()) {
                     ApiAccessor.logOut(this);
                     this.mNavigationDrawerFragment.updateList();
@@ -127,10 +126,6 @@ public class TimetableActivity extends Activity
                 else {
                     ApiAccessor.login(this);
                 }
-                break;
-            case 5:
-                Intent settings = new Intent(this, SettingsActivity.class);
-                this.startActivity(settings);
                 break;
             default:
                 fragmentManager.beginTransaction()
@@ -144,18 +139,16 @@ public class TimetableActivity extends Activity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.title_countdown);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
+                mTitle = getString(R.string.title_timetable);
                 break;
             case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.title_notices);
                 break;
             case 4:
-                mTitle = getString(R.string.title_section4);
-            case 5:
-                mTitle = getString(R.string.action_login);
+                mTitle = getString(R.string.title_belltimes);
                 break;
         }
     }
@@ -287,28 +280,28 @@ public class TimetableActivity extends Activity
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-               ApiAccessor.todayLoaded = true;
+                ApiAccessor.todayLoaded = true;
 
-               if (this.activity.isActive && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
-                   TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
-                   if (frag != null) {
-                       frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-                   } else {
-                       Log.i("timetable", "oops");
-                   }
-               }
-               else {
-                   JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
-                   if (o.has("error")) {
-                       // reject it silently/
-                       return;
-                   }
-                   StorageCache.cacheTodayJson(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                if (this.activity.isActive && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
+                    TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
+                    if (frag != null) {
+                        frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                    } else {
+                        Log.i("timetable", "oops");
+                    }
+                }
+                else {
+                    JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+                    if (o.has("error")) {
+                        // reject it silently/
+                        return;
+                    }
+                    StorageCache.cacheTodayJson(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 
-                   TodayJson j = new TodayJson(o); // set INSTANCE
-                   StorageCache.writeCachedDate(context, j.getDate());
-               }
-               LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
+                    TodayJson j = new TodayJson(o); // set INSTANCE
+                    StorageCache.writeCachedDate(context, j.getDate());
+                }
+                LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                 //activity.setProgressBarIndeterminateVisibility(false);

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
 
     <!-- Base application theme. -->
@@ -14,8 +15,7 @@
         <item name="android:background">@color/primary</item>
     </style>
 
-    <style name="LoginTheme" parent="android:Theme.Holo">
-        <item name="android:actionBarStyle">@style/AppActionBar</item>
+    <style name="LoginTheme" parent="AppTheme">
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 

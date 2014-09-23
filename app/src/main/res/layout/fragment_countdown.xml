@@ -1,17 +1,13 @@
-<!--<com.sbhstimetable.sbhs_timetable_android.backend.CustomSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" android:layout_marginTop="85dp" android:paddingTop="85dp"
-    tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment">-->
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment">
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment" >
+
     <include layout="@layout/layout_countdown_countdown" />
     <include layout="@layout/layout_countdown_moreinfo" />
 
-
-    </RelativeLayout>
-   <!-- </com.sbhstimetable.sbhs_timetable_android.backend.CustomSwipeRefreshLayout>-->
+</RelativeLayout>

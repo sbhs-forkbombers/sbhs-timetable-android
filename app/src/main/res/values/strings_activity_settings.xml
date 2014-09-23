@@ -1,9 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
         <string name="title_activity_settings">Settings</string>
 
 
-    <string name="pref_title_allow_notifications">Enable notifications for the next period?</string>
-    <string name="pref_desc_allow_notifications_enabled">Showing notifications containing next period\'s room, class, teacher and time.</string>
-    <string name="pref_desc_allow_notifications_disabled">Not showing notifications containing next period\'s room, class, teacher and time.</string>
+    <string name="pref_title_allow_notifications">Show notifications</string>
+    <string name="pref_desc_allow_notifications">Show notifications for the next period</string>
     <string name="pref_header_notifications">Notifications</string>
 </resources>

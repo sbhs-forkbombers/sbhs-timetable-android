@@ -1,5 +1,6 @@
-<!--android-L ONLY! Comment all for builds!-->
+<?xml version="1.0" encoding="utf-8"?>
 
+<!--android-L ONLY! Comment all for builds!-->
 <resources>
 
     <!-- Base application theme. -->

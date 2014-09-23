@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sbhstimetable.sbhs_timetable_android" >
 
@@ -27,6 +28,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="TimetableActivity" />
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".TimetableActivity"
+            android:theme="@style/AppTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
         </activity>
         <activity
             android:name=".ClassInfoActivity"
@@ -58,7 +68,9 @@
                 android:value="@string/dashclock_desc" />
         </service>
 
-        <receiver android:name=".backend.service.TimetableAppWidget" android:label="SBHS Timetable - Countdown">
+        <receiver
+            android:name=".backend.service.TimetableAppWidget"
+            android:label="SBHS Timetable - Countdown" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -73,16 +85,9 @@
             android:exported="false" >
         </service>
 
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".TimetableActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
-        </activity>
-
-        <receiver android:name=".backend.service.TodayAppWidget" android:label="SBHS Timetable - Today" >
+        <receiver
+            android:name=".backend.service.TodayAppWidget"
+            android:label="SBHS Timetable - Today" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -92,8 +97,9 @@
                 android:resource="@xml/today_app_widget_info" />
         </receiver>
 
-        <service android:name=".backend.service.TodayWidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
-
+        <service
+            android:name=".backend.service.TodayWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

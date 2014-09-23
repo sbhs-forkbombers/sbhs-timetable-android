@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
-    <dimen name="kk_trans_margin">80dp</dimen>
+    <dimen name="kk_trans_margin">8dp</dimen>
     <dimen name="kk_notrans_margin">8dp</dimen>
 </resources>

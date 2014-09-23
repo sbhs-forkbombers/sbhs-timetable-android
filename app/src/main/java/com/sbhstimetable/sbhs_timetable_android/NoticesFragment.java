@@ -21,8 +21,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.NoticesDropDown
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
-
-
 public class NoticesFragment extends Fragment {
 
     private CommonFragmentInterface mListener;

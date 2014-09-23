@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
@@ -28,7 +29,8 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 public class CountdownFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
-    private CountDownTimer timeLeft;
+    private static CountDownTimer timeLeft;
+    private static boolean cancelling = false;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -91,24 +93,30 @@ public class CountdownFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        this.updateTimer();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (timeLeft != null) {
+            cancelling = true;
+            timeLeft.cancel();
+            cancelling = false;
+        }
         this.updateTimer();
     }
 
     public void updateTimer() {
-        if (this.timeLeft != null) {
-            this.timeLeft.cancel();
-        }
         final View f = this.getView();
         if (f == null) {
-            //Toast.makeText(this.getActivity(),"No view, aborting...", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (timeLeft != null) {
+            cancelling = true;
+            timeLeft.cancel();
+            cancelling = false;
+        }
+
         RelativeLayout extraData = (RelativeLayout)f.findViewById(R.id.countdown_extraData);
         TextView teacher = (TextView)extraData.findViewById(R.id.countdown_extraData_teacher);
         teacher.setText("…");
@@ -191,7 +199,6 @@ public class CountdownFragment extends Fragment {
         ((TextView)f.findViewById(R.id.countdown_name)).setText(label);
         ((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
         final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
-        t.setText("...");
         final CountdownFragment frag = this;
         CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
             long lastTime = 10000;
@@ -204,11 +211,12 @@ public class CountdownFragment extends Fragment {
 
             @Override
             public void onFinish() {
-                if (this.lastTime <= 1000) {
+                if (this.lastTime <= 1000 && !cancelling) {
                     if (this.isLast) {
                         ApiAccessor.getToday(frag.getActivity());
                         ApiAccessor.getBelltimes(frag.getActivity());
                     }
+                    Log.i("countdownFragment", "creating new timer");
                     final Handler h = new Handler();
                     h.postDelayed(new Runnable() {
                         @Override
@@ -217,12 +225,12 @@ public class CountdownFragment extends Fragment {
                         }
                     }, 1000);
                 }
-                t.setText("00m 00s");
+                //t.setText("00m 00s");
 
             }
         };
         timer.start();
-        this.timeLeft = timer;
+        timeLeft = timer;
     }
 
     @Override

@@ -81,6 +81,7 @@ public class CountdownFragment extends Fragment {
             @Override
             public void onRefresh() {
                 if (!ApiAccessor.hasInternetConnection(me.getActivity())) {
+                    Toast.makeText(me.getActivity(), R.string.refresh_failure, Toast.LENGTH_SHORT).show();
                     f.setRefreshing(false);
                     return;
                 }
@@ -130,7 +131,7 @@ public class CountdownFragment extends Fragment {
         }
         if (mainView.isRefreshing()) {
             mainView.setRefreshing(false);
-            Toast.makeText(this.getActivity(), "Reloaded!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
         }
         if (timeLeft != null) {
             cancelling = true;
@@ -282,7 +283,7 @@ public class CountdownFragment extends Fragment {
         }
     }
 
-    private static final class StopSwiping implements Runnable {
+    public static final class StopSwiping implements Runnable {
         private SwipeRefreshLayout f;
         public StopSwiping(SwipeRefreshLayout f) {
             this.f = f;
@@ -291,6 +292,7 @@ public class CountdownFragment extends Fragment {
         @Override
         public void run() {
             f.setRefreshing(false);
+            Toast.makeText(f.getContext(), R.string.refresh_failure, Toast.LENGTH_SHORT).show();
         }
     }
 

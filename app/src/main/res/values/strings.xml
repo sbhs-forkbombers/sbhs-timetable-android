@@ -23,6 +23,8 @@
     <string name="dashclock_desc">Shows information about today\'s next lesson.</string>
     <string name="start">Start:</string>
     <string name="end">End:</string>
+    <string name="refresh_failure">Failed to refresh!</string>
+    <string name="refresh_success">Refreshed!</string>
 
 
 </resources>

@@ -11,9 +11,13 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 
-public class TodayJSONAdapter implements ListAdapter{
+import java.util.ArrayList;
+import java.util.List;
+
+public class TodayAdapter implements ListAdapter{
     private TodayJson timetable;
-    public TodayJSONAdapter(TodayJson tt) {
+    private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
+    public TodayAdapter(TodayJson tt) {
         this.timetable = tt;
     }
 
@@ -23,12 +27,19 @@ public class TodayJSONAdapter implements ListAdapter{
 
     @Override
     public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-        // TODO
+        this.dsos.add(dataSetObserver);
     }
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
-        // TODO
+        this.dsos.remove(dataSetObserver);
+    }
+
+    public void updateDataSet(TodayJson newValue) {
+        this.timetable = newValue;
+        for (DataSetObserver i : dsos) {
+            i.onChanged();
+        }
     }
 
     @Override

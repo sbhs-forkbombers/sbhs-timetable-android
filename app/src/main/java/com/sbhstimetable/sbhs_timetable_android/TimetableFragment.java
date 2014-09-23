@@ -2,14 +2,22 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -17,7 +25,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJSONAdapter;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -35,6 +43,10 @@ public class TimetableFragment extends Fragment {
 
     private CommonFragmentInterface mListener;
     private TodayJson today;
+    private SwipeRefreshLayout layout;
+    private Runnable runnable;
+    private Handler h;
+    private TodayAdapter adapter;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -51,6 +63,7 @@ public class TimetableFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        this.h = new Handler();
         //Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
     }
 
@@ -64,7 +77,35 @@ public class TimetableFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_timetable, container, false);
+        final SwipeRefreshLayout v =  (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
+        this.layout = v;
+        IntentFilter i = new IntentFilter();
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(this), i);
+        final Context c = this.getActivity();
+        v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!ApiAccessor.hasInternetConnection(c)) {
+                    Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
+                    v.setRefreshing(false);
+                    return;
+                }
+                ApiAccessor.getBelltimes(c, false);
+                ApiAccessor.getNotices(c, false);
+                ApiAccessor.getToday(c, false);
+                h.removeCallbacks(runnable);
+                runnable = new CountdownFragment.StopSwiping(v);
+                h.postDelayed(runnable, 10000);
+            }
+        });
+        Resources r = this.getResources();
+        v.setColorSchemeColors(r.getColor(R.color.green),
+                r.getColor(R.color.red),
+                r.getColor(R.color.blue),
+                r.getColor(R.color.yellow));
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         if (z != null) {
             ApiAccessor.getToday(this.getActivity());
@@ -86,6 +127,7 @@ public class TimetableFragment extends Fragment {
         }
     }
 
+
     public void doTimetable(String b) {
         JsonParser g = new JsonParser();
         JsonObject obj = g.parse(b).getAsJsonObject();
@@ -96,8 +138,15 @@ public class TimetableFragment extends Fragment {
 
     public void doTimetable(TodayJson o) {
         this.today = o;
-        ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-        z.setAdapter(new TodayJSONAdapter(this.today));
+        if (this.adapter == null) {
+            this.adapter = new TodayAdapter(this.today);
+            ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
+            z.setAdapter(this.adapter);
+        }
+        else {
+            this.adapter.updateDataSet(this.today);
+        }
+
     }
 
 
@@ -113,11 +162,17 @@ public class TimetableFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         if (this.today != null) {
             StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
         }
+
 
     }
 
@@ -125,6 +180,28 @@ public class TimetableFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private class BroadcastListener extends BroadcastReceiver {
+        private SwipeRefreshLayout f;
+        private TimetableFragment frag;
+        BroadcastListener(TimetableFragment f) {
+            this.f = f.layout;
+            this.frag = f;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String act = intent.getAction();
+            if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                this.f.setRefreshing(false);
+                this.frag.h.removeCallbacks(this.frag.runnable);
+                Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+                if (act.equals(ApiAccessor.ACTION_TODAY_JSON)) {
+                    this.frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                }
+            }
+        }
     }
 
 

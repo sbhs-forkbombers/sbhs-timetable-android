@@ -5,11 +5,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +33,9 @@ public class CountdownFragment extends Fragment {
     private CommonFragmentInterface mListener;
     private static CountDownTimer timeLeft;
     private static boolean cancelling = false;
+    private SwipeRefreshLayout mainView;
+    private Handler stopSwipeToRefresh;
+    private StopSwiping runnable;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -65,23 +70,31 @@ public class CountdownFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //final CountdownFragment me = this;
-        /*final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
-        f.setColorSchemeColors(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+        final CountdownFragment me = this;
+        final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
+        Resources r = this.getResources();
+        f.setColorSchemeColors(r.getColor(android.R.color.holo_blue_bright),
+                r.getColor(android.R.color.holo_green_light),
+                r.getColor(android.R.color.holo_orange_light),
+                r.getColor(android.R.color.holo_red_light));
         f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ApiAccessor.getNotices(me.getActivity());
-                ApiAccessor.getToday(me.getActivity());
-                ApiAccessor.getBelltimes(me.getActivity());
+                if (!ApiAccessor.hasInternetConnection(me.getActivity())) {
+                    f.setRefreshing(false);
+                    return;
+                }
+                ApiAccessor.getNotices(me.getActivity(), false);
+                ApiAccessor.getToday(me.getActivity(), false);
+                ApiAccessor.getBelltimes(me.getActivity(), false);
+                stopSwipeToRefresh = new Handler();
+                runnable = new StopSwiping(f);
+                stopSwipeToRefresh.postDelayed(runnable, 10000);
+                Log.i("countdownFragment","Swipe2refresh!");
             }
         });
-        Log.i("countdownFrag", "done");
-        f.setRefreshing(true);*/
-        return inflater.inflate(R.layout.fragment_countdown, container, false);
+        this.mainView = f;
+        return f;
     }
 
     @Override
@@ -110,6 +123,14 @@ public class CountdownFragment extends Fragment {
         final View f = this.getView();
         if (f == null) {
             return;
+        }
+        if (stopSwipeToRefresh != null && runnable != null) {
+            stopSwipeToRefresh.removeCallbacks(runnable);
+            runnable = null;
+        }
+        if (mainView.isRefreshing()) {
+            mainView.setRefreshing(false);
+            Toast.makeText(this.getActivity(), "Reloaded!", Toast.LENGTH_SHORT).show();
         }
         if (timeLeft != null) {
             cancelling = true;
@@ -258,6 +279,18 @@ public class CountdownFragment extends Fragment {
                 ApiAccessor.getBelltimes(context);
 
             }
+        }
+    }
+
+    private static final class StopSwiping implements Runnable {
+        private SwipeRefreshLayout f;
+        public StopSwiping(SwipeRefreshLayout f) {
+            this.f = f;
+        }
+
+        @Override
+        public void run() {
+            f.setRefreshing(false);
         }
     }
 

@@ -76,9 +76,13 @@ public class ApiAccessor {
         return conn.getActiveNetworkInfo() != null && conn.getActiveNetworkInfo().isConnected();
     }
 
-    public static String getToday(Context c) {
+    public static void getToday(Context c) {
+        getToday(c, true);
+    }
+
+    public static void getToday(Context c, boolean tryCache) {
         JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
-        if (obj != null) {
+        if (obj != null && tryCache) {
             todayCached = true;
             Intent i = new Intent(ACTION_TODAY_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());
@@ -86,7 +90,6 @@ public class ApiAccessor {
         }
         if (!isLoggedIn() || !hasInternetConnection(c)) {
             todayLoaded  = true;
-            return null;
         }
         try {
             new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
@@ -95,12 +98,15 @@ public class ApiAccessor {
             Log.e("apiaccessor", "today.json dl failed", e);
         }
 
-        return null;
     }
 
     public static void getBelltimes(Context c) {
+        getBelltimes(c, true);
+    }
+
+    public static void getBelltimes(Context c, boolean tryCache) {
         JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString(c));
-        if (obj != null) {
+        if (obj != null && tryCache) {
             bellsCached = true;
             bellsLoaded = true;
             Intent i = new Intent(ACTION_BELLTIMES_JSON);
@@ -119,8 +125,12 @@ public class ApiAccessor {
     }
 
     public static void getNotices(Context c) {
+        getNotices(c, true);
+    }
+
+    public static void getNotices(Context c, boolean tryCache) {
         JsonObject obj = StorageCache.getNotices(c, DateTimeHelper.getDateString(c));
-        if (obj != null) {
+        if (obj != null && tryCache) {
             noticesCached = true;
             Intent i = new Intent(ACTION_NOTICES_JSON);
             i.putExtra(EXTRA_JSON_DATA, obj.toString());

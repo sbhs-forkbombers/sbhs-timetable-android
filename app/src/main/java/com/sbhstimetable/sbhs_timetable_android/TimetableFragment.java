@@ -67,10 +67,7 @@ public class TimetableFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_timetable, container, false);
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         if (z != null) {
-            String b = ApiAccessor.getToday(this.getActivity());
-            if (b != null) {
-                this.doTimetable(b);
-            }
+            ApiAccessor.getToday(this.getActivity());
         }
         return v;
     }

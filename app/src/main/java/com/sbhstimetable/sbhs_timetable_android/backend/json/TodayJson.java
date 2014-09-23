@@ -39,9 +39,14 @@ public class TodayJson {
                  b.addProperty("changed", false);
                  b.addProperty("year", "");
                  b.addProperty("title", "");
+                 periods[i] = new Period(b, false);
              }
          }
         INSTANCE = this;
+    }
+
+    public boolean valid() {
+        return this.today.has("timetable");
     }
 
     public String getDate() {

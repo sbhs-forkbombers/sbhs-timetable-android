@@ -47,7 +47,7 @@ public class DashclockService extends DashClockExtension {
     @Override
     protected void onUpdateData(int reason) {
         int num;
-        if (bells != null) {
+        if (bells != null && bells.valid()) {
             BelltimesJson.Bell b = bells.getNextPeriod();
             if (b == null) {
                 // what
@@ -59,6 +59,7 @@ public class DashclockService extends DashClockExtension {
             Log.i("dashclockservice",num+"");
         }
         else {
+            publishUpdate(new ExtensionData().visible(false));
             return;
         }
         if (mine != null) {

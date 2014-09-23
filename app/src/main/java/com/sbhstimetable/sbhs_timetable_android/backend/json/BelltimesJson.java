@@ -57,6 +57,10 @@ public class BelltimesJson {
         return null;
     }
 
+    public boolean valid() {
+        return this.bells.has("bells");
+    }
+
     public Bell getNextPeriod() {
         Bell b = getNextBell();
         JsonArray belltimes = this.bells.get("bells").getAsJsonArray();

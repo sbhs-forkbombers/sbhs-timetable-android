@@ -1,6 +1,7 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.database.DataSetObserver;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,14 +39,14 @@ public class BelltimesAdapter implements ListAdapter {
 
     @Override
     public int getCount() {
-        return b.getMaxIndex()-1;
+        return b.valid() ? b.getMaxIndex()-1 : 1;
     }
 
     @Override
     public Object getItem(int i) {
-        BelltimesJson.Bell bell = b.getIndex(i);
 
-        return b.getIndex(i);
+
+        return b.valid() ? b.getIndex(i) : ":(";
     }
 
     @Override
@@ -61,6 +62,13 @@ public class BelltimesAdapter implements ListAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         RelativeLayout r;
+        if (!b.valid()) {
+            TextView t = new TextView(viewGroup.getContext());
+            t.setText("Couldn't load belltimes!");
+            t.setGravity(Gravity.CENTER);
+            t.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
+            return t;
+        }
         if (view instanceof RelativeLayout) {
             r = (RelativeLayout)view;
         }

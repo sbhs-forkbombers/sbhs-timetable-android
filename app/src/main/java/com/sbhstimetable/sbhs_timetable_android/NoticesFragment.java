@@ -56,6 +56,9 @@ public class NoticesFragment extends Fragment {
         getActivity().getActionBar().setListNavigationCallbacks(spinnerAdapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int i, long l) {
+                if (adapter == null) {
+                    return true;
+                }
                 Log.i("onNavListener", "getting - " + i + " (that's " + spinnerAdapter.getItem(i) + ")");
                 if (i == 0) {
                     adapter.filter(null);

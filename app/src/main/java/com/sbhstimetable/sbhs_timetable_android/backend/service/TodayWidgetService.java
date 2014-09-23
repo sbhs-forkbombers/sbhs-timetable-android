@@ -1,5 +1,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.google.gson.JsonParser;
+import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -56,13 +58,18 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return 6;
+            return this.today != null && this.today.valid() ? 6 : 1;
         }
 
         @Override
         public RemoteViews getViewAt(int i) {
-            if (this.today == null) {
-                return null;
+            if (this.today == null || !this.today.valid()) {
+                RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
+                r.setTextViewText(R.id.label, "You need to log in");
+                Intent t = new Intent(con, LoginActivity.class);
+                t.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                r.setOnClickPendingIntent(R.id.label, PendingIntent.getActivity(this.con, 0, t, 0));
+                return r;
             }
             if (i == 5) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);

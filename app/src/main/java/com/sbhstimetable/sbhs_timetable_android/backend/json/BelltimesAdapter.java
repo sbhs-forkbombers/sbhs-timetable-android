@@ -12,8 +12,11 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 
+import java.util.ArrayList;
+
 public class BelltimesAdapter implements ListAdapter {
     private BelltimesJson b;
+    private ArrayList<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
     public BelltimesAdapter(BelltimesJson b) {
         this.b = b;
     }
@@ -30,12 +33,23 @@ public class BelltimesAdapter implements ListAdapter {
 
     @Override
     public void registerDataSetObserver(DataSetObserver dataSetObserver) {
-
+        dsos.add(dataSetObserver);
     }
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
+        dsos.remove(dataSetObserver);
+    }
 
+    private void updateDSOs() {
+        for (DataSetObserver i : dsos) {
+            i.onChanged();
+        }
+    }
+
+    public void updateBelltimes(BelltimesJson b) {
+        this.b = b;
+        updateDSOs();
     }
 
     @Override
@@ -45,8 +59,6 @@ public class BelltimesAdapter implements ListAdapter {
 
     @Override
     public Object getItem(int i) {
-
-
         return b.valid() ? b.getIndex(i) : ":(";
     }
 

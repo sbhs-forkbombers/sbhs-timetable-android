@@ -58,7 +58,7 @@ public class ApiAccessor {
         c.startActivity(new Intent(c, LoginActivity.class));
     }
 
-    public static void logOut(Context c) {
+    public static void logout(Context c) {
         sessionID = null;
         SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
         s.edit().remove("sessionID").apply();

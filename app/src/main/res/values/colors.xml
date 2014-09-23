@@ -3,10 +3,15 @@
 <resources>
     <color name="primary">#ff455ede</color>
     <color name="primary_dark">#ff3b50ce</color>
-    <color name="accent">#ff5677fc</color>
+    <color name="accent">#fff50057</color>
+    <color name="accent_alt">#ffff4081</color>
     <color name="standout">#ffc107</color>
     <color name="background">#ff212121</color>
-    <color name="pressed">#1a000000</color>
-    <color name="focused">#77000000</color>
+    <color name="pressed">#1affffff</color>
+    <color name="focused">#77ffffff</color>
     <color name="divider">#ff888888</color>
+    <color name="red">#e51c23</color>
+    <color name="green">#259b24</color>
+    <color name="blue">#5677fc</color>
+    <color name="yellow">#ffc107</color>
 </resources>

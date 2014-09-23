@@ -73,10 +73,10 @@ public class CountdownFragment extends Fragment {
         final CountdownFragment me = this;
         final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         Resources r = this.getResources();
-        f.setColorSchemeColors(r.getColor(android.R.color.holo_blue_bright),
-                r.getColor(android.R.color.holo_green_light),
-                r.getColor(android.R.color.holo_orange_light),
-                r.getColor(android.R.color.holo_red_light));
+        f.setColorSchemeColors(r.getColor(R.color.green),
+                r.getColor(R.color.red),
+                r.getColor(R.color.blue),
+                r.getColor(R.color.yellow));
         f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

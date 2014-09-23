@@ -48,8 +48,9 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SystemBarTintManager b = new SystemBarTintManager(this);
-        b.setStatusBarTintColor(Color.parseColor("#455ede"));
+        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        tintManager.setStatusBarTintColor(Color.parseColor("#455ede"));
+        tintManager.setStatusBarTintEnabled(true);
         setupActionBar();
     }
 
@@ -252,4 +253,8 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        NavUtils.navigateUpFromSameTask(this);
+    }
 }

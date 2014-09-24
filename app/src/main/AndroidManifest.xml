@@ -5,12 +5,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
+        <!-- Main Activity -->
         <activity
             android:name=".TimetableActivity"
             android:label="@string/app_name" >
@@ -20,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Other Activities -->
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
@@ -48,6 +52,7 @@
                 android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
         </activity>
 
+        <!-- Services -->
         <service
             android:name=".backend.service.DashclockService"
             android:icon="@drawable/ic_launcher"
@@ -68,6 +73,17 @@
                 android:value="@string/dashclock_desc" />
         </service>
 
+        <service
+            android:name=".backend.service.NotificationService"
+            android:exported="false" >
+        </service>
+
+        <service
+            android:name=".backend.service.TodayWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <!-- BroadcastReceivers -->
+
         <receiver
             android:name=".backend.service.TimetableAppWidget"
             android:label="SBHS Timetable - Countdown" >
@@ -80,10 +96,14 @@
                 android:resource="@xml/timetable_app_widget_info" />
         </receiver>
 
-        <service
-            android:name=".backend.service.NotificationService"
-            android:exported="false" >
-        </service>
+        <receiver
+            android:name="com.sbhstimetable.sbhs_timetable_android.backend.service.BootFinishedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+
 
         <receiver
             android:name=".backend.service.TodayAppWidget"
@@ -97,9 +117,7 @@
                 android:resource="@xml/today_app_widget_info" />
         </receiver>
 
-        <service
-            android:name=".backend.service.TodayWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
     </application>
 
 </manifest>

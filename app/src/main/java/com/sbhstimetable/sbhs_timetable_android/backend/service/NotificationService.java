@@ -54,10 +54,9 @@ public class NotificationService extends IntentService {
      *
      * @see IntentService
      */
-    public static void startUpdatingNotification(Context context, String param1) {
+    public static void startUpdatingNotification(Context context) {
         Intent intent = new Intent(context, NotificationService.class);
         intent.setAction(ACTION_UPDATE_NOTIFICATION);
-        intent.putExtra(EXTRA_SESSID, param1);
         context.startService(intent);
     }
 
@@ -73,8 +72,7 @@ public class NotificationService extends IntentService {
                 final boolean doAll = intent.getBooleanExtra(EXTRA_SHOULD_DO_ALL, false);
                 handleCheckUpdate(doAll);
             } else if (ACTION_UPDATE_NOTIFICATION.equals(action)) {
-                final String sessID = intent.getStringExtra(EXTRA_SESSID);
-                handleNotificationUpdate(sessID);
+                handleNotificationUpdate();
             }
         }
     }
@@ -96,7 +94,7 @@ public class NotificationService extends IntentService {
      * Handle action Baz in the provided background thread with the provided
      * parameters.
      */
-    private void handleNotificationUpdate(final String param1) {
+    private void handleNotificationUpdate() {
         NotificationManager m = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_enable", false)) {
             // only show a notification if it's configured
@@ -133,7 +131,7 @@ public class NotificationService extends IntentService {
         ses.schedule(new Runnable() {
             @Override
             public void run() {
-                NotificationService.startUpdatingNotification(con, param1);
+                NotificationService.startUpdatingNotification(con);
             }
         }, DateTimeHelper.milliSecondsUntilNextEvent(), TimeUnit.MILLISECONDS);
     }

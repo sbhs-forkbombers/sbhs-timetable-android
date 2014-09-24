@@ -46,6 +46,7 @@ import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
@@ -271,7 +272,7 @@ public class TimetableActivity extends Activity
                     }
                 }
                 else {
-                    JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+                    JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                     if (o.has("error")) {
                         // reject it silently/
                         return;
@@ -287,14 +288,16 @@ public class TimetableActivity extends Activity
                 //activity.setProgressBarIndeterminateVisibility(false);
                 ApiAccessor.bellsLoaded = true;
                 StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-                DateTimeHelper.bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                DateTimeHelper.bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                 LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
             }
             else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
                 //activity.setProgressBarIndeterminateVisibility(false);
                 ApiAccessor.noticesLoaded = true;
                 StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-                new NoticesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                JsonObject nj = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+                if (nj != null && NoticesJson.isValid(nj))
+                    new NoticesJson(nj);
             }
             this.activity.updateCachedStatus(this.activity.menu);
         }

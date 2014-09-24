@@ -59,7 +59,9 @@ public class DateTimeHelper {
     public static String getDateString(Context optionalCon) {
         if (!ApiAccessor.todayLoaded || TodayJson.getInstance() == null) {
             if (optionalCon != null) {
-                return StorageCache.getCachedDate(optionalCon);
+                String s = StorageCache.getCachedDate(optionalCon);
+                if (!s.equals("1970-01-01"))
+                    return s;
             }
             return getGuessedDateString();
         }

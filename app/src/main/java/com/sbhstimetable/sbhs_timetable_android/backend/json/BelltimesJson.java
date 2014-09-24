@@ -103,6 +103,10 @@ public class BelltimesJson {
         return null;
     }
 
+    public static boolean isValid(JsonObject res) {
+        return res.has("bells");
+    }
+
     public static class Bell {
         private JsonObject data;
         private int index;

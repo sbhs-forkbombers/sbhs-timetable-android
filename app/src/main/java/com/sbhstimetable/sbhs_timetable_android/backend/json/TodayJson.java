@@ -70,7 +70,7 @@ public class TodayJson {
     }
 
     public String getDate() {
-        return this.today.get("date").getAsString();
+        return valid() ? this.today.get("date").getAsString() : "1970-01-01";
     }
 
     public Period getPeriod(int num) {
@@ -84,6 +84,10 @@ public class TodayJson {
     @Override
     public String toString() {
         return this.today.toString();
+    }
+
+    public static boolean isValid(JsonObject res) {
+        return res.has("timetable");
     }
 
     public static class Period {

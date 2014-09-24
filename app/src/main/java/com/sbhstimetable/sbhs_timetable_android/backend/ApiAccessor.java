@@ -112,6 +112,7 @@ public class ApiAccessor {
             todayLoaded  = true;
         }
         try {
+            Log.i("ApiAccessor", "Going to get today.json for " + DateTimeHelper.getDateString(c));
             new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
         }
         catch (Exception e) {

@@ -48,6 +48,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.NoticesDropDownAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
@@ -220,7 +221,7 @@ public class NoticesFragment extends Fragment {
                 this.frag.h.removeCallbacks(this.frag.runnable);
                 Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
                 if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-                    JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+                    JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
                     if (o.has("notices")) {
                         NoticesJson nj = new NoticesJson(o);
                         this.frag.adapter.update(nj);

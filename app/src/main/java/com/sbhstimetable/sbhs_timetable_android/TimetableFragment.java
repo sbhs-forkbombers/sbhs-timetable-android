@@ -45,6 +45,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -146,8 +147,7 @@ public class TimetableFragment extends Fragment {
 
 
     public void doTimetable(String b) {
-        JsonParser g = new JsonParser();
-        JsonObject obj = g.parse(b).getAsJsonObject();
+        JsonObject obj = JsonUtil.safelyParseJson(b);
         if (obj.has("timetable")) {
             doTimetable(new TodayJson(obj));
         }

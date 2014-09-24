@@ -34,6 +34,7 @@ import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -59,7 +60,7 @@ public class TodayWidgetService extends RemoteViewsService {
                 LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
-                        today = new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                        today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                         LocalBroadcastManager.getInstance(con).unregisterReceiver(this);
                     }
                 }, new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));

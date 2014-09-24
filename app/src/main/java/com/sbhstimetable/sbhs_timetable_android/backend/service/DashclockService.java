@@ -32,6 +32,7 @@ import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -56,9 +57,9 @@ public class DashclockService extends DashClockExtension {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-                    mine = new TodayJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                    mine = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                 } else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-                    bells = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject());
+                    bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                 }
             }
         }, wanted);

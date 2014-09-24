@@ -43,6 +43,11 @@ public class NoticesJson {
     public static NoticesJson getInstance() {
         return INSTANCE;
     }
+
+    public static boolean isValid(JsonObject n) {
+        return n.has("notices");
+    }
+
     @SuppressWarnings("all")
     private JsonObject notices;
     private ArrayList<Notice> n = new ArrayList<Notice>();

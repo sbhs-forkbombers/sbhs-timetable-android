@@ -25,6 +25,10 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 import java.io.File;
 import java.io.FileReader;
@@ -69,10 +73,13 @@ public class StorageCache {
                 return new JsonParser().parse(new FileReader(data)).getAsJsonObject();
             }
             catch (IOException e) {
-                Log.e("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
+                Log.v("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
             }
             catch (IllegalStateException e) {
-                Log.e("storageCache", "wow wek json", e);
+                Log.v("storageCache", "wow wek json", e);
+            }
+            catch (JsonSyntaxException e) {
+                Log.v("storageCache", "wow wek json", e);
             }
         }
         return null;
@@ -98,7 +105,8 @@ public class StorageCache {
     }
 
     public static JsonObject getTodayJson(Context context, String date) {
-        return readCacheFile(context, date, "today");
+        JsonObject res = readCacheFile(context, date, "today");
+        return res != null && TodayJson.isValid(res) ? res : null;
     }
 
     public static void cacheTodayJson(Context context, String date, String json) {
@@ -110,7 +118,8 @@ public class StorageCache {
     }
 
     public static JsonObject getBelltimes(Context c, String date) {
-        return readCacheFile(c, date, "belltimes");
+        JsonObject res = readCacheFile(c, date, "belltimes");
+        return res != null && BelltimesJson.isValid(res) ? res : null;
     }
 
     public static void cacheNotices(Context c, String date, String json) {
@@ -118,7 +127,8 @@ public class StorageCache {
     }
 
     public static JsonObject getNotices(Context c, String date) {
-        return readCacheFile(c, date, "notices");
+        JsonObject res = readCacheFile(c, date, "notices");
+        return res != null && NoticesJson.isValid(res) ? res : null;
     }
 
     @SuppressWarnings("unused")

@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.google.gson.JsonParser;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -45,7 +46,7 @@ public class ClassInfoActivity extends Activity {
             throw new IllegalStateException("RUDE I NEED SOME DATA PLOX");
         }
         String json = i.getStringExtra("json");
-        TodayJson.Period b = new TodayJson.Period(new JsonParser().parse(json).getAsJsonObject(), true); // TODO
+        TodayJson.Period b = new TodayJson.Period(JsonUtil.safelyParseJson(json), true); // TODO
         TextView subject = (TextView)this.findViewById(R.id.classInfoSubject);
         subject.setText(b.name());
         //subject.setMinimumHeight(50);

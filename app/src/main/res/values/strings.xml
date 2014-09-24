@@ -25,6 +25,9 @@
     <string name="end">End:</string>
     <string name="refresh_failure">Failed to refresh!</string>
     <string name="refresh_success">Refreshed!</string>
+    <string name="pls2feedback">If the app crashes, please report it using the \"Report\" button in the \"Unfortunately, SBHS Timetable has stopped\" dialog, so we can fix it.</string>
+    <string name="no_show">Don\'t show this again</string>
+    <string name="yes_show">Show this again!</string>
 
 
 </resources>

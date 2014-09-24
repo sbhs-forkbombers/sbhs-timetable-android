@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -36,6 +38,8 @@ public class TimetableActivity extends Activity
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
     public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
     public static final String TODAY_AVAILABLE = "todayIsPresent";
+
+    public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -80,7 +84,11 @@ public class TimetableActivity extends Activity
     @Override
     public void onResume() {
         super.onResume();
-        NotificationService.startUpdatingNotification(this, ApiAccessor.getSessionID());
+        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREF_DISABLE_DIALOG, false)) {
+            DialogFragment f = new FeedbackDialogFragment();
+            f.show(this.getFragmentManager(), "dialog");
+        }
+        NotificationService.startUpdatingNotification(this);
         this.mNavigationDrawerFragment.updateList();
         this.isActive = true;
     }

@@ -36,6 +36,8 @@ public class CountdownFragment extends Fragment {
     private SwipeRefreshLayout mainView;
     private Handler stopSwipeToRefresh;
     private StopSwiping runnable;
+    private BroadcastListener listener;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -58,11 +60,6 @@ public class CountdownFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
-        i.addAction(TimetableActivity.TODAY_AVAILABLE);
-        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(), i);
         //Toast.makeText(getActivity(), "Countdown! School never ends!", Toast.LENGTH_SHORT).show();
     }
 
@@ -258,6 +255,14 @@ public class CountdownFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
+        i.addAction(TimetableActivity.TODAY_AVAILABLE);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        if (this.listener == null) {
+            this.listener = new BroadcastListener();
+        }
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
         try {
             mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
@@ -269,6 +274,7 @@ public class CountdownFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
         mListener = null;
     }
 

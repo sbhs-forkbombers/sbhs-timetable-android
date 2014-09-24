@@ -41,6 +41,7 @@ public class NoticesFragment extends Fragment {
     private Handler h;
     private Runnable runnable;
     private SwipeRefreshLayout layout;
+    private BroadcastListener listener;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -97,11 +98,7 @@ public class NoticesFragment extends Fragment {
         final SwipeRefreshLayout res = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_notices, container, false);
         this.layout = res;
         final ListView v = (ListView)res.findViewById(R.id.notices_listview);
-        IntentFilter i = new IntentFilter();
-        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(this), i);
+
         v.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -163,6 +160,14 @@ public class NoticesFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        IntentFilter i = new IntentFilter();
+        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        if (this.listener == null) {
+            this.listener = new BroadcastListener(this);
+        }
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
         try {
             mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
@@ -174,6 +179,7 @@ public class NoticesFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
         mListener = null;
     }
 

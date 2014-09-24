@@ -47,6 +47,7 @@ public class TimetableFragment extends Fragment {
     private Runnable runnable;
     private Handler h;
     private TodayAdapter adapter;
+    private BroadcastListener listener;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -79,11 +80,7 @@ public class TimetableFragment extends Fragment {
         // Inflate the layout for this fragment
         final SwipeRefreshLayout v =  (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
         this.layout = v;
-        IntentFilter i = new IntentFilter();
-        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(this), i);
+
         final Context c = this.getActivity();
         v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -153,6 +150,14 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        IntentFilter i = new IntentFilter();
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+        if (this.listener == null) {
+            this.listener = new BroadcastListener(this);
+        }
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
         try {
             mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
@@ -169,6 +174,7 @@ public class TimetableFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
         if (this.today != null) {
             StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
         }
@@ -194,6 +200,10 @@ public class TimetableFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String act = intent.getAction();
             if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+                if (this.f == null) {
+                    this.f = this.frag.layout;
+                }
+                if (this.f == null) return;
                 this.f.setRefreshing(false);
                 this.frag.h.removeCallbacks(this.frag.runnable);
                 Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();

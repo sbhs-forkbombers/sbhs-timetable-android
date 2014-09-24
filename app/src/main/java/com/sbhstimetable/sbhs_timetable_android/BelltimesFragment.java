@@ -26,7 +26,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +43,7 @@ public class BelltimesFragment extends Fragment {
     private SwipeRefreshLayout layout;
     private Handler h;
     private BelltimesAdapter adapter;
+    private BroadcastListener listener;
     //private Menu menu;
 
     public static BelltimesFragment newInstance() {
@@ -73,11 +73,7 @@ public class BelltimesFragment extends Fragment {
         final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
         this.layout = v;
         final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
-        IntentFilter i = new IntentFilter();
-        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(new BroadcastListener(this), i);
+
         lv.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int i) {
@@ -124,6 +120,15 @@ public class BelltimesFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        IntentFilter i = new IntentFilter();
+        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+
+        if (this.listener == null) {
+            this.listener = new BroadcastListener(this);
+        }
+        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
         try {
             mListener = (CommonFragmentInterface) activity;
         } catch (ClassCastException e) {
@@ -135,6 +140,7 @@ public class BelltimesFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
         mListener = null;
     }
 

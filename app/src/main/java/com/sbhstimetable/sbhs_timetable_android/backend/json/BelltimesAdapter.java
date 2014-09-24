@@ -54,7 +54,7 @@ public class BelltimesAdapter implements ListAdapter {
 
     @Override
     public int getCount() {
-        return b.valid() ? b.getMaxIndex()-1 : 1;
+        return b!= null && b.valid() ? b.getMaxIndex()-1 : 1;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class BelltimesAdapter implements ListAdapter {
     @SuppressLint("all")
     public View getView(int i, View view, ViewGroup viewGroup) {
         RelativeLayout r;
-        if (!b.valid()) {
+        if (b == null || !b.valid()) {
             TextView t = new TextView(viewGroup.getContext());
             t.setText("Couldn't load belltimes!");
             t.setGravity(Gravity.CENTER);

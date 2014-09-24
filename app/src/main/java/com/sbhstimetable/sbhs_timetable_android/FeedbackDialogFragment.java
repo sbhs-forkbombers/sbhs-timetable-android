@@ -18,12 +18,12 @@ public class FeedbackDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(TimetableActivity.PREF_DISABLE_DIALOG, true).apply();
             }
-        }).setNegativeButton(R.string.yes_show, new DialogInterface.OnClickListener() {
+        })/*.setNegativeButton(R.string.yes_show, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 
             }
-        });
+        });*/.setTitle(R.string.dialog_title);
         return builder.create();
     }
 }

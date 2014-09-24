@@ -1,12 +1,32 @@
 apply plugin: 'com.android.application'
+/*
+ * SBHS-Timetable-Android: Countdown and timetable all at once (Android app).
+ * Copyright (C) 2014 Simon Shields, James Ye
+ *
+ * This file is part of SBHS-Timetable-Android.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // Build with SDK 20 for run, android-L cannot be used on lower SDKs
 android {
-    compileSdkVersion 19
+    compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
         applicationId 'com.sbhstimetable.sbhs_timetable_android'
         minSdkVersion 15
-        targetSdkVersion 19
+        targetSdkVersion 20
         versionCode 3
         versionName '0.5-alpha'
     }

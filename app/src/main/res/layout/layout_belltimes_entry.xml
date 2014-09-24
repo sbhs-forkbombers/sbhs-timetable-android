@@ -4,43 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <TextView android:id="@+id/bell_name"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:gravity="start|center_vertical"
         android:layout_alignParentBottom="true"
-        android:id="@+id/bell_name"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:text="Transition"
-        android:minWidth="110dp"/>
+        android:minWidth="110dp" />
 
-    <TextView
+    <TextView android:id="@+id/bell_start_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bell_start_label"
         android:text="@string/start"
         android:layout_toRightOf="@id/bell_name"
         android:layout_toEndOf="@id/bell_name"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"/>
+        android:layout_marginRight="2dp" />
 
-    <TextView
+    <TextView android:id="@+id/bell_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bell_start"
         android:textColor="@android:color/primary_text_dark"
         android:layout_toRightOf="@id/bell_start_label"
         android:layout_toEndOf="@id/bell_start_label"
         android:layout_alignParentTop="true" />
 
-    <TextView
+    <TextView android:id="@+id/bell_end_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bell_end_label"
         android:text="@string/end"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
@@ -48,10 +44,9 @@
         android:layout_toRightOf="@id/bell_name"
         android:layout_toEndOf="@id/bell_name" />
 
-    <TextView
+    <TextView android:id="@+id/bell_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/bell_end"
         android:textColor="@android:color/primary_text_dark"
         android:layout_toRightOf="@id/bell_start_label"
         android:layout_toEndOf="@id/bell_start_label"

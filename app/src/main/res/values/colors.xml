@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
+
     <color name="primary">#ff455ede</color>
     <color name="primary_dark">#ff3b50ce</color>
     <color name="accent">#fff50057</color>
@@ -14,4 +15,5 @@
     <color name="green">#259b24</color>
     <color name="blue">#5677fc</color>
     <color name="yellow">#ffc107</color>
+
 </resources>

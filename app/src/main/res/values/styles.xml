@@ -5,12 +5,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo">
         <item name="android:actionBarStyle">@style/AppActionBar</item>
-        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:fitsSystemWindows">false</item>
     </style>
 
     <style name="AppActionBar" parent="android:Widget.Holo.ActionBar.Solid">
-        <item name="android:height">56dp</item>
         <item name="android:background">@color/primary</item>
     </style>
 

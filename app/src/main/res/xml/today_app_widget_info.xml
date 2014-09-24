@@ -7,5 +7,4 @@
     android:initialLayout="@layout/today_app_widget"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|keyguard"
-    android:initialKeyguardLayout="@layout/today_app_widget">
-</appwidget-provider>
+    android:initialKeyguardLayout="@layout/today_app_widget" />

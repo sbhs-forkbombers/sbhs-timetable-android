@@ -70,7 +70,7 @@ public class TodayJson {
     }
 
     public String getDate() {
-        return valid() ? this.today.get("date").getAsString() : "1970-01-01";
+        return valid() ? this.today.get("date").getAsString() : "";
     }
 
     public Period getPeriod(int num) {

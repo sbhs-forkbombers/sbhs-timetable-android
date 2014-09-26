@@ -113,7 +113,7 @@ public class ApiAccessor {
             todayLoaded  = true;
         }
         try {
-            Log.i("ApiAccessor", "Going to get today.json...");
+            Log.i("ApiAccessor", "Going to get today.json…");
             new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {

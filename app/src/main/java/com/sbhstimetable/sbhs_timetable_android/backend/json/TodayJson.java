@@ -21,8 +21,11 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 public class TodayJson {
     private final JsonObject today;
@@ -35,6 +38,8 @@ public class TodayJson {
 
     public TodayJson(JsonObject obj) {
          this.today = obj;
+         Log.i("TodayJson", obj.toString());
+         Log.i("TodayJson", "new instance");
          for (int i = 0; i < 5; i++) {
              try {
                  JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
@@ -63,6 +68,7 @@ public class TodayJson {
              }
          }
         INSTANCE = this;
+        ApiAccessor.todayLoaded = true;
     }
 
     public boolean valid() {

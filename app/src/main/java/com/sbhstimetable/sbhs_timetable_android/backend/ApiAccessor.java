@@ -29,6 +29,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 
@@ -112,8 +113,8 @@ public class ApiAccessor {
             todayLoaded  = true;
         }
         try {
-            Log.i("ApiAccessor", "Going to get today.json for " + DateTimeHelper.getDateString(c));
-            new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json?date=" + DateTimeHelper.getDateString(c)));
+            Log.i("ApiAccessor", "Going to get today.json...");
+            new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
         }
         catch (Exception e) {
             Log.e("apiaccessor", "today.json dl failed", e);
@@ -219,6 +220,17 @@ public class ApiAccessor {
 
             Intent i = new Intent(this.intentType);
             i.putExtra(EXTRA_JSON_DATA, result);
+            try {
+                JsonObject o = new JsonParser().parse(result).getAsJsonObject();
+                if (o.has("status") && o.get("status").getAsString().equals("401")) {
+                    // need to log in
+                    ApiAccessor.login(c);
+                }
+            }
+            catch (Exception e) {
+                // whatever
+                Log.d("ApiAccessor", "failed to parse json", e);
+            }
             if (this.c instanceof TimetableActivity) {
                 TimetableActivity a = (TimetableActivity)c;
                 a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));

@@ -21,6 +21,7 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -29,6 +30,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class DateTimeHelper {
+    private static final String TAG = "DateTimeHelper";
     private static Calendar cal() {
         return Calendar.getInstance();
     }
@@ -60,13 +62,18 @@ public class DateTimeHelper {
         if (!ApiAccessor.todayLoaded || TodayJson.getInstance() == null) {
             if (optionalCon != null) {
                 String s = StorageCache.getCachedDate(optionalCon);
+                Log.i(TAG, "got date - " + s);
                 if (!s.equals("1970-01-01"))
                     return s;
             }
-            return getGuessedDateString();
+            String s = getGuessedDateString();
+            Log.i(TAG, "got date - " + s);
+            return s;
         }
         else {
-            return TodayJson.getInstance().getDate();
+            String s = TodayJson.getInstance().getDate();
+            Log.i(TAG, "got date - " + s);
+            return s;
         }
     }
 

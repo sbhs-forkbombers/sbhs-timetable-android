@@ -156,6 +156,7 @@ public class TimetableFragment extends Fragment {
     public void doTimetable(TodayJson o) {
         this.today = o;
         if (this.adapter == null) {
+            if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return;
             this.adapter = new TodayAdapter(this.today);
             ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
             z.setAdapter(this.adapter);

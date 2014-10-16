@@ -24,8 +24,8 @@
 
     <color name="primary">#ff455ede</color>
     <color name="primary_dark">#ff3b50ce</color>
-    <color name="accent">#fff50057</color>
-    <color name="accent_alt">#ffff4081</color>
+    <color name="accent">#ff00bfa5</color>
+    <color name="accent_alt">#ff1de9b6</color>
     <color name="standout">#ffc107</color>
     <color name="background">#ff212121</color>
     <color name="pressed">#1affffff</color>

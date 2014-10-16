@@ -20,12 +20,10 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--android-L ONLY! Comment all for builds!-->
 <resources>
 
     <!-- Base application theme. -->
-    <!--
-    <style name="AppTheme" parent="android:Theme.Material">
+    <!--<style name="AppTheme" parent="android:Theme.Material">
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorAccent">@color/accent</item>
@@ -35,7 +33,6 @@
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
         <item name="android:colorAccent">@color/accent</item>
-    </style>
-    -->
+    </style>-->
 
 </resources>

@@ -19,7 +19,6 @@ apply plugin: 'com.android.application'
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Build with SDK 20 for run, android-L cannot be used on lower SDKs
 android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'

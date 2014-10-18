@@ -21,16 +21,16 @@
   -->
 
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    tools:context="com.sbhstimetable.sbhs_timetable_android.TimetableFragment">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingLeft="16dp"
+	android:paddingRight="16dp"
+	tools:context="com.sbhstimetable.sbhs_timetable_android.TimetableFragment">
 
-    <ListView android:id="@+id/timetable_listview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|top" />
+	<ListView android:id="@+id/timetable_listview"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start|top" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

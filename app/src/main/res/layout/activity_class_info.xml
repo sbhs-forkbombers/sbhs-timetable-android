@@ -21,71 +21,71 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/classInfoRoot"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="80dp"
-    tools:context="com.sbhstimetable.sbhs_timetable_android.ClassInfoActivity">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/classInfoRoot"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingTop="80dp"
+	tools:context="com.sbhstimetable.sbhs_timetable_android.ClassInfoActivity">
 
-    <TextView android:id="@+id/classInfoSubject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textSize="60sp"
-        android:fontFamily="sans-serif-thin"
-        android:text="Something happens"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true" />
+	<TextView android:id="@+id/classInfoSubject"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:textSize="60sp"
+		android:fontFamily="sans-serif-thin"
+		android:text="Something happens"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentLeft="true" />
 
-    <RelativeLayout android:id="@+id/classInfoRL1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/classInfoSubject"
-        android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dp"
-        android:layout_marginLeft="5dp">
+	<RelativeLayout android:id="@+id/classInfoRL1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/classInfoSubject"
+		android:layout_alignParentLeft="true"
+		android:layout_marginRight="5dp"
+		android:layout_marginLeft="5dp">
 
-        <TextView android:id="@+id/classInfoRoomLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:fontFamily="sans-serif-thin"
-            android:text="Room: "
-            android:layout_alignParentLeft="true"
-            />
+		<TextView android:id="@+id/classInfoRoomLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="30sp"
+			android:fontFamily="sans-serif-thin"
+			android:text="Room: "
+			android:layout_alignParentLeft="true"
+			/>
 
-        <TextView android:id="@+id/classInfoRoom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/classInfoRoomLabel"
-            android:textSize="30sp"
-            android:gravity="center"
-            android:text="Room"/>
+		<TextView android:id="@+id/classInfoRoom"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/classInfoRoomLabel"
+			android:textSize="30sp"
+			android:gravity="center"
+			android:text="Room"/>
 
-    </RelativeLayout>
+	</RelativeLayout>
 
-    <RelativeLayout android:layout_toRightOf="@id/classInfoRL1"
-        android:layout_below="@id/classInfoSubject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+	<RelativeLayout android:layout_toRightOf="@id/classInfoRL1"
+		android:layout_below="@id/classInfoSubject"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content">
 
-        <TextView android:id="@+id/classInfoTeacherLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:fontFamily="sans-serif-thin"
-            android:text="Teacher: "
-            android:layout_alignParentLeft="true" />
+		<TextView android:id="@+id/classInfoTeacherLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="30sp"
+			android:fontFamily="sans-serif-thin"
+			android:text="Teacher: "
+			android:layout_alignParentLeft="true" />
 
-        <TextView android:id="@+id/classInfoTeacher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/classInfoTeacherLabel"
-            android:textSize="30sp"
-            android:gravity="center"
-            android:text="Teacher"/>
+		<TextView android:id="@+id/classInfoTeacher"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/classInfoTeacherLabel"
+			android:textSize="30sp"
+			android:gravity="center"
+			android:text="Teacher"/>
 
-    </RelativeLayout>
+	</RelativeLayout>
 
 </RelativeLayout>

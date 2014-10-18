@@ -21,56 +21,56 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <TextView android:id="@+id/bell_name"
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:gravity="start|center_vertical"
-        android:layout_alignParentBottom="true"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="Transition"
-        android:minWidth="110dp" />
+	<TextView android:id="@+id/bell_name"
+		android:layout_width="wrap_content"
+		android:layout_height="fill_parent"
+		android:gravity="start|center_vertical"
+		android:layout_alignParentBottom="true"
+		android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentTop="true"
+		android:text="Transition"
+		android:minWidth="110dp" />
 
-    <TextView android:id="@+id/bell_start_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/start"
-        android:layout_toRightOf="@id/bell_name"
-        android:layout_toEndOf="@id/bell_name"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp" />
+	<TextView android:id="@+id/bell_start_label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/start"
+		android:layout_toRightOf="@id/bell_name"
+		android:layout_toEndOf="@id/bell_name"
+		android:layout_alignParentTop="true"
+		android:layout_marginLeft="2dp"
+		android:layout_marginRight="2dp" />
 
-    <TextView android:id="@+id/bell_start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/primary_text_dark"
-        android:layout_toRightOf="@id/bell_start_label"
-        android:layout_toEndOf="@id/bell_start_label"
-        android:layout_alignParentTop="true" />
+	<TextView android:id="@+id/bell_start"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="@android:color/primary_text_dark"
+		android:layout_toRightOf="@id/bell_start_label"
+		android:layout_toEndOf="@id/bell_start_label"
+		android:layout_alignParentTop="true" />
 
-    <TextView android:id="@+id/bell_end_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/end"
-        android:layout_marginLeft="2dp"
-        android:layout_marginRight="2dp"
-        android:layout_below="@id/bell_start_label"
-        android:layout_toRightOf="@id/bell_name"
-        android:layout_toEndOf="@id/bell_name" />
+	<TextView android:id="@+id/bell_end_label"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/end"
+		android:layout_marginLeft="2dp"
+		android:layout_marginRight="2dp"
+		android:layout_below="@id/bell_start_label"
+		android:layout_toRightOf="@id/bell_name"
+		android:layout_toEndOf="@id/bell_name" />
 
-    <TextView android:id="@+id/bell_end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/primary_text_dark"
-        android:layout_toRightOf="@id/bell_start_label"
-        android:layout_toEndOf="@id/bell_start_label"
-        android:layout_below="@id/bell_start_label"
-        android:text="Demo" />
+	<TextView android:id="@+id/bell_end"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="@android:color/primary_text_dark"
+		android:layout_toRightOf="@id/bell_start_label"
+		android:layout_toEndOf="@id/bell_start_label"
+		android:layout_below="@id/bell_start_label"
+		android:text="Demo" />
 
 </RelativeLayout>

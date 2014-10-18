@@ -29,21 +29,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 
 public class FeedbackDialogFragment extends DialogFragment {
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final Context c = getActivity();
-        builder.setMessage(R.string.pls2feedback).setPositiveButton(R.string.no_show, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(TimetableActivity.PREF_DISABLE_DIALOG, true).apply();
-            }
-        })/*.setNegativeButton(R.string.yes_show, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });*/.setTitle(R.string.dialog_title);
-        return builder.create();
-    }
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		final Context c = getActivity();
+		builder.setMessage(R.string.pls2feedback).setPositiveButton(R.string.no_show, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i) {
+			PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(TimetableActivity.PREF_DISABLE_DIALOG, true).apply();
+			}
+		}).setTitle(R.string.dialog_title);
+		return builder.create();
+	}
 }

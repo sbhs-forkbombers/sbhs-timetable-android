@@ -84,10 +84,10 @@ public class NavigationDrawerFragment extends Fragment {
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
-    public TextView lastTimestamp;
+	public TextView lastTimestamp;
 
-    private final ArrayList<String> elements = new ArrayList<String>();
-    private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
+	private final ArrayList<String> elements = new ArrayList<String>();
+	private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
 
 	public NavigationDrawerFragment() {
 	}
@@ -118,60 +118,58 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
-        this.mDrawerListView = (ListView)l.findViewById(R.id.navdraw_listview);
+		this.mDrawerListView = (ListView)l.findViewById(R.id.navdraw_listview);
 		mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				selectItem(position);
+			selectItem(position);
 			}
 		});
-        this.elements.addAll(Arrays.asList(getString(R.string.title_countdown),
-                getString(R.string.title_timetable),
-                getString(R.string.title_notices),
-                getString(R.string.title_belltimes)
-        ));
+		this.elements.addAll(Arrays.asList(getString(R.string.title_countdown),
+			getString(R.string.title_timetable),
+			getString(R.string.title_notices),
+			getString(R.string.title_belltimes)
+		));
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                ((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                this.elements));
+			((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
+			android.R.layout.simple_list_item_activated_1,
+			this.elements));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
-        ListView smallView = (ListView)l.findViewById(R.id.navdraw_botlistview);
-        smallView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                selectItem(i+elements.size());
-            }
-        });
-        this.botElements.addAll(Arrays.asList(
-                new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), this.getActivity()),
-        new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
-        ));
-        smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                this.botElements
-        ));
-        this.lastTimestamp = (TextView)l.findViewById(R.id.navdraw_timestamp);
+		ListView smallView = (ListView)l.findViewById(R.id.navdraw_botlistview);
+		smallView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+			selectItem(i+elements.size());
+			}
+		});
+		this.botElements.addAll(Arrays.asList(
+			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), this.getActivity()),
+			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
+		));
+		smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
+			getActionBar().getThemedContext(),
+			android.R.layout.simple_list_item_activated_1,
+			this.botElements
+		));
+		this.lastTimestamp = (TextView)l.findViewById(R.id.navdraw_timestamp);
 		return l;
 	}
 
-    @SuppressWarnings("unchecked")
-    public void updateList() {
-        ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
-        if (ApiAccessor.isLoggedIn()) {
-            this.botElements.remove(1);
-            this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_logout), this.getActivity()));
-        }
-        else {
-            if (a.getCount() < 2) {
-                this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity()));
-            }
-        }
-    }
+	@SuppressWarnings("unchecked")
+	public void updateList() {
+		ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
+		if (ApiAccessor.isLoggedIn()) {
+			this.botElements.remove(1);
+			this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_logout), this.getActivity()));
+		} else {
+			if (a.getCount() < 2) {
+				this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity()));
+			}
+		}
+	}
 
 	public boolean isDrawerOpen() {
 		return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
@@ -198,7 +196,7 @@ public class NavigationDrawerFragment extends Fragment {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the navigation drawer and the action bar app icon.
 		mDrawerToggle = new ActionBarDrawerToggle(
-            (ActionBarActivity)getActivity(),                    /* host Activity */
+			(ActionBarActivity)getActivity(),                    /* host Activity */
 			mDrawerLayout,                    /* DrawerLayout object */
 			R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
 			R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
@@ -224,8 +222,7 @@ public class NavigationDrawerFragment extends Fragment {
 					// The user manually opened the drawer; store this flag to prevent auto-showing
 					// the navigation drawer automatically in the future.
 					mUserLearnedDrawer = true;
-					SharedPreferences sp = PreferenceManager
-												   .getDefaultSharedPreferences(getActivity());
+					SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
 					sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
 				}
 

@@ -21,34 +21,34 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".NavigationDrawerFragment"
-    android:background="@color/background">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".NavigationDrawerFragment"
+	android:background="@color/background">
 
-    <ListView android:id="@+id/navdraw_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp" />
+	<ListView android:id="@+id/navdraw_listview"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:choiceMode="singleChoice"
+		android:divider="@android:color/transparent"
+		android:dividerHeight="0dp" />
 
-    <ListView android:id="@+id/navdraw_botlistview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/navdraw_listview"
-        android:dividerHeight="1dp"
-        android:choiceMode="singleChoice" />
+	<ListView android:id="@+id/navdraw_botlistview"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_below="@id/navdraw_listview"
+		android:dividerHeight="1dp"
+		android:choiceMode="singleChoice" />
 
-    <TextView android:id="@+id/navdraw_timestamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_alignParentBottom="true" />
+	<TextView android:id="@+id/navdraw_timestamp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

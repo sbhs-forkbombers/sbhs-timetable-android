@@ -22,14 +22,14 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- A 'parent' preference, which enables/disables child preferences (below)
-         when checked/unchecked. -->
-    <PreferenceCategory
-        android:title="@string/pref_header_notifications" />
-    <CheckBoxPreference
-        android:key="notifications_enable"
-        android:title="@string/pref_title_allow_notifications"
-        android:summary="@string/pref_desc_allow_notifications"
-        android:defaultValue="true" />
+	<!-- A 'parent' preference, which enables/disables child preferences (below)
+		 when checked/unchecked. -->
+	<PreferenceCategory
+		android:title="@string/pref_header_notifications" />
+	<CheckBoxPreference
+		android:key="notifications_enable"
+		android:title="@string/pref_title_allow_notifications"
+		android:summary="@string/pref_desc_allow_notifications"
+		android:defaultValue="true" />
 
 </PreferenceScreen>

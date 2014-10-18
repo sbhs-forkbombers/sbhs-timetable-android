@@ -21,20 +21,20 @@
   -->
 
 <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.sbhstimetable.sbhs_timetable_android.BelltimesFragment">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context="com.sbhstimetable.sbhs_timetable_android.BelltimesFragment">
 
-    <FrameLayout android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp">
+	<FrameLayout android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:paddingLeft="16dp"
+		android:paddingRight="16dp">
 
-        <ListView android:id="@+id/belltimes_listview"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+		<ListView android:id="@+id/belltimes_listview"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"/>
 
-    </FrameLayout>
+	</FrameLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

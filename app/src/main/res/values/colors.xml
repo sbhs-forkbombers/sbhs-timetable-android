@@ -22,18 +22,18 @@
 
 <resources>
 
-    <color name="primary">#ff455ede</color> <!-- blue 700 -->
-    <color name="primary_dark">#ff3b50ce</color> <!-- blue 800 -->
-    <color name="accent">#ff00bfa5</color> <!-- teal A700 -->
-    <color name="accent_alt">#ff1de9b6</color> <!-- teal A400 -->
-    <color name="standout">#ffc107</color> <!-- amber 500 -->
-    <color name="background">#ff303030</color>
-    <color name="pressed">#1affffff</color>
-    <color name="focused">#77ffffff</color>
-    <color name="divider">#ff888888</color>
-    <color name="red">#e51c23</color> <!-- red 500 -->
-    <color name="green">#259b24</color> <!-- green 500 -->
-    <color name="blue">#5677fc</color> <!-- blue 500 -->
-    <color name="yellow">#ffc107</color> <!-- amber 500 -->
+	<color name="primary">#ff455ede</color> <!-- blue 700 -->
+	<color name="primary_dark">#ff3b50ce</color> <!-- blue 800 -->
+	<color name="accent">#ff00bfa5</color> <!-- teal A700 -->
+	<color name="accent_alt">#ff1de9b6</color> <!-- teal A400 -->
+	<color name="standout">#ffc107</color> <!-- amber 500 -->
+	<color name="background">#ff303030</color>
+	<color name="pressed">#1affffff</color>
+	<color name="focused">#77ffffff</color>
+	<color name="divider">#ff888888</color>
+	<color name="red">#e51c23</color> <!-- red 500 -->
+	<color name="green">#259b24</color> <!-- green 500 -->
+	<color name="blue">#5677fc</color> <!-- blue 500 -->
+	<color name="yellow">#ffc107</color> <!-- amber 500 -->
 
 </resources>

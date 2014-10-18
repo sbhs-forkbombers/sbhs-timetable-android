@@ -21,34 +21,34 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
 
-    <TextView android:id="@+id/notice_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_alignParentLeft="true"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+	<TextView android:id="@+id/notice_title"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_alignParentLeft="true"
+		android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
-    <TextView android:id="@+id/notice_body"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/notice_title"
-        android:layout_alignParentLeft="true" />
+	<TextView android:id="@+id/notice_body"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/notice_title"
+		android:layout_alignParentLeft="true" />
 
-    <TextView android:id="@+id/notice_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/notice_body"
-        android:textStyle="bold|italic" />
+	<TextView android:id="@+id/notice_author"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/notice_body"
+		android:textStyle="bold|italic" />
 
-    <TextView android:id="@+id/notice_target"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/notice_body"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@id/notice_author"
-        android:textStyle="bold" /><!-- TODO smallcaps -->
+	<TextView android:id="@+id/notice_target"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/notice_body"
+		android:layout_marginLeft="5dp"
+		android:layout_toRightOf="@id/notice_author"
+		android:textStyle="bold" /><!-- TODO smallcaps -->
 
 </RelativeLayout>

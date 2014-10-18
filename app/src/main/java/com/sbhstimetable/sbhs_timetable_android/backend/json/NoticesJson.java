@@ -39,174 +39,174 @@ import java.util.Locale;
 import java.util.Map;
 
 public class NoticesJson {
-    private static NoticesJson INSTANCE;
-    public static NoticesJson getInstance() {
-        return INSTANCE;
-    }
+	private static NoticesJson INSTANCE;
+	public static NoticesJson getInstance() {
+		return INSTANCE;
+	}
 
-    public static boolean isValid(JsonObject n) {
-        return n.has("notices");
-    }
+	public static boolean isValid(JsonObject n) {
+		return n.has("notices");
+	}
 
-    @SuppressWarnings("all")
-    private JsonObject notices;
-    private ArrayList<Notice> n = new ArrayList<Notice>();
-    public NoticesJson(JsonObject obj) {
-        this.notices = obj;
-        ArrayList<NoticeList> why = new ArrayList<NoticeList>();
-        for (Map.Entry<String, JsonElement> i : this.notices.get("notices").getAsJsonObject().entrySet()) {
-            NoticeList l = new NoticeList(i.getValue().getAsJsonArray(), Integer.valueOf(i.getKey()));
-            why.add(l);
-        }
-        for (int i = why.size()-1; i > -1; i--) {
-            n.addAll(why.get(i).getAllNotices());
-        }
-        INSTANCE = this;
-    }
+	@SuppressWarnings("all")
+	private JsonObject notices;
+	private ArrayList<Notice> n = new ArrayList<Notice>();
+	public NoticesJson(JsonObject obj) {
+		this.notices = obj;
+		ArrayList<NoticeList> why = new ArrayList<NoticeList>();
+		for (Map.Entry<String, JsonElement> i : this.notices.get("notices").getAsJsonObject().entrySet()) {
+			NoticeList l = new NoticeList(i.getValue().getAsJsonArray(), Integer.valueOf(i.getKey()));
+			why.add(l);
+		}
+		for (int i = why.size()-1; i > -1; i--) {
+			n.addAll(why.get(i).getAllNotices());
+		}
+		INSTANCE = this;
+	}
 
-    public ArrayList<Notice> getNotices() {
-        return this.n;
-    }
+	public ArrayList<Notice> getNotices() {
+		return this.n;
+	}
 
-    public static class NoticeList {
-        private JsonArray notices;
-        private int level;
-        private List<Notice> mine = new ArrayList<Notice>();
-        public NoticeList(JsonArray ary, int importance) {
-            this.notices = ary;
-            this.level = importance;
-            for (int i = 0; i < length(); i++) {
-                mine.add(new Notice(this.notices.get(i).getAsJsonObject(), this.level));
-            }
-        }
+	public static class NoticeList {
+		private JsonArray notices;
+		private int level;
+		private List<Notice> mine = new ArrayList<Notice>();
+		public NoticeList(JsonArray ary, int importance) {
+			this.notices = ary;
+			this.level = importance;
+			for (int i = 0; i < length(); i++) {
+				mine.add(new Notice(this.notices.get(i).getAsJsonObject(), this.level));
+			}
+		}
 
-        public int length() {
-            return notices.size();
-        }
-        @SuppressWarnings("unused")
-        public Notice get(int i) {
-            if (i < length()) {
-                return mine.get(i);
-            }
-            else {
-                throw new ArrayIndexOutOfBoundsException("Nope");
-            }
-        }
+		public int length() {
+			return notices.size();
+		}
+		@SuppressWarnings("unused")
+		public Notice get(int i) {
+			if (i < length()) {
+				return mine.get(i);
+			}
+			else {
+				throw new ArrayIndexOutOfBoundsException("Nope");
+			}
+		}
 
-        public List<Notice> getAllNotices() {
-            return mine;
-        }
-    }
+		public List<Notice> getAllNotices() {
+			return mine;
+		}
+	}
 
-    public static class Notice {
-        private JsonObject notice;
-        private List<Year> years;
-        private int weight;
-        public Notice(JsonObject obj, int weight) {
-            this.notice = obj;
-            JsonArray a = this.notice.get("years").getAsJsonArray();
-            years = new ArrayList<Year>(a.size());
-            for (int i = 0; i < a.size(); i++) {
-                years.add(i, Year.fromString(a.get(i).getAsString()));
-            }
-            this.weight = weight;
+	public static class Notice {
+		private JsonObject notice;
+		private List<Year> years;
+		private int weight;
+		public Notice(JsonObject obj, int weight) {
+			this.notice = obj;
+			JsonArray a = this.notice.get("years").getAsJsonArray();
+			years = new ArrayList<Year>(a.size());
+			for (int i = 0; i < a.size(); i++) {
+				years.add(i, Year.fromString(a.get(i).getAsString()));
+			}
+			this.weight = weight;
 
-        }
-        @SuppressWarnings("unused")
-        public int getWeight() {
-            return this.weight;
-        }
+		}
+		@SuppressWarnings("unused")
+		public int getWeight() {
+			return this.weight;
+		}
 
-        public boolean isForYear(Year y) {
-            return years.contains(y);
-        }
+		public boolean isForYear(Year y) {
+			return years.contains(y);
+		}
 
-        public Spanned getTextViewNoticeContents() {
-            return Html.fromHtml(this.notice.get("text").getAsString().replace("<p>", "").replace("</p>", "<br />"));
-        }
+		public Spanned getTextViewNoticeContents() {
+			return Html.fromHtml(this.notice.get("text").getAsString().replace("<p>", "").replace("</p>", "<br />"));
+		}
 
-        public String getNoticeTitle() {
-            return this.notice.get("title").getAsString();
-        }
+		public String getNoticeTitle() {
+			return this.notice.get("title").getAsString();
+		}
 
-        public String getNoticeAuthor() {
-            return this.notice.get("author").getAsString();
-        }
+		public String getNoticeAuthor() {
+			return this.notice.get("author").getAsString();
+		}
 
-        public String getNoticeTarget() {
-            return this.notice.get("dTarget").getAsString();
-        }
+		public String getNoticeTarget() {
+			return this.notice.get("dTarget").getAsString();
+		}
 
-        public boolean isMeeting() {
-            return this.notice.has("isMeeting") && this.notice.get("isMeeting").getAsBoolean();
-        }
+		public boolean isMeeting() {
+			return this.notice.has("isMeeting") && this.notice.get("isMeeting").getAsBoolean();
+		}
 
-        public String getMeetingDate() {
-            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
-            try {
-                Date d = fmt.parse(this.notice.get("meetingDate").getAsString());
-                Calendar c = Calendar.getInstance();
-                c.setTimeInMillis(d.getTime());
-                int DAY = Calendar.DAY_OF_YEAR;
-                Calendar now = Calendar.getInstance();
-                if (c.get(DAY) == now.get(DAY)) {
-                    return "Today";
-                }
-                else if (c.get(DAY) - 1 == now.get(DAY)) {
-                    return "Tomorrow";
-                }
-                else if (c.get(DAY) - 7 >= now.get(DAY)) { // within the next week
-                    return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
-                }
-                else {
-                    return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + " " + DateFormat.format("dd", d).toString() + " " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
-                }
-            } catch (ParseException e) {
-                Log.e("NoticesJson", "Failed to parse meeting date: " + this.notice.get("meetingDate").getAsString());
-                return this.notice.get("meetingDate").getAsString();
-            }
-        }
+		public String getMeetingDate() {
+			SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				Date d = fmt.parse(this.notice.get("meetingDate").getAsString());
+				Calendar c = Calendar.getInstance();
+				c.setTimeInMillis(d.getTime());
+				int DAY = Calendar.DAY_OF_YEAR;
+				Calendar now = Calendar.getInstance();
+				if (c.get(DAY) == now.get(DAY)) {
+					return "Today";
+				}
+				else if (c.get(DAY) - 1 == now.get(DAY)) {
+					return "Tomorrow";
+				}
+				else if (c.get(DAY) - 7 >= now.get(DAY)) { // within the next week
+					return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
+				}
+				else {
+					return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + " " + DateFormat.format("dd", d).toString() + " " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
+				}
+			} catch (ParseException e) {
+				Log.e("NoticesJson", "Failed to parse meeting date: " + this.notice.get("meetingDate").getAsString());
+				return this.notice.get("meetingDate").getAsString();
+			}
+		}
 
-        public String getMeetingTime() {
-            return this.notice.get("meetingTime").getAsString();
-        }
+		public String getMeetingTime() {
+			return this.notice.get("meetingTime").getAsString();
+		}
 
-        public String getMeetingPlace() {
-            return this.notice.get("meetingPlace").getAsString();
-        }
-    }
+		public String getMeetingPlace() {
+			return this.notice.get("meetingPlace").getAsString();
+		}
+	}
 
-    public enum Year {
-        SEVEN("7"), EIGHT("8"), NINE("9"), TEN("10"), ELEVEN("11"), TWELVE("12"), STAFF("Staff");
-        private String ident;
-        private Year(String s) {
-            this.ident = s;
-        }
-        public String toString() {
-            return this.ident;
-        }
+	public enum Year {
+		SEVEN("7"), EIGHT("8"), NINE("9"), TEN("10"), ELEVEN("11"), TWELVE("12"), STAFF("Staff");
+		private String ident;
+		private Year(String s) {
+			this.ident = s;
+		}
+		public String toString() {
+			return this.ident;
+		}
 
-        public static Year fromString(String s) {
-            if (!s.startsWith("Staff")) {
-                int i = Integer.valueOf(s);
-                switch (i) {
-                    case 7:
-                        return SEVEN;
-                    case 8:
-                        return EIGHT;
-                    case 9:
-                        return NINE;
-                    case 10:
-                        return TEN;
-                    case 11:
-                        return ELEVEN;
-                    case 12:
-                        return TWELVE;
-                    default:
-                        throw new IllegalArgumentException("Must be a number 7-12 or \"Staff\", not " + i);
-                }
-            }
-            return STAFF;
-        }
-    }
+		public static Year fromString(String s) {
+			if (!s.startsWith("Staff")) {
+				int i = Integer.valueOf(s);
+				switch (i) {
+					case 7:
+						return SEVEN;
+					case 8:
+						return EIGHT;
+					case 9:
+						return NINE;
+					case 10:
+						return TEN;
+					case 11:
+						return ELEVEN;
+					case 12:
+						return TWELVE;
+					default:
+						throw new IllegalArgumentException("Must be a number 7-12 or \"Staff\", not " + i);
+				}
+			}
+			return STAFF;
+		}
+	}
 }

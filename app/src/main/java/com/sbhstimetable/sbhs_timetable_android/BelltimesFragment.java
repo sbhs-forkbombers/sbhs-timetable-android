@@ -58,139 +58,133 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
  */
 public class BelltimesFragment extends Fragment {
 
-    private CommonFragmentInterface mListener;
-    private Runnable runnable;
-    private SwipeRefreshLayout layout;
-    private Handler h;
-    private BelltimesAdapter adapter;
-    private BroadcastListener listener;
-    //private Menu menu;
+	private CommonFragmentInterface mListener;
+	private Runnable runnable;
+	private SwipeRefreshLayout layout;
+	private Handler h;
+	private BelltimesAdapter adapter;
+	private BroadcastListener listener;
+	//private Menu menu;
 
-    public static BelltimesFragment newInstance() {
-        return new BelltimesFragment();
-    }
-    public BelltimesFragment() {
-        // Required empty public constructor
-    }
+	public static BelltimesFragment newInstance() {
+		return new BelltimesFragment();
+	}
+	public BelltimesFragment() {
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //this.menu = menu;
-        super.onCreateOptionsMenu(menu, inflater);
-        this.mListener.updateCachedStatus(menu);
-    }
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		//this.menu = menu;
+		super.onCreateOptionsMenu(menu, inflater);
+		this.mListener.updateCachedStatus(menu);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
-        this.layout = v;
-        final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
+		this.layout = v;
+		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
 
-        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
+		lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView absListView, int i) {
+			}
 
-            }
+			@Override
+			public void onScroll(AbsListView absListView, int i, int i2, int i3) {
+				int topRowVerticalPosition =
+					(lv == null || v.getChildCount() == 0) ?
+					0 : v.getChildAt(0).getTop();
+				v.setEnabled(topRowVerticalPosition >= 0);
+			}
+		});
+		final Context c = this.getActivity();
+		h = new Handler();
+		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+			if (!ApiAccessor.hasInternetConnection(c)) {
+				Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
+				v.setRefreshing(false);
+				return;
+			}
+			ApiAccessor.getBelltimes(c, false);
+			ApiAccessor.getNotices(c, false);
+			ApiAccessor.getToday(c, false);
+			h.removeCallbacks(runnable);
+			runnable = new CountdownFragment.StopSwiping(v);
+			h.postDelayed(runnable, 10000);
+			}
+		});
+		Resources r = this.getResources();
+		v.setColorSchemeColors(r.getColor(R.color.blue),
+			r.getColor(R.color.green),
+			r.getColor(R.color.yellow),
+			r.getColor(R.color.red));
+		this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
+		lv.setAdapter(this.adapter);
+		return v;
+	}
 
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i2, int i3) {
-                int topRowVerticalPosition =
-                        (lv == null || v.getChildCount() == 0) ?
-                                0 : v.getChildAt(0).getTop();
-                v.setEnabled(topRowVerticalPosition >= 0);
-            }
-        });
-        final Context c = this.getActivity();
-        h = new Handler();
-        v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (!ApiAccessor.hasInternetConnection(c)) {
-                    Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-                    v.setRefreshing(false);
-                    return;
-                }
-                ApiAccessor.getBelltimes(c, false);
-                ApiAccessor.getNotices(c, false);
-                ApiAccessor.getToday(c, false);
-                h.removeCallbacks(runnable);
-                runnable = new CountdownFragment.StopSwiping(v);
-                h.postDelayed(runnable, 10000);
-            }
-        });
-        Resources r = this.getResources();
-        v.setColorSchemeColors(r.getColor(R.color.blue),
-                r.getColor(R.color.green),
-                r.getColor(R.color.yellow),
-                r.getColor(R.color.red));
-        this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
-        lv.setAdapter(this.adapter);
-        return v;
-    }
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		IntentFilter i = new IntentFilter();
+		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
 
+		if (this.listener == null) {
+			this.listener = new BroadcastListener(this);
+		}
+		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
+		try {
+			mListener = (CommonFragmentInterface) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString() + " must implement CommonFragmentInterface");
+		}
+	}
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        IntentFilter i = new IntentFilter();
-        i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-        i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-        i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
+		mListener = null;
+	}
 
-        if (this.listener == null) {
-            this.listener = new BroadcastListener(this);
-        }
-        LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
-        try {
-            mListener = (CommonFragmentInterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement CommonFragmentInterface");
-        }
-    }
+	private class BroadcastListener extends BroadcastReceiver {
+		private SwipeRefreshLayout f;
+		private BelltimesFragment frag;
+		BroadcastListener(BelltimesFragment f) {
+			this.f = f.layout;
+			this.frag = f;
+		}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
-        mListener = null;
-    }
-
-
-    private class BroadcastListener extends BroadcastReceiver {
-        private SwipeRefreshLayout f;
-        private BelltimesFragment frag;
-        BroadcastListener(BelltimesFragment f) {
-            this.f = f.layout;
-            this.frag = f;
-        }
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String act = intent.getAction();
-            if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-                if (this.f == null) return;
-                this.f.setRefreshing(false);
-                this.frag.h.removeCallbacks(this.frag.runnable);
-                Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
-                if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-                    JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
-                    if (o.has("bells")) {
-                        BelltimesJson b = new BelltimesJson(o);
-                        this.frag.adapter.updateBelltimes(b);
-                        //this.frag.adapter.update(nj);
-                    }
-
-                }
-            }
-        }
-    }
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String act = intent.getAction();
+			if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+				if (this.f == null) return;
+				this.f.setRefreshing(false);
+				this.frag.h.removeCallbacks(this.frag.runnable);
+				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+				if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+					JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
+					if (o.has("bells")) {
+						BelltimesJson b = new BelltimesJson(o);
+						this.frag.adapter.updateBelltimes(b);
+						//this.frag.adapter.update(nj);
+					}
+				}
+			}
+		}
+	}
 }

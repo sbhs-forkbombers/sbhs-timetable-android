@@ -38,47 +38,46 @@ import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseU
 
 public class LoginActivity extends ActionBarActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        getWindow().requestFeature(Window.FEATURE_PROGRESS);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        WebView wv = (WebView) findViewById(R.id.loginview);
-        wv.setBackgroundColor(Color.parseColor("#000000"));
-        wv.getSettings().setSaveFormData(true);
-        final Activity me = this;
-        //wv.getSettings().setJavaScriptEnabled(true);
-        wv.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                me.setProgress(newProgress * 1000);
-            }
-        });
-        wv.setWebViewClient(new WebViewClient() {
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                if (url.startsWith(baseURL) && (url.endsWith("/") || url.contains("mobile_loading"))) {
-                    // this would be our website!
-                    String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
-                    for (String i : cookies) {
-                        if (i.contains("SESSID")) {
-                            String sessionID = i.split("=")[1];
-                            ApiAccessor.finishedLogin(me, sessionID);
-                            NavUtils.navigateUpFromSameTask(me);
-                            view.clearCache(true);
-                        }
-                    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		getWindow().requestFeature(Window.FEATURE_PROGRESS);
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_login);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		WebView wv = (WebView) findViewById(R.id.loginview);
+		wv.setBackgroundColor(Color.parseColor("#000000"));
+		wv.getSettings().setSaveFormData(true);
+		final Activity me = this;
+		//wv.getSettings().setJavaScriptEnabled(true);
+		wv.setWebChromeClient(new WebChromeClient() {
+			@Override
+			public void onProgressChanged(WebView view, int newProgress) {
+			super.onProgressChanged(view, newProgress);
+			me.setProgress(newProgress * 1000);
+			}
+		});
+		wv.setWebViewClient(new WebViewClient() {
+			public void onPageStarted(WebView view, String url, Bitmap favicon) {
+			if (url.startsWith(baseURL) && (url.endsWith("/") || url.contains("mobile_loading"))) {
+				// this would be our website!
+				String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
+				for (String i : cookies) {
+					if (i.contains("SESSID")) {
+						String sessionID = i.split("=")[1];
+						ApiAccessor.finishedLogin(me, sessionID);
+						NavUtils.navigateUpFromSameTask(me);
+						view.clearCache(true);
+					}
+				}
+			}
+			}
+		});
+		//setContentView(wv);
+		wv.loadUrl(baseURL + "/try_do_oauth?app=1");
+	}
 
-                }
-            }
-        });
-        //setContentView(wv);
-        wv.loadUrl(baseURL + "/try_do_oauth?app=1");
-    }
-
-    @Override
-    public void onBackPressed() {
-        NavUtils.navigateUpFromSameTask(this);
-    }
+	@Override
+	public void onBackPressed() {
+		NavUtils.navigateUpFromSameTask(this);
+	}
 }

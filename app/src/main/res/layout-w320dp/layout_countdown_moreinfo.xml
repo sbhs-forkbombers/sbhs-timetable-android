@@ -21,82 +21,82 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/countdown_extraData"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true">
+	android:id="@+id/countdown_extraData"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_alignParentBottom="true">
 
-    <RelativeLayout android:id="@+id/countdown_rl1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+	<RelativeLayout android:id="@+id/countdown_rl1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true">
 
-        <TextView android:id="@+id/countdown_extraData_teacherLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="Teacher: " />
+		<TextView android:id="@+id/countdown_extraData_teacherLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:text="Teacher: " />
 
-        <TextView android:id="@+id/countdown_extraData_teacher"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:layout_toRightOf="@id/countdown_extraData_teacherLabel"
-            android:layout_toEndOf="@id/countdown_extraData_teacherLabel"
-            android:text="Unknown" />
+		<TextView android:id="@+id/countdown_extraData_teacher"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+			android:layout_toRightOf="@id/countdown_extraData_teacherLabel"
+			android:layout_toEndOf="@id/countdown_extraData_teacherLabel"
+			android:text="Unknown" />
 
-    </RelativeLayout>
+	</RelativeLayout>
 
-    <RelativeLayout android:id="@+id/countdown_rl2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/countdown_rl1"
-        android:layout_toEndOf="@id/countdown_rl1"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp">
+	<RelativeLayout android:id="@+id/countdown_rl2"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/countdown_rl1"
+		android:layout_toEndOf="@id/countdown_rl1"
+		android:layout_marginLeft="4dp"
+		android:layout_marginRight="4dp">
 
-        <TextView android:id="@+id/countdown_extraData_roomLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="Room: " />
+		<TextView android:id="@+id/countdown_extraData_roomLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:text="Room: " />
 
-        <TextView android:id="@+id/countdown_extraData_room"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:layout_toRightOf="@id/countdown_extraData_roomLabel"
-            android:layout_toEndOf="@id/countdown_extraData_roomLabel"
-            android:text="Unknown"/>
+		<TextView android:id="@+id/countdown_extraData_room"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+			android:layout_toRightOf="@id/countdown_extraData_roomLabel"
+			android:layout_toEndOf="@id/countdown_extraData_roomLabel"
+			android:text="Unknown"/>
 
-    </RelativeLayout>
+	</RelativeLayout>
 
-    <RelativeLayout android:id="@+id/countdown_rl3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/countdown_rl2"
-        android:layout_toEndOf="@id/countdown_rl2"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+	<RelativeLayout android:id="@+id/countdown_rl3"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/countdown_rl2"
+		android:layout_toEndOf="@id/countdown_rl2"
+		android:layout_alignParentRight="true"
+		android:layout_alignParentEnd="true">
 
-        <TextView android:id="@+id/countdown_extraData_subjectLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:text="Subject: " />
+		<TextView android:id="@+id/countdown_extraData_subjectLabel"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true"
+			android:text="Subject: " />
 
-        <TextView android:id="@+id/countdown_extraData_subject"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/countdown_extraData_subjectLabel"
-            android:layout_toEndOf="@id/countdown_extraData_subjectLabel"
-            android:textStyle="bold"
-            android:text="Unknown" />
+		<TextView android:id="@+id/countdown_extraData_subject"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/countdown_extraData_subjectLabel"
+			android:layout_toEndOf="@id/countdown_extraData_subjectLabel"
+			android:textStyle="bold"
+			android:text="Unknown" />
 
-    </RelativeLayout>
+	</RelativeLayout>
 
 </RelativeLayout>

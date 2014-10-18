@@ -21,12 +21,13 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-	  xmlns:tools="http://schemas.android.com/tools"
-	  tools:context=".TimetableActivity" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context=".TimetableActivity" >
 
     <item android:id="@+id/action_cache_status"
-        android:icon="@android:drawable/ic_dialog_alert"
         android:title="@string/title_cache_status"
-        android:showAsAction="always" />
+        android:icon="@android:drawable/ic_dialog_alert"
+        app:showAsAction="always" />
 
 </menu>

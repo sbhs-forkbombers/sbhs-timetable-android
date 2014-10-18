@@ -219,10 +219,6 @@ public class TimetableActivity extends ActionBarActivity
                 ApiAccessor.getNotices(this);
                 ApiAccessor.getToday(this);
             }
-            else {
-                Intent i = new Intent(this, LoginActivity.class);
-                this.startActivity(i);
-            }
             return true;
         } else {
             return super.onOptionsItemSelected(item);

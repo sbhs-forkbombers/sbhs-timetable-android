@@ -27,7 +27,7 @@
     <color name="accent">#ff00bfa5</color>
     <color name="accent_alt">#ff1de9b6</color>
     <color name="standout">#ffc107</color>
-    <color name="background">#ff212121</color>
+    <color name="background">#ff303030</color>
     <color name="pressed">#1affffff</color>
     <color name="focused">#77ffffff</color>
     <color name="divider">#ff888888</color>

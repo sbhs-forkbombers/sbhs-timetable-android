@@ -27,6 +27,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -224,7 +225,6 @@ public class ApiAccessor {
                 JsonObject o = new JsonParser().parse(result).getAsJsonObject();
                 if (o.has("status") && o.get("status").getAsString().equals("401")) {
                     // need to log in
-                    ApiAccessor.login(c);
                 }
             }
             catch (Exception e) {

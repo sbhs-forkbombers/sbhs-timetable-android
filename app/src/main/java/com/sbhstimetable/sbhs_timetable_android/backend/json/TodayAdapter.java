@@ -24,6 +24,7 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
@@ -84,16 +85,16 @@ public class TodayAdapter implements ListAdapter{
 
 	@Override
 	public View getView(int i, View oldView, ViewGroup viewGroup) {
-		final RelativeLayout view;
+		final FrameLayout view;
 		final TextView header;
 		final TextView roomText;
 		final TextView teacherText;
 		final ImageView changed;
-		if (oldView instanceof RelativeLayout) {
-			view = (RelativeLayout)oldView;
+		if (oldView instanceof FrameLayout) {
+			view = (FrameLayout)oldView;
 		}
 		else {
-			view = (RelativeLayout)LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
+			view = (FrameLayout)LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
 		}
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
 		roomText = (TextView)view.findViewById(R.id.timetable_class_room);

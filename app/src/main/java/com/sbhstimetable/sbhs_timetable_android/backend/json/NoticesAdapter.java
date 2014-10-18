@@ -29,6 +29,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -117,7 +118,7 @@ public class NoticesAdapter implements ListAdapter {
         }
         NoticesJson.Notice n = this.notices.get(i);
         View res;
-        if (view instanceof RelativeLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
+        if (view instanceof FrameLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
             res = view;
         }
         else {

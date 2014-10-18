@@ -21,18 +21,18 @@
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingLeft="8dp"
-	android:paddingRight="8dp">
+	android:layout_height="match_parent">
 
 	<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
 		android:layout_height="match_parent"
 		android:layout_width="match_parent"
-		card_view:cardBackgroundColor="@color/cardview_dark_background"
-		card_view:contentPadding="8dp">
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"
+		card_view:cardUseCompatPadding="true"
+		card_view:contentPadding="8dp"
+		card_view:cardBackgroundColor="@color/cardview_dark_background">
 
-		<RelativeLayout
-			android:layout_width="match_parent"
+		<RelativeLayout android:layout_width="match_parent"
 			android:layout_height="match_parent">
 
 			<TextView android:id="@+id/timetable_class_header"
@@ -93,5 +93,7 @@
 				android:src="@drawable/ic_cached" />
 
 		</RelativeLayout>
+
 	</android.support.v7.widget.CardView>
+
 </FrameLayout>

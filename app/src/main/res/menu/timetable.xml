@@ -27,7 +27,7 @@
 
     <item android:id="@+id/action_cache_status"
         android:title="@string/title_cache_status"
-        android:icon="@android:drawable/ic_dialog_alert"
+        android:icon="@drawable/ic_warning_white_48dp"
         app:showAsAction="always" />
 
 </menu>

@@ -147,8 +147,8 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
         this.botElements.addAll(Arrays.asList(
-                new NavBarFancyAdapter.DrawerEntry(android.R.drawable.ic_menu_preferences, getString(R.string.action_settings), this.getActivity()),
-        new NavBarFancyAdapter.DrawerEntry(android.R.drawable.ic_menu_edit, getString(R.string.action_login), this.getActivity())
+                new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), this.getActivity()),
+        new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
         ));
         smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
                 getActionBar().getThemedContext(),
@@ -164,11 +164,11 @@ public class NavigationDrawerFragment extends Fragment {
         ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
         if (ApiAccessor.isLoggedIn()) {
             this.botElements.remove(1);
-            this.botElements.add(new NavBarFancyAdapter.DrawerEntry(android.R.drawable.ic_menu_edit, getString(R.string.action_logout), this.getActivity()));
+            this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_logout), this.getActivity()));
         }
         else {
             if (a.getCount() < 2) {
-                this.botElements.add(new NavBarFancyAdapter.DrawerEntry(android.R.drawable.ic_menu_edit, getString(R.string.action_login), this.getActivity()));
+                this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity()));
             }
         }
     }

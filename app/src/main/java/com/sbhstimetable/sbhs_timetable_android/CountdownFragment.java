@@ -90,10 +90,10 @@ public class CountdownFragment extends Fragment {
         final CountdownFragment me = this;
         final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
         Resources r = this.getResources();
-        f.setColorSchemeColors(r.getColor(R.color.green),
-                r.getColor(R.color.red),
-                r.getColor(R.color.blue),
-                r.getColor(R.color.yellow));
+        f.setColorSchemeColors(r.getColor(R.color.blue),
+                r.getColor(R.color.green),
+                r.getColor(R.color.yellow),
+                r.getColor(R.color.red));
         f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

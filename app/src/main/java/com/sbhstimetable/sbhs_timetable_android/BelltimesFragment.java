@@ -127,10 +127,10 @@ public class BelltimesFragment extends Fragment {
             }
         });
         Resources r = this.getResources();
-        v.setColorSchemeColors(r.getColor(R.color.green),
-                r.getColor(R.color.red),
-                r.getColor(R.color.blue),
-                r.getColor(R.color.yellow));
+        v.setColorSchemeColors(r.getColor(R.color.blue),
+                r.getColor(R.color.green),
+                r.getColor(R.color.yellow),
+                r.getColor(R.color.red));
         this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
         lv.setAdapter(this.adapter);
         return v;

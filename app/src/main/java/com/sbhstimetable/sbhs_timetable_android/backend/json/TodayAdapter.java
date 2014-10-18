@@ -111,8 +111,8 @@ public class TodayAdapter implements ListAdapter{
         });*/
         String room = b.room();
         String teacher = b.fullTeacher();
-        roomText.setTextColor(viewGroup.getResources().getColor(android.R.color.primary_text_dark));
-        teacherText.setTextColor(viewGroup.getResources().getColor(android.R.color.primary_text_dark));
+        roomText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
+        teacherText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
         if (b.changed()) {
             // variations!
             changed.setVisibility(View.VISIBLE);

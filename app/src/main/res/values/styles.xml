@@ -33,11 +33,11 @@
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
-    <style name="Subtitle" parent="Theme.AppCompat">
+    <style name="Subtitle" parent="AppTheme">
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
     </style>
 
-    <style name="Header" parent="Theme.AppCompat">
+    <style name="Header" parent="AppTheme">
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Large</item>
     </style>
 

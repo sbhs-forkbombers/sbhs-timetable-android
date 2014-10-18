@@ -86,7 +86,6 @@ public class TimetableFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         this.h = new Handler();
-        //Toast.makeText(getActivity(), "Timetable! Indoor Walking Route in -10 minutes!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -120,10 +119,10 @@ public class TimetableFragment extends Fragment {
             }
         });
         Resources r = this.getResources();
-        v.setColorSchemeColors(r.getColor(R.color.green),
-                r.getColor(R.color.red),
-                r.getColor(R.color.blue),
-                r.getColor(R.color.yellow));
+        v.setColorSchemeColors(r.getColor(R.color.blue),
+                r.getColor(R.color.green),
+                r.getColor(R.color.yellow),
+                r.getColor(R.color.red));
         ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
         if (z != null) {
             ApiAccessor.getToday(this.getActivity());

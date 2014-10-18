@@ -35,7 +35,9 @@
 		<ListView android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/notices_listview"
-			android:layout_gravity="start|top" />
+			android:layout_gravity="start|top"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10.0dp"/>
 
 	</FrameLayout>
 

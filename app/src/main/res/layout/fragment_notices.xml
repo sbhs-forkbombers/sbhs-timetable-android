@@ -28,16 +28,14 @@
 
 	<FrameLayout android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp"
 		tools:context="com.sbhstimetable.sbhs_timetable_android.NoticesFragment">
 
 		<ListView android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/notices_listview"
 			android:layout_gravity="start|top"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="10.0dp"/>
+            android:divider="@color/background"
+            android:dividerHeight="20.0dp"/>
 
 	</FrameLayout>
 

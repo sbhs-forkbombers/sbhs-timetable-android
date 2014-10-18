@@ -117,7 +117,6 @@ public class NoticesFragment extends Fragment {
 		final SwipeRefreshLayout res = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_notices, container, false);
 		this.layout = res;
 		final ListView v = (ListView)res.findViewById(R.id.notices_listview);
-
 		v.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView absListView, int i) {

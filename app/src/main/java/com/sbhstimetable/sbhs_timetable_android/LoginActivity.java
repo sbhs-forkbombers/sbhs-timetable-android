@@ -32,7 +32,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
@@ -43,9 +42,6 @@ public class LoginActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         getWindow().requestFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setTintColor(Color.parseColor("#455ede"));
-        tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_login);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         WebView wv = (WebView) findViewById(R.id.loginview);

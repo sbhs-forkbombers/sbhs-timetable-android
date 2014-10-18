@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.google.gson.JsonParser;
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -37,9 +36,6 @@ public class ClassInfoActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
-        tintManager.setTintColor(Color.parseColor("#455ede"));
-        tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_class_info);
         Intent i = this.getIntent();
         if (!i.hasExtra("json")) {

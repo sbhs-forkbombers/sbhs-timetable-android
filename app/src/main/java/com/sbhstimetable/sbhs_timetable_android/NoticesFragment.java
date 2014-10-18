@@ -20,7 +20,6 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -32,6 +31,8 @@ import android.app.Fragment;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -88,7 +89,7 @@ public class NoticesFragment extends Fragment {
         this.mListener.updateCachedStatus(this.menu);
         this.mListener.setNavigationStyle(ActionBar.NAVIGATION_MODE_LIST);
         this.spinnerAdapter = new NoticesDropDownAdapter();
-        getActivity().getActionBar().setListNavigationCallbacks(spinnerAdapter, new ActionBar.OnNavigationListener() {
+        ((ActionBarActivity)getActivity()).getSupportActionBar().setListNavigationCallbacks(spinnerAdapter, new ActionBar.OnNavigationListener() {
             @Override
             public boolean onNavigationItemSelected(int i, long l) {
                 if (adapter == null) {

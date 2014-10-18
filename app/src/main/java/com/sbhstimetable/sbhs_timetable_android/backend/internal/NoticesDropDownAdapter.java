@@ -48,6 +48,7 @@ public class NoticesDropDownAdapter implements SpinnerAdapter {
         }
         res.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
         res.setPadding(5, 5, 5, 5);
+        // FIXME: NPE when spinner is activated.
         res.setText(this.getItem(i));
         return res;
     }

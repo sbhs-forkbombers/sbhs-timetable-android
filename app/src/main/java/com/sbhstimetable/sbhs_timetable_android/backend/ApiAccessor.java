@@ -44,7 +44,7 @@ import java.util.Date;
  * Access remote API calls and stuff
  */
 public class ApiAccessor {
-    public static final String baseURL = "http://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
+    public static final String baseURL = "http://seemslegit.sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
     public static final String PREFS_NAME = "timetablePrefs";
     public static final String ACTION_TODAY_JSON = "todayData";
     public static final String ACTION_BELLTIMES_JSON = "belltimesData";

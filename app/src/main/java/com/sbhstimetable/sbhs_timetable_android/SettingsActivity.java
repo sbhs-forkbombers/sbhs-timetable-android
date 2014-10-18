@@ -20,9 +20,9 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 
@@ -37,7 +37,7 @@ import android.support.v4.app.NavUtils;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

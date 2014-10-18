@@ -23,13 +23,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <item name="android:actionBarStyle">@style/AppActionBar</item>
         <item name="android:windowBackground">@drawable/bg</item>
         <item name="android:fitsSystemWindows">false</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
     </style>
 
-    <style name="AppActionBar" parent="android:Widget.Holo.ActionBar.Solid">
+    <style name="AppActionBar" parent="Widget.AppCompat.ActionBar.Solid">
         <item name="android:background">@color/primary</item>
     </style>
 
@@ -37,11 +40,11 @@
         <item name="android:windowBackground">@android:color/black</item>
     </style>
 
-    <style name="Subtitle" parent="android:Theme.Holo">
+    <style name="Subtitle" parent="Theme.AppCompat">
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
     </style>
 
-    <style name="Header" parent="android:Theme.Holo">
+    <style name="Header" parent="Theme.AppCompat">
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Large</item>
     </style>
 

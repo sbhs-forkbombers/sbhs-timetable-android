@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -36,16 +37,17 @@ import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_PROGRESS);
+        super.onCreate(savedInstanceState);
         SystemBarTintManager tintManager = new SystemBarTintManager(this);
         tintManager.setTintColor(Color.parseColor("#455ede"));
         tintManager.setStatusBarTintEnabled(true);
         setContentView(R.layout.activity_login);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         WebView wv = (WebView) findViewById(R.id.loginview);
         wv.setBackgroundColor(Color.parseColor("#000000"));
         wv.getSettings().setSaveFormData(true);

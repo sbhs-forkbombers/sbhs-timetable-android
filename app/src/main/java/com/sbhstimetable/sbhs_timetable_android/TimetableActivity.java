@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,7 +55,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 
 
-public class TimetableActivity extends Activity
+public class TimetableActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, CommonFragmentInterface {
     private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
     public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
@@ -75,8 +76,8 @@ public class TimetableActivity extends Activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timetable);
         ApiAccessor.load(this);
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -178,8 +179,8 @@ public class TimetableActivity extends Activity
 
     @Override
     public void setNavigationStyle(int s) {
-        if (getActionBar() != null)
-            getActionBar().setNavigationMode(s);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setNavigationMode(s);
         this.navStyle = s;
     }
 

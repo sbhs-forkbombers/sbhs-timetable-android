@@ -91,7 +91,8 @@ public class CountdownFragment extends Fragment {
 		f.setColorSchemeColors(r.getColor(R.color.blue),
 			r.getColor(R.color.green),
 			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
+			r.getColor(R.color.red)
+		);
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -197,7 +198,6 @@ public class CountdownFragment extends Fragment {
 						label = DateTimeHelper.bells.getIndex(now.getIndex() + 1).getLabel();
 						extraData.setVisibility(View.VISIBLE);
 					}
-
 				} else { // There's consecutive non-periods - i.e lunch 1 -> lunch 2
 					label = now.getLabel();
 					connector = "starts in";

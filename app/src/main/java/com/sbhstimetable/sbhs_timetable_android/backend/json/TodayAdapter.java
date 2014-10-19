@@ -92,8 +92,7 @@ public class TodayAdapter implements ListAdapter{
 		final ImageView changed;
 		if (oldView instanceof FrameLayout) {
 			view = (FrameLayout)oldView;
-		}
-		else {
+		} else {
 			view = (FrameLayout)LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
 		}
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
@@ -124,7 +123,6 @@ public class TodayAdapter implements ListAdapter{
 			if (b.teacherChanged()) {
 				teacherText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
 			}
-
 		}
 		else {
 			changed.setVisibility(View.INVISIBLE);

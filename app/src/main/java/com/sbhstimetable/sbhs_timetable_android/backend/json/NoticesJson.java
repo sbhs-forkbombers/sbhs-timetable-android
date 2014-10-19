@@ -87,8 +87,7 @@ public class NoticesJson {
 		public Notice get(int i) {
 			if (i < length()) {
 				return mine.get(i);
-			}
-			else {
+			} else {
 				throw new ArrayIndexOutOfBoundsException("Nope");
 			}
 		}
@@ -151,14 +150,11 @@ public class NoticesJson {
 				Calendar now = Calendar.getInstance();
 				if (c.get(DAY) == now.get(DAY)) {
 					return "Today";
-				}
-				else if (c.get(DAY) - 1 == now.get(DAY)) {
+				} else if (c.get(DAY) - 1 == now.get(DAY)) {
 					return "Tomorrow";
-				}
-				else if (c.get(DAY) - 7 >= now.get(DAY)) { // within the next week
+				} else if (c.get(DAY) - 7 >= now.get(DAY)) { // within the next week
 					return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault());
-				}
-				else {
+				} else {
 					return c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()) + " " + DateFormat.format("dd", d).toString() + " " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault());
 				}
 			} catch (ParseException e) {

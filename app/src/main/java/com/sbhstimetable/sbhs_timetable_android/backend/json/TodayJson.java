@@ -55,8 +55,7 @@ public class TodayJson {
 					 b.addProperty("title", "");
 					 periods[i] = new Period(b, false);
 				 }
-			 }
-			 catch (NullPointerException e) {
+			 } catch (NullPointerException e) {
 				JsonObject b = new JsonObject();
 				 b.addProperty("fullName", "…");
 				 b.addProperty("room", "…");

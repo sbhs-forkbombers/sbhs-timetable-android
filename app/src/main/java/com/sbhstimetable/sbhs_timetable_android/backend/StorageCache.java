@@ -58,8 +58,7 @@ public class StorageCache {
 			w.write(json);
 			w.close();
 			return true;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			Log.e("storageCache", "unable to cache json for " + date + "!", e);
 		}
 		return false;
@@ -71,14 +70,11 @@ public class StorageCache {
 		if (data.exists() && data.canRead()) {
 			try {
 				return new JsonParser().parse(new FileReader(data)).getAsJsonObject();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				Log.v("storageCache","couldn't read cache (which supposedly exists and is cached!)",e);
-			}
-			catch (IllegalStateException e) {
+			} catch (IllegalStateException e) {
 				Log.v("storageCache", "wow wek json", e);
-			}
-			catch (JsonSyntaxException e) {
+			} catch (JsonSyntaxException e) {
 				Log.v("storageCache", "wow wek json", e);
 			}
 		}
@@ -148,8 +144,7 @@ public class StorageCache {
 			String date = String.valueOf(Arrays.copyOfRange(s, 0, max));
 			r.close();
 			return date;
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			//meh
 		}
 		return DateTimeHelper.getGuessedDateString();
@@ -161,8 +156,7 @@ public class StorageCache {
 			FileWriter w = new FileWriter(f);
 			w.write(s);
 			w.close();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			Log.e("StorageCache", "failed to write cached date", e);
 		}
 	}

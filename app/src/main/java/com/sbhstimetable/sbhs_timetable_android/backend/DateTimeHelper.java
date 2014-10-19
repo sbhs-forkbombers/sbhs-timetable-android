@@ -43,8 +43,7 @@ public class DateTimeHelper {
 		if (day == Calendar.SATURDAY) {
 			// push to sunday afternoon.
 			offset++;
-		}
-		else if (day == Calendar.FRIDAY && (hour > 15 || hour == 15 && minute >= 15)) {
+		} else if (day == Calendar.FRIDAY && (hour > 15 || hour == 15 && minute >= 15)) {
 			offset += 2;
 		}
 		return offset;
@@ -69,8 +68,7 @@ public class DateTimeHelper {
 			String s = getGuessedDateString();
 			Log.i(TAG, "got date - " + s);
 			return s;
-		}
-		else {
+		} else {
 			String s = TodayJson.getInstance().getDate();
 			Log.i(TAG, "got date - " + s);
 			return s;
@@ -89,12 +87,10 @@ public class DateTimeHelper {
 			d.set(Calendar.HOUR_OF_DAY, 9);
 			if (d.get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY) {
 				d.set(Calendar.MINUTE, 30);
-			}
-			else {
+			} else {
 				d.set(Calendar.MINUTE, 5);
 			}
-		}
-		else {
+		} else {
 			BelltimesJson.Bell b = bells.getNextBell();
 			Integer[] els = b.getBell();
 			d.set(Calendar.HOUR_OF_DAY, els[0]);
@@ -141,8 +137,7 @@ public class DateTimeHelper {
 		}
 		if (hrs != 0) {
 			return hrs + "h " + mins + "m " + sec + "s";
-		}
-		else {
+		} else {
 			return mins + "m " + sec + "s";
 		}
 	}

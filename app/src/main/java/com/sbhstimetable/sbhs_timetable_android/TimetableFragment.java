@@ -220,7 +220,9 @@ public class TimetableFragment extends Fragment {
 				if (this.f == null) {
 					this.f = this.frag.layout;
 				}
-				if (this.f == null) return;
+				if (this.f == null) {
+					return;
+				}
 				this.f.setRefreshing(false);
 				this.frag.h.removeCallbacks(this.frag.runnable);
 				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();

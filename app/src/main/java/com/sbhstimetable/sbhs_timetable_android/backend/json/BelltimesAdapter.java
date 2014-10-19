@@ -103,8 +103,7 @@ public class BelltimesAdapter implements ListAdapter {
 		}
 		if (view instanceof RelativeLayout) {
 			r = (RelativeLayout)view;
-		}
-		else {
+		} else {
 			r = (RelativeLayout) LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_belltimes_entry, null);
 		}
 		Integer[] a = b.getIndex(i+1).getBell();

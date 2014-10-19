@@ -120,8 +120,7 @@ public class NoticesAdapter implements ListAdapter {
         View res;
         if (view instanceof FrameLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
             res = view;
-        }
-        else {
+        } else {
             res = ((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
         }
         TextView v = (TextView)res.findViewById(R.id.notice_body);

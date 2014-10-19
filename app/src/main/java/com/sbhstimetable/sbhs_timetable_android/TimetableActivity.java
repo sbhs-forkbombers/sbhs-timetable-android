@@ -93,7 +93,6 @@ public class TimetableActivity extends ActionBarActivity
 		});
 		t.start();
 		setProgressBarIndeterminateVisibility(true);
-
 	}
 
 	@Override
@@ -204,19 +203,21 @@ public class TimetableActivity extends ActionBarActivity
 	}
 
 	public void updateCachedStatus(Menu m) {
-		if (this.menu == null) return;
+		if (this.menu == null) {
+			return;
+		}
 		MenuItem i = this.menu.findItem(R.id.action_cache_status);
-		if (i == null) return;
+		if (i == null) {
+			return;
+		}
 		if (ApiAccessor.noticesLoaded && ApiAccessor.todayLoaded && ApiAccessor.bellsLoaded) {
 			setProgressBarIndeterminateVisibility(false);
-		}
-		else {
+		} else {
 			setProgressBarIndeterminateVisibility(true);
 		}
 		if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
 			i.setVisible(true);
-		}
-		else {
+		} else {
 			i.setVisible(false);
 		}
 	}
@@ -239,8 +240,7 @@ public class TimetableActivity extends ActionBarActivity
 					if (frag != null) {
 						frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 					}
-				}
-				else {
+				} else {
 					JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 					if (o.has("error")) {
 						// reject it silently/
@@ -252,21 +252,20 @@ public class TimetableActivity extends ActionBarActivity
 					StorageCache.writeCachedDate(context, j.getDate());
 				}
 				LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+			} else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
 				//activity.setProgressBarIndeterminateVisibility(false);
 				ApiAccessor.bellsLoaded = true;
 				StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				DateTimeHelper.bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
 				LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+			} else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
 				//activity.setProgressBarIndeterminateVisibility(false);
 				ApiAccessor.noticesLoaded = true;
 				StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				JsonObject nj = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				if (nj != null && NoticesJson.isValid(nj))
+				if (nj != null && NoticesJson.isValid(nj)) {
 					new NoticesJson(nj);
+				}
 			}
 			this.activity.updateCachedStatus(this.activity.menu);
 		}

@@ -22,15 +22,18 @@ package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 
 
 /**
@@ -44,19 +47,56 @@ public class TodayAppWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
+        int home[] = new int[appWidgetIds.length];
+        int lock[] = new int[appWidgetIds.length];
+        int lockIdx = 0;
+        int homeIdx = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) { // no lockscreen widgets < 4.2, so don't check.
+            for (int i : appWidgetIds) {
+                if (appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
+                    lock[lockIdx++] = i;
+                } else {
+                    home[homeIdx++] = i;
+                }
+            }
+        }
+        else {
+            home = appWidgetIds;
+            homeIdx = appWidgetIds.length;
+        }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        String c = "#";
-        String trans = p.getString("widget_transparency", "32");
-        c += "00".substring(trans.length()) + trans;
-        c += "000000"; // WHY JAVA
-        Log.i("todaywidget", "bg color: " + c);
-        views.setInt(R.id.widget_today_root, "setBackgroundColor", Color.parseColor(c));
-        Intent i = new Intent(context, TodayWidgetService.class);
-        views.setRemoteAdapter(R.id.widget_today_listview, i);
-        Log.i("todaywidget", "updating!");
-        // Instruct the widget manager to update the widget
-        appWidgetManager.updateAppWidget(appWidgetIds, views);
+        if (homeIdx > 0) {
+            RemoteViews homeScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
+
+            String c = "#";
+            String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
+            c += "00".substring(trans.length()) + trans;
+            c += "000000"; // WHY JAVA
+            Log.i("todaywidget", "bg color (hs): " + c);
+            homeScreenWidg.setInt(R.id.widget_today_root, "setBackgroundColor", Color.parseColor(c));
+            Intent i = new Intent(context, TodayWidgetService.class);
+            homeScreenWidg.setRemoteAdapter(R.id.widget_today_listview, i);
+            Log.i("todaywidget", "updating hs!");
+            // Instruct the widget manager to update the widget
+            appWidgetManager.updateAppWidget(home, homeScreenWidg);
+        }
+
+        if (lockIdx > 0 ) {
+            RemoteViews lockScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
+
+            String c = "#";
+            String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_LS, "00");
+            c += "00".substring(trans.length()) + trans;
+            c += "000000"; // WHY JAVA
+            Log.i("todaywidget", "bg color (ls): " + c);
+            lockScreenWidg.setInt(R.id.widget_today_root, "setBackgroundColor", Color.parseColor(c));
+            Intent i = new Intent(context, TodayWidgetService.class);
+            lockScreenWidg.setRemoteAdapter(R.id.widget_today_listview, i);
+            Log.i("todaywidget", "updating ls!");
+            // Instruct the widget manager to update the widget
+            appWidgetManager.updateAppWidget(lock, lockScreenWidg);
+
+        }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 

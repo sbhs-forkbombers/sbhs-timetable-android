@@ -30,6 +30,7 @@ import android.preference.PreferenceFragment;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -39,10 +40,17 @@ public class SettingsFragment extends PreferenceFragment {
 
 		addPreferencesFromResource(R.xml.pref_notification);
         addPreferencesFromResource(R.xml.pref_widget);
-        Preference widget_transparency = this.findPreference("widget_transparency");
-        widget_transparency.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-        SharedPreferences p = widget_transparency.getSharedPreferences();
-        widget_transparency.getOnPreferenceChangeListener().onPreferenceChange(widget_transparency, p.getString("widget_transparency", "32"));
+        String[] prefs = new String[] {
+                PrefUtil.WIDGET_TRANSPARENCY_HS,
+                PrefUtil.WIDGET_TRANSPARENCY_LS
+        }; // settings to attach listeners to
+        for (String pref : prefs) {
+            Preference thePref = this.findPreference(pref);
+            thePref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+            SharedPreferences p = thePref.getSharedPreferences();
+            String defaultVal = ((ListPreference) thePref).getValue();
+            thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
+        }
 	}
 
 	/**

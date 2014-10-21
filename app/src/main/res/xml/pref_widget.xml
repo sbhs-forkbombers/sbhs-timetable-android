@@ -27,10 +27,17 @@
 	<PreferenceCategory
 		android:title="@string/pref_header_widget" />
 	<ListPreference
-		android:key="widget_transparency"
-		android:title="@string/pref_title_widget_transparency"
+		android:key="widget_transparency_homescreen"
+		android:title="@string/pref_title_widget_transparency_hs"
         android:entries="@array/widget_transparency_display"
         android:entryValues="@array/widget_transparency_val"
         android:defaultValue="32"/> <!-- 50% transparent by default -->
+
+    <ListPreference
+        android:key="widget_transparency_lockscreen"
+        android:title="@string/pref_title_widget_transparency_ls"
+        android:entries="@array/widget_transparency_display"
+        android:entryValues="@array/widget_transparency_val"
+        android:defaultValue="00"/> <!-- 0% transparent by default -->
 
 </PreferenceScreen>

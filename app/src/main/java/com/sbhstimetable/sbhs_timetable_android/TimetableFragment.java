@@ -225,8 +225,8 @@ public class TimetableFragment extends Fragment {
 				}
 				this.f.setRefreshing(false);
 				this.frag.h.removeCallbacks(this.frag.runnable);
-				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				if (act.equals(ApiAccessor.ACTION_TODAY_JSON)) {
+                    Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 					this.frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				}
 			}

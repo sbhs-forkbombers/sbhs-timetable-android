@@ -107,7 +107,6 @@ public class CountdownFragment extends Fragment {
 			stopSwipeToRefresh = new Handler();
 			runnable = new StopSwiping(f);
 			stopSwipeToRefresh.postDelayed(runnable, 10000);
-			Log.i("countdownFragment","Swipe2refresh!");
 			}
 		});
 		this.mainView = f;

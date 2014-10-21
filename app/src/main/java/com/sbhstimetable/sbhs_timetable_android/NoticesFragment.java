@@ -214,7 +214,8 @@ public class NoticesFragment extends Fragment {
 				if (this.f == null) return;
 				this.f.setRefreshing(false);
 				this.frag.h.removeCallbacks(this.frag.runnable);
-				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+                if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) // show once per refresh cycle
+				    Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
 					JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 					if (o.has("notices")) {

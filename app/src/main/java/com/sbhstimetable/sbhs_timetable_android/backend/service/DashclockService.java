@@ -32,6 +32,7 @@ import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -46,13 +47,16 @@ public class DashclockService extends DashClockExtension {
         mine = TodayJson.getInstance();
         bells = BelltimesJson.getInstance();
         if (mine == null) {
+            Log.i("dashclock", "today");
             ApiAccessor.getToday(this);
         }
         if (bells == null) {
+            Log.i("dashclock", "bells");
             ApiAccessor.getBelltimes(this);
         }
         IntentFilter wanted = new IntentFilter();
         wanted.addAction(ApiAccessor.ACTION_TODAY_JSON);
+        final DashclockService that = this;
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -61,6 +65,8 @@ public class DashclockService extends DashClockExtension {
                 } else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                     bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                 }
+                that.onUpdateData(DashClockExtension.UPDATE_REASON_MANUAL);
+
             }
         }, wanted);
     }
@@ -68,6 +74,8 @@ public class DashclockService extends DashClockExtension {
     @Override
     protected void onUpdateData(int reason) {
         int num;
+        Log.i("dashclock", "Dashclock update. date offset " + DateTimeHelper.getDateOffset());
+        boolean summary = false;
         if (bells != null && bells.valid()) {
             BelltimesJson.Bell b = bells.getNextPeriod();
             if (b == null) {
@@ -77,18 +85,53 @@ public class DashclockService extends DashClockExtension {
             else {
                 num = b.getPeriodNumber();
             }
+
+            if (DateTimeHelper.getDateOffset() > 0 || DateTimeHelper.getHour() < 9 || DateTimeHelper.needsMidnightCountdown()) {
+                summary = true;
+            }
         }
         else {
+            Log.i("dashclock", "no data for dashclock :(");
             publishUpdate(new ExtensionData().visible(false));
             return;
         }
-        if (mine != null) {
+        if (mine != null && !summary) {
             publishUpdate(new ExtensionData()
                             .icon(R.drawable.ic_launcher)
                             .status(mine.getPeriod(num).getShortName() + " - " + mine.getPeriod(num).room())
                             .expandedTitle(mine.getPeriod(num).name())
                             .expandedBody("in " + mine.getPeriod(num).room() + " with " + mine.getPeriod(num).fullTeacher())
                             .visible(true)
+            );
+        }
+        else if (summary && mine != null) {
+            String subjects = "";
+            for (int i : new int[] { 1, 2, 3, 4, 5}) {
+                TodayJson.Period p = mine.getPeriod(i);
+                if (i == 5) {
+                    if (p != null) {
+                        subjects += "and " + p.name().replace(" Period", "");
+                    }
+                    else {
+                        subjects += "and free!";
+                    }
+                    continue;
+                }
+                if (p != null) {
+                    subjects += p.name().replace(" Period", "") + ", ";
+                }
+                else {
+                    subjects += "Free, ";
+                }
+            }
+            String shortTitle = mine.getDayName().substring(0, 3);
+            shortTitle += " " + mine.getDayName().split(" ")[1];
+            publishUpdate(new ExtensionData()
+                .icon(R.drawable.ic_launcher)
+                .status(shortTitle)
+                .expandedTitle(mine.getDayName())
+                .expandedBody(subjects)
+                .visible(true)
             );
         }
     }

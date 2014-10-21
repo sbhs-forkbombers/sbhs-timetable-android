@@ -24,6 +24,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
@@ -36,12 +37,14 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 // TODO should use AlarmManager.
 public class TodayAppWidget extends AppWidgetProvider {
 
+    
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
         Intent i = new Intent(context, TodayWidgetService.class);
         views.setRemoteAdapter(R.id.widget_today_listview, i);
-
+        Log.i("todaywidget", "updating!");
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetIds, views);
         super.onUpdate(context, appWidgetManager, appWidgetIds);

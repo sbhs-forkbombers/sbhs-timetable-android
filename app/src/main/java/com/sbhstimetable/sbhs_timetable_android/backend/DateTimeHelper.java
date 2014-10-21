@@ -61,16 +61,13 @@ public class DateTimeHelper {
 		if (!ApiAccessor.todayLoaded || TodayJson.getInstance() == null) {
 			if (optionalCon != null) {
 				String s = StorageCache.getCachedDate(optionalCon);
-				Log.i(TAG, "got date - " + s);
 				if (!s.equals("1970-01-01"))
 					return s;
 			}
 			String s = getGuessedDateString();
-			Log.i(TAG, "got date - " + s);
 			return s;
 		} else {
 			String s = TodayJson.getInstance().getDate();
-			Log.i(TAG, "got date - " + s);
 			return s;
 		}
 	}

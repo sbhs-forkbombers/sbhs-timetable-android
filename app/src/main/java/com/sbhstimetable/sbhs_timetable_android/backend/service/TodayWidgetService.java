@@ -21,7 +21,9 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -54,22 +56,28 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            if (today == null) {
-                ApiAccessor.load(con);
-                ApiAccessor.getToday(con);
+            if (today == null || !today.valid()) {
+                Log.i("TodayWidgetService", "today is invalid");
                 LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
                     @Override
                     public void onReceive(Context context, Intent intent) {
                         today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                        LocalBroadcastManager.getInstance(con).unregisterReceiver(this);
+                        Intent i = new Intent();
+                        Log.i("todayWidgetService", "stuff happening");
+                        int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), TodayAppWidget.class));
+                        i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                        i.setClass(con, TodayAppWidget.class);
+                        i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                        sendBroadcast(i);
                     }
                 }, new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
+                ApiAccessor.load(con);
+                ApiAccessor.getToday(con);
             }
         }
 
         @Override
         public void onDataSetChanged() {
-
         }
 
         @Override
@@ -79,11 +87,12 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return this.today != null && this.today.valid() ? 6 : 1;
+            return this.today != null && this.today.valid() ? 5 : 1;
         }
 
         @Override
         public RemoteViews getViewAt(int i) {
+            Log.i("todayWidgetService", "getViewAt " + i + ". today ok == " + (this.today != null && this.today.valid()));
             if (this.today == null || !this.today.valid()) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
                 r.setTextViewText(R.id.label, "You need to log in");
@@ -100,10 +109,21 @@ public class TodayWidgetService extends RemoteViewsService {
                 return r;
             }
             TodayJson.Period p = this.today.getPeriod(i+1);
-            RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_timetable_classinfo);
+            RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_timetable_classinfo_widget);
             r.setTextViewText(R.id.timetable_class_header, p.name());
             r.setTextViewText(R.id.timetable_class_room, p.room());
+            int standout = getResources().getColor(R.color.standout);
+            if (p.roomChanged()) {
+                r.setTextColor(R.id.timetable_class_room, standout);
+            }
             r.setTextViewText(R.id.timetable_class_teacher, p.fullTeacher());
+            if (p.teacherChanged()) {
+                r.setTextColor(R.id.timetable_class_teacher, standout);
+            }
+
+            if (!p.changed() || !today.finalised()) {
+                r.setImageViewBitmap(R.id.timetable_class_changed, null);
+            }
             return r;
         }
 
@@ -126,7 +146,7 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public boolean hasStableIds() {
-            return true;
+            return false;
         }
     }
 }

@@ -44,7 +44,7 @@ import java.util.Date;
  * Access remote API calls and stuff
  */
 public class ApiAccessor {
-	public static final String baseURL = "https://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
+	public static final String baseURL = "http://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
 	public static final String PREFS_NAME = "timetablePrefs";
 	public static final String ACTION_TODAY_JSON = "todayData";
 	public static final String ACTION_BELLTIMES_JSON = "belltimesData";
@@ -63,6 +63,7 @@ public class ApiAccessor {
 
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here
+        Log.i("ApiAccessor", "loading...");
 		SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
 		sessionID = s.getString("sessionID", null);
 	}
@@ -104,6 +105,7 @@ public class ApiAccessor {
 	public static void getToday(Context c, boolean tryCache) {
 		JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
 		if (obj != null && tryCache) {
+            todayLoaded = true;
 			todayCached = true;
 			Intent i = new Intent(ACTION_TODAY_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());

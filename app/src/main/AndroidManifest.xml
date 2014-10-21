@@ -135,6 +135,7 @@
 
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.sbhstimetable.action.TODAY_UPDATE" />
 			</intent-filter>
 
 			<meta-data

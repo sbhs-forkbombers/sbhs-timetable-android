@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="widget_transparency_display">
+        <item>Fully transparent</item>
+        <item>75% transparent</item>
+        <item>50% transparent</item>
+        <item>25% transparent</item>
+        <item>Opaque</item>
+    </string-array>
+
+    <string-array name="widget_transparency_val"> <!-- 100, 75, 50, 25, 0 in hex because rgba -->
+        <item>00</item>
+        <item>19</item>
+        <item>32</item>
+        <item>4B</item>
+        <item>ff</item>
+    </string-array>
+
+</resources>

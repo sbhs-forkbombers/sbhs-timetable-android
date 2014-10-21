@@ -21,8 +21,13 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.os.Build;
 import android.view.View;
+
+import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,4 +60,8 @@ public class Compat {
 			return View.generateViewId();
 		}
 	}
+
+    public static int[] getWidgetIds(Context c, Class<?> clazz) {
+        return AppWidgetManager.getInstance(c).getAppWidgetIds(new ComponentName(c, clazz));
+    }
 }

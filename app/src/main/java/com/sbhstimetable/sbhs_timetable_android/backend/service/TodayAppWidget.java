@@ -24,6 +24,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -37,11 +40,18 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 // TODO should use AlarmManager.
 public class TodayAppWidget extends AppWidgetProvider {
 
-    
+
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        String c = "#";
+        String trans = p.getString("widget_transparency", "32");
+        c += "00".substring(trans.length()) + trans;
+        c += "000000"; // WHY JAVA
+        Log.i("todaywidget", "bg color: " + c);
+        views.setInt(R.id.widget_today_root, "setBackgroundColor", Color.parseColor(c));
         Intent i = new Intent(context, TodayWidgetService.class);
         views.setRemoteAdapter(R.id.widget_today_listview, i);
         Log.i("todaywidget", "updating!");

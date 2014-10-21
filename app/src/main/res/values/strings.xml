@@ -49,5 +49,7 @@
 	<string name="no_show">OK</string>
 	<string name="yes_show">Show this again!</string>
 	<string name="dialog_title">Please report crashes!</string>
+    <string name="pref_header_widget">Widgets</string>
+    <string name="pref_title_widget_transparency">Widget background transparency</string>
 
 </resources>

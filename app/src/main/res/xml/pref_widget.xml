@@ -20,14 +20,17 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<!-- These settings headers are only used on tablets. -->
-	<header
-		android:fragment="com.sbhstimetable.sbhs_timetable_android.SettingsActivity"
-		android:title="@string/pref_header_notifications" />
+	<!-- A 'parent' preference, which enables/disables child preferences (below)
+		 when checked/unchecked. -->
+	<PreferenceCategory
+		android:title="@string/pref_header_widget" />
+	<ListPreference
+		android:key="widget_transparency"
+		android:title="@string/pref_title_widget_transparency"
+        android:entries="@array/widget_transparency_display"
+        android:entryValues="@array/widget_transparency_val"
+        android:defaultValue="32"/> <!-- 50% transparent by default -->
 
-    <header android:fragment="com.sbhstimetable.sbhs_timetable_android.SettingsFragment"
-        android:title="@string/pref_header_widget" />
-
-</preference-headers>
+</PreferenceScreen>

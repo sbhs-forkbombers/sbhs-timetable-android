@@ -78,6 +78,8 @@ public class TodayJson {
 		return valid() ? this.today.get("date").getAsString() : "";
 	}
 
+    public String getDayName() { return this.today.get("today").getAsString(); }
+
 	public Period getPeriod(int num) {
 		return periods[num-1];
 	}

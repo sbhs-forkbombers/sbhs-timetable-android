@@ -27,10 +27,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+import android.widget.TextView;
 
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
@@ -87,7 +91,7 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return this.today != null && this.today.valid() ? 5 : 1;
+            return this.today != null && this.today.valid() ? 6 : 1;
         }
 
         @Override
@@ -101,14 +105,14 @@ public class TodayWidgetService extends RemoteViewsService {
                 r.setOnClickPendingIntent(R.id.label, PendingIntent.getActivity(this.con, 0, t, 0));
                 return r;
             }
-            if (i == 5) {
+            if (i == 0) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
-                String res = today.finalised() ? "This info is final" : "This info may change";
+                String res = today.getDayName();
                 r.setTextViewText(R.id.label, res);
-                r.setTextColor(R.id.label, getResources().getColor(R.color.standout));
+                //r.setInt(R.id.label, "setGravity", Gravity.LEFT);
                 return r;
             }
-            TodayJson.Period p = this.today.getPeriod(i+1);
+            TodayJson.Period p = this.today.getPeriod(i);
             RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_timetable_classinfo_widget);
             r.setTextViewText(R.id.timetable_class_header, p.name());
             r.setTextViewText(R.id.timetable_class_room, p.room());

@@ -40,11 +40,19 @@ import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 
 public class TodayWidgetService extends RemoteViewsService {
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new TodayRemoteViewsFactory(this, TodayJson.getInstance());
@@ -60,24 +68,35 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            if (today == null || !today.valid()) {
-                Log.i("TodayWidgetService", "today is invalid");
-                LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                        Intent i = new Intent();
-                        Log.i("todayWidgetService", "stuff happening");
-                        int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), TodayAppWidget.class));
-                        i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                        i.setClass(con, TodayAppWidget.class);
-                        i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-                        sendBroadcast(i);
-                    }
-                }, new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
-                ApiAccessor.load(con);
-                ApiAccessor.getToday(con);
-            }
+            Log.i("TodayWidgetService", "today is invalid");
+            LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
+                    Intent i = new Intent();
+                    Log.i("todayWidgetService", "stuff happening");
+                    int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), TodayAppWidget.class));
+                    i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                    i.setClass(con, TodayAppWidget.class);
+                    i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                    sendBroadcast(i);
+                }
+            }, new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
+            ApiAccessor.load(con);
+            ApiAccessor.getToday(con);
+            ScheduledExecutorService ses = new ScheduledThreadPoolExecutor(1);
+            Calendar c = new GregorianCalendar();
+            c.set(Calendar.HOUR_OF_DAY, 15);
+            c.set(Calendar.MINUTE, 16);
+            long wait = c.getTimeInMillis() - DateTimeHelper.getTimeMillis();
+            if (wait < 0) return; // bail out.
+            ses.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    ApiAccessor.getToday(con);
+                    ApiAccessor.getBelltimes(con); // update all the things yea
+                }
+            }, wait, TimeUnit.MILLISECONDS);
         }
 
         @Override

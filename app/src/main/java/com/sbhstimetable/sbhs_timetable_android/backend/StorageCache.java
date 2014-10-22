@@ -100,6 +100,10 @@ public class StorageCache {
 		}
 	}
 
+    public static JsonObject getTodayJson(Context context) {
+        return getTodayJson(context, DateTimeHelper.getDateString(context));
+    }
+
 	public static JsonObject getTodayJson(Context context, String date) {
 		JsonObject res = readCacheFile(context, date, "today");
 		return res != null && TodayJson.isValid(res) ? res : null;
@@ -113,6 +117,10 @@ public class StorageCache {
 		writeCacheFile(context, date, "belltimes", json);
 	}
 
+    public static JsonObject getBelltimes(Context c) {
+        return getBelltimes(c, DateTimeHelper.getDateString(c));
+    }
+
 	public static JsonObject getBelltimes(Context c, String date) {
 		JsonObject res = readCacheFile(c, date, "belltimes");
 		return res != null && BelltimesJson.isValid(res) ? res : null;
@@ -121,6 +129,10 @@ public class StorageCache {
 	public static void cacheNotices(Context c, String date, String json) {
 		writeCacheFile(c, date, "notices", json);
 	}
+
+    public static JsonObject getNotices(Context c) {
+        return getNotices(c, DateTimeHelper.getDateString(c));
+    }
 
 	public static JsonObject getNotices(Context c, String date) {
 		JsonObject res = readCacheFile(c, date, "notices");

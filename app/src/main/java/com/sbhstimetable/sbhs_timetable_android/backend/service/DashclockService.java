@@ -29,10 +29,12 @@ import android.util.Log;
 
 import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -48,10 +50,18 @@ public class DashclockService extends DashClockExtension {
         bells = BelltimesJson.getInstance();
         if (mine == null) {
             Log.i("dashclock", "today");
+            JsonObject temp = StorageCache.getTodayJson(this);
+            if (temp != null) {
+                mine = new TodayJson(temp);
+            }
             ApiAccessor.getToday(this);
         }
         if (bells == null) {
             Log.i("dashclock", "bells");
+            JsonObject temp = StorageCache.getBelltimes(this);
+            if (temp != null) {
+                bells = new BelltimesJson(temp);
+            }
             ApiAccessor.getBelltimes(this);
         }
         IntentFilter wanted = new IntentFilter();

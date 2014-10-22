@@ -52,6 +52,7 @@ public class NotificationService extends IntentService {
     private static final String EXTRA_SESSID = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM1";
     private static final String EXTRA_SHOULD_DO_ALL = "com.sbhstimetable.sbhs_timetable_android.backend.service.extra.PARAM2";
 
+
     public static final int NOTIFICATION_NEXT = 1;
 
     /**
@@ -143,16 +144,27 @@ public class NotificationService extends IntentService {
         }
         builder.setContentTitle(title);
         builder.setContentText(subText);
+        if (DateTimeHelper.milliSecondsUntilNextEvent() < 0) {
+            Log.e("notificationService", "an event in the past? bailing out...");
+            return;
+        }
+        Log.i("notificationService", "updating. time until next event: " + DateTimeHelper.formatToCountdown(DateTimeHelper.milliSecondsUntilNextEvent()));
 
 
         ScheduledExecutorService ses = new ScheduledThreadPoolExecutor(1);
         m.notify(NOTIFICATION_NEXT, builder.build());
-        final Context con = this;
-        ses.schedule(new Runnable() {
-            @Override
-            public void run() {
-                NotificationService.startUpdatingNotification(con);
-            }
-        }, DateTimeHelper.milliSecondsUntilNextEvent(), TimeUnit.MILLISECONDS);
+        ses.schedule(new NotificationRunner(this), DateTimeHelper.milliSecondsUntilNextEvent(), TimeUnit.MILLISECONDS);
+    }
+
+    private class NotificationRunner implements Runnable {
+        private Context context;
+        public NotificationRunner(Context c) {
+            this.context = c;
+        }
+
+        @Override
+        public void run() {
+            NotificationService.startUpdatingNotification(context);
+        }
     }
 }

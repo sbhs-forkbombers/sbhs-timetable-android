@@ -95,6 +95,8 @@ public class NavigationDrawerFragment extends Fragment {
     private TextView noticesStatus;
     private TextView bellsStatus;
 
+	private CacheStatusUpdater csu;
+
 
 	private final ArrayList<String> elements = new ArrayList<String>();
 	private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
@@ -115,11 +117,6 @@ public class NavigationDrawerFragment extends Fragment {
 			mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 			mFromSavedInstanceState = true;
 		}
-		IntentFilter i = new IntentFilter();
-		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new CacheStatusUpdater(this), i);
 		// Select either the default item (0) or the last selected item.
 		selectItem(mCurrentSelectedPosition);
 	}
@@ -280,6 +277,12 @@ public class NavigationDrawerFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		this.csu = new CacheStatusUpdater(this);
+		IntentFilter i = new IntentFilter();
+		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(csu, i);
 		try {
 			mCallbacks = (NavigationDrawerCallbacks) activity;
 		} catch (ClassCastException e) {
@@ -289,8 +292,10 @@ public class NavigationDrawerFragment extends Fragment {
 
 	@Override
 	public void onDetach() {
+		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(this.csu);
 		super.onDetach();
 		mCallbacks = null;
+
 	}
 
 	@Override

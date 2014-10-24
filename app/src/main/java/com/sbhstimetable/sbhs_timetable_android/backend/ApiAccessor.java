@@ -60,9 +60,9 @@ public class ApiAccessor {
 	private static String sessionID = null;
 
 
-    public static int noticesStatus = R.string.desc_failed;
-    public static int bellsStatus = R.string.desc_failed;
-    public static int todayStatus = R.string.desc_failed;
+	public static int noticesStatus = R.string.desc_failed;
+	public static int bellsStatus = R.string.desc_failed;
+	public static int todayStatus = R.string.desc_failed;
 
 	public static boolean todayCached = true;
 	public static boolean bellsCached = true;
@@ -74,7 +74,7 @@ public class ApiAccessor {
 
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here
-        Log.i("ApiAccessor", "loading...");
+		Log.i("ApiAccessor", "loading...");
 		SharedPreferences s = c.getSharedPreferences(PREFS_NAME, 0);
 		sessionID = s.getString("sessionID", null);
 	}
@@ -117,9 +117,9 @@ public class ApiAccessor {
 		String ds = DateTimeHelper.getDateString(c);
 		JsonObject obj = StorageCache.getTodayJson(c, ds);
 		if (obj != null && tryCache) {
-            todayLoaded = true;
+			todayLoaded = true;
 			todayCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_TODAY, c));
-            todayStatus = todayCached ? R.string.desc_cached : R.string.desc_current;
+			todayStatus = todayCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_TODAY_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, todayCached);
@@ -148,7 +148,7 @@ public class ApiAccessor {
 		if (obj != null && tryCache) {
 			bellsCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_BELLTIMES, c));
 			bellsLoaded = true;
-            bellsStatus = bellsCached ? R.string.desc_cached : R.string.desc_current;
+			bellsStatus = bellsCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_BELLTIMES_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, bellsCached);
@@ -175,8 +175,8 @@ public class ApiAccessor {
 		JsonObject obj = StorageCache.getNotices(c, ds);
 		if (obj != null && tryCache) {
 			noticesCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_NOTICES, c));
-            noticesLoaded = true;
-            noticesStatus = noticesCached ? R.string.desc_cached : R.string.desc_current;
+			noticesLoaded = true;
+			noticesStatus = noticesCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_NOTICES_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, noticesCached);
@@ -231,27 +231,27 @@ public class ApiAccessor {
 				Log.e("downloadfiletask", "failed to download a result for " + this.intentType);
 				return;
 			}
-            try {
-                JsonObject o = new JsonParser().parse(result).getAsJsonObject();
-                if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
-                    Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
-                }
-            }
-            catch (Exception e) {
-                Log.e("downloadfiletask", "received invalid json");
-            }
+			try {
+				JsonObject o = new JsonParser().parse(result).getAsJsonObject();
+				if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
+					Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
+				}
+			}
+			catch (Exception e) {
+				Log.e("downloadfiletask", "received invalid json");
+			}
 			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
 			SharedPreferences.Editor ed = p.edit();
 			if (intentType.equals(ACTION_BELLTIMES_JSON)) {
-                bellsStatus = R.string.desc_current;
+				bellsStatus = R.string.desc_current;
 				bellsCached = false;
 				ed.putLong(PREF_BELLTIMES_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			} else if (intentType.equals(ACTION_NOTICES_JSON)) {
-                noticesStatus = R.string.desc_current;
+				noticesStatus = R.string.desc_current;
 				noticesCached = false;
 				ed.putLong(PREF_NOTICES_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			} else if (intentType.equals(ACTION_TODAY_JSON)) {
-                todayStatus = R.string.desc_current;
+				todayStatus = R.string.desc_current;
 				todayCached = false;
 				ed.putLong(PREF_TODAY_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			}

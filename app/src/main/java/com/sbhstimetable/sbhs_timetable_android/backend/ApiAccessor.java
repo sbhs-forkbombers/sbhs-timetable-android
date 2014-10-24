@@ -31,6 +31,7 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 
 import java.io.BufferedReader;
@@ -50,8 +51,14 @@ public class ApiAccessor {
 	public static final String ACTION_BELLTIMES_JSON = "belltimesData";
 	public static final String ACTION_NOTICES_JSON = "noticesData";
 	public static final String EXTRA_JSON_DATA = "jsonString";
+	public static final String EXTRA_CACHED = "isCached";
 	public static final String GLOBAL_ACTION_TODAY_JSON = "com.sbhstimetable.sbhs_timetable_android."+ACTION_TODAY_JSON;
 	private static String sessionID = null;
+
+
+    public static int noticesStatus = R.string.desc_failed;
+    public static int bellsStatus = R.string.desc_failed;
+    public static int todayStatus = R.string.desc_failed;
 
 	public static boolean todayCached = true;
 	public static boolean bellsCached = true;
@@ -103,13 +110,17 @@ public class ApiAccessor {
 	}
 
 	public static void getToday(Context c, boolean tryCache) {
-		JsonObject obj = StorageCache.getTodayJson(c, DateTimeHelper.getDateString(c));
+		String ds = DateTimeHelper.getDateString(c);
+		JsonObject obj = StorageCache.getTodayJson(c, ds);
 		if (obj != null && tryCache) {
             todayLoaded = true;
-			todayCached = true;
+			todayCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_TODAY, c));
+            todayStatus = todayCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_TODAY_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
+			i.putExtra(EXTRA_CACHED, todayCached);
 			LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
+			if (todayCached) return; // no point wasting data!
 		}
 		if (!isLoggedIn() || !hasInternetConnection(c)) {
 			todayLoaded  = true;
@@ -128,13 +139,17 @@ public class ApiAccessor {
 	}
 
 	public static void getBelltimes(Context c, boolean tryCache) {
-		JsonObject obj = StorageCache.getBelltimes(c, DateTimeHelper.getDateString(c));
+		String ds = DateTimeHelper.getDateString(c);
+		JsonObject obj = StorageCache.getBelltimes(c, ds);
 		if (obj != null && tryCache) {
-			bellsCached = true;
+			bellsCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_BELLTIMES, c));
 			bellsLoaded = true;
+            bellsStatus = bellsCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_BELLTIMES_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
-			c.sendBroadcast(i);
+			i.putExtra(EXTRA_CACHED, bellsCached);
+			LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+			if (bellsCached) return; // no point wasting data!
 		}
 		if (!hasInternetConnection(c)) {
 			bellsLoaded = true;
@@ -152,12 +167,17 @@ public class ApiAccessor {
 	}
 
 	public static void getNotices(Context c, boolean tryCache) {
-		JsonObject obj = StorageCache.getNotices(c, DateTimeHelper.getDateString(c));
+		String ds = DateTimeHelper.getDateString(c);
+		JsonObject obj = StorageCache.getNotices(c, ds);
 		if (obj != null && tryCache) {
-			noticesCached = true;
+			noticesCached = StorageCache.isStale(StorageCache.getFile(ds, StorageCache.TYPE_NOTICES, c));
+            noticesLoaded = true;
+            noticesStatus = noticesCached ? R.string.desc_cached : R.string.desc_current;
 			Intent i = new Intent(ACTION_NOTICES_JSON);
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
+			i.putExtra(EXTRA_CACHED, noticesCached);
 			LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+			if (noticesCached) return; // no point wasting data!
 		}
 		if (!isLoggedIn() || !hasInternetConnection(c)) {
 			noticesLoaded = true;
@@ -207,12 +227,23 @@ public class ApiAccessor {
 				Log.e("downloadfiletask", "failed to download a result for " + this.intentType);
 				return;
 			}
-
+            try {
+                JsonObject o = new JsonParser().parse(result).getAsJsonObject();
+                if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
+                    Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
+                }
+            }
+            catch (Exception e) {
+                Log.e("downloadfiletask", "received invalid json");
+            }
 			if (intentType.equals(ACTION_BELLTIMES_JSON)) {
+                bellsStatus = R.string.desc_current;
 				bellsCached = false;
 			} else if (intentType.equals(ACTION_NOTICES_JSON)) {
+                noticesStatus = R.string.desc_current;
 				noticesCached = false;
 			} else if (intentType.equals(ACTION_TODAY_JSON)) {
+                todayStatus = R.string.desc_current;
 				todayCached = false;
 			}
 
@@ -229,9 +260,9 @@ public class ApiAccessor {
 			}
 			if (this.c instanceof TimetableActivity) {
 				TimetableActivity a = (TimetableActivity)c;
-				a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));
+				//a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));
 			}
-
+			i.putExtra(EXTRA_CACHED, false);
 
 			if (intentType.equals(GLOBAL_ACTION_TODAY_JSON)) {
 				this.c.sendBroadcast(i);

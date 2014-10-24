@@ -84,7 +84,6 @@ public class DashclockService extends DashClockExtension {
     @Override
     protected void onUpdateData(int reason) {
         int num;
-        Log.i("dashclock", "Dashclock update. date offset " + DateTimeHelper.getDateOffset());
         boolean summary = false;
         if (bells != null && bells.valid()) {
             BelltimesJson.Bell b = bells.getNextPeriod();
@@ -101,7 +100,6 @@ public class DashclockService extends DashClockExtension {
             }
         }
         else {
-            Log.i("dashclock", "no data for dashclock :(");
             publishUpdate(new ExtensionData().visible(false));
             return;
         }
@@ -134,8 +132,18 @@ public class DashclockService extends DashClockExtension {
                     subjects += "Free, ";
                 }
             }
-            String shortTitle = mine.getDayName().substring(0, 3);
-            shortTitle += " " + mine.getDayName().split(" ")[1];
+            if (!mine.valid()) {
+                subjects = "I need to reload!";
+                ApiAccessor.getToday(this);
+            }
+            String shortTitle;
+            if (mine.getDayName().length() > 3) {
+                shortTitle = mine.getDayName().substring(0, 3);
+                shortTitle += " " + mine.getDayName().split(" ")[1];
+            }
+            else {
+                shortTitle = "TMR";
+            }
             publishUpdate(new ExtensionData()
                 .icon(R.drawable.ic_launcher)
                 .status(shortTitle)

@@ -57,6 +57,8 @@ public class CountdownFragment extends Fragment {
 	private Handler stopSwipeToRefresh;
 	private StopSwiping runnable;
 	private BroadcastListener listener;
+    private int lastBells;
+    private int lastToday;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -184,6 +186,7 @@ public class CountdownFragment extends Fragment {
 				} else if (now.isPeriod() && now.getPeriodNumber() == 5) { // last period
 					connector = "in";
 					label = "School ends";
+                    extraData.setVisibility(View.INVISIBLE);
 				} else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) { // in a break followed by a period - Lunch 2, Recess, Transition.
 					connector = "starts in";
 					if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
@@ -251,7 +254,6 @@ public class CountdownFragment extends Fragment {
 						ApiAccessor.getToday(frag.getActivity());
 						ApiAccessor.getBelltimes(frag.getActivity());
 					}
-					Log.i("countdownFragment", "creating new timer");
 					final Handler h = new Handler();
 					h.postDelayed(new Runnable() {
 						@Override

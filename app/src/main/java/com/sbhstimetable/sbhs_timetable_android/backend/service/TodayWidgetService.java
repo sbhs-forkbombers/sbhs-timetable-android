@@ -68,13 +68,11 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            Log.i("TodayWidgetService", "today is invalid");
             LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
                     today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                     Intent i = new Intent();
-                    Log.i("todayWidgetService", "stuff happening");
                     int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), TodayAppWidget.class));
                     i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
                     i.setClass(con, TodayAppWidget.class);
@@ -90,6 +88,7 @@ public class TodayWidgetService extends RemoteViewsService {
             c.set(Calendar.MINUTE, 16);
             long wait = c.getTimeInMillis() - DateTimeHelper.getTimeMillis();
             if (wait < 0) return; // bail out.
+            Log.i("todayWidgetService", "updating in " + DateTimeHelper.formatToCountdown(wait));
             ses.schedule(new Runnable() {
                 @Override
                 public void run() {
@@ -105,7 +104,7 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public void onDestroy() {
-
+            Log.i("todayWidgetService", "bye");
         }
 
         @Override
@@ -115,7 +114,6 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int i) {
-            Log.i("todayWidgetService", "getViewAt " + i + ". today ok == " + (this.today != null && this.today.valid()));
             if (this.today == null || !this.today.valid()) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
                 r.setTextViewText(R.id.label, "You need to log in");

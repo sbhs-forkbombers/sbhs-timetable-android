@@ -39,12 +39,12 @@
 		android:layout_below="@id/countdown_name"
 		android:gravity="center"
 		android:textSize="20dp"
-		android:text="in" />
+		android:text="hopefully" />
 
 	<TextView android:id="@+id/countdown_countdown"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:text="Loading..."
+		android:text="pretty soon"
 		android:fontFamily="sans-serif-thin"
 		android:textSize="60sp"
 		android:gravity="center"

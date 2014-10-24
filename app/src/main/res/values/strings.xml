@@ -52,5 +52,8 @@
     <string name="pref_header_widget">Widgets</string>
     <string name="pref_title_widget_transparency_hs">Home screen widget background</string>
     <string name="pref_title_widget_transparency_ls">Lock screen widget background</string>
+    <string name="desc_cached">May be outdated!</string>
+    <string name="desc_current">Up to date!</string>
+    <string name="desc_failed">Couldn\'t load!</string>
 
 </resources>

@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class StorageCache {
+	public static final String TYPE_TODAY = "today";
+	public static final String TYPE_NOTICES = "notices";
+	public static final String TYPE_BELLTIMES = "belltimes";
 	private static boolean isOld(File f) {
 		// don't touch non-JSONs
 		return f.getName().endsWith("json") && (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
@@ -64,9 +67,17 @@ public class StorageCache {
 		return false;
 	}
 
+    public static boolean isStale(File f) {
+        if (!f.exists() || !f.canRead()) return true;
+        return System.currentTimeMillis() - f.lastModified() > (1000 * 60 * 30); // max. 30 minutes old. TODO configuration
+    }
+
+	public static File getFile(String date, String type, Context c) {
+		return new File(c.getCacheDir(), date+"_"+type+".json");
+	}
+
 	private static JsonObject readCacheFile(Context c, String date, String type) {
-		File cacheDir = c.getCacheDir();
-		File data = new File(cacheDir, date+"_"+type+".json");
+		File data = getFile(date, type, c);
 		if (data.exists() && data.canRead()) {
 			try {
 				return new JsonParser().parse(new FileReader(data)).getAsJsonObject();
@@ -105,16 +116,16 @@ public class StorageCache {
     }
 
 	public static JsonObject getTodayJson(Context context, String date) {
-		JsonObject res = readCacheFile(context, date, "today");
+		JsonObject res = readCacheFile(context, date, TYPE_TODAY);
 		return res != null && TodayJson.isValid(res) ? res : null;
 	}
 
 	public static void cacheTodayJson(Context context, String date, String json) {
-		writeCacheFile(context, date, "today", json);
+		writeCacheFile(context, date, TYPE_TODAY, json);
 	}
 
 	public static void cacheBelltimes(Context context, String date, String json) {
-		writeCacheFile(context, date, "belltimes", json);
+		writeCacheFile(context, date, TYPE_BELLTIMES, json);
 	}
 
     public static JsonObject getBelltimes(Context c) {
@@ -122,12 +133,12 @@ public class StorageCache {
     }
 
 	public static JsonObject getBelltimes(Context c, String date) {
-		JsonObject res = readCacheFile(c, date, "belltimes");
+		JsonObject res = readCacheFile(c, date, TYPE_BELLTIMES);
 		return res != null && BelltimesJson.isValid(res) ? res : null;
 	}
 
 	public static void cacheNotices(Context c, String date, String json) {
-		writeCacheFile(c, date, "notices", json);
+		writeCacheFile(c, date, TYPE_NOTICES, json);
 	}
 
     public static JsonObject getNotices(Context c) {
@@ -135,7 +146,7 @@ public class StorageCache {
     }
 
 	public static JsonObject getNotices(Context c, String date) {
-		JsonObject res = readCacheFile(c, date, "notices");
+		JsonObject res = readCacheFile(c, date, TYPE_NOTICES);
 		return res != null && NoticesJson.isValid(res) ? res : null;
 	}
 

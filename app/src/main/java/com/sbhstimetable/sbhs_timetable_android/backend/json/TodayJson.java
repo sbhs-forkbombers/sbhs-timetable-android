@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
 public class TodayJson {
@@ -37,50 +38,55 @@ public class TodayJson {
 	}
 
 	public TodayJson(JsonObject obj) {
-		 this.today = obj;
-		 Log.i("TodayJson", obj.toString());
-		 Log.i("TodayJson", "new instance");
-		 for (int i = 0; i < 5; i++) {
-			 try {
-				 JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
-				 if (j != null) {
-					 periods[i] = new Period(j.getAsJsonObject(), this.finalised());
-				 } else {
-					 JsonObject b = new JsonObject();
-					 b.addProperty("fullName", "Free Period");
-					 b.addProperty("room", "N/A");
-					 b.addProperty("fullTeacher", "Nobody");
-					 b.addProperty("changed", false);
-					 b.addProperty("year", "");
-					 b.addProperty("title", "");
-					 periods[i] = new Period(b, false);
-				 }
-			 } catch (NullPointerException e) {
-				JsonObject b = new JsonObject();
-				 b.addProperty("fullName", "…");
-				 b.addProperty("room", "…");
-				 b.addProperty("fullTeacher", "…");
-				 b.addProperty("changed", false);
-				 b.addProperty("year", "");
-				 b.addProperty("title", "");
-				 periods[i] = new Period(b, false);
-			 }
-		 }
-		INSTANCE = this;
-		ApiAccessor.todayLoaded = true;
-	}
+		this.today = obj;
+        if (!this.valid()) {
+            Log.w("TodayJson", "I am an INVALID TodayJson!");
+        }
+        for (int i = 0; i < 5; i++) {
+            try {
+                JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
+                if (j != null) {
+                    periods[i] = new Period(j.getAsJsonObject(), this.finalised());
+                } else {
+                    JsonObject b = new JsonObject();
+                    b.addProperty("fullName", "Free Period");
+                    b.addProperty("room", "N/A");
+                    b.addProperty("fullTeacher", "Nobody");
+                    b.addProperty("changed", false);
+                    b.addProperty("year", "");
+                    b.addProperty("title", "");
+                    periods[i] = new Period(b, false);
+                }
+            } catch (NullPointerException e) {
+                Log.e("TodayJson", "Error handling period " + (i + 1), e);
+                JsonObject b = new JsonObject();
+                b.addProperty("fullName", "…");
+                b.addProperty("room", "…");
+                b.addProperty("fullTeacher", "…");
+                b.addProperty("changed", false);
+                b.addProperty("year", "");
+                b.addProperty("title", "");
+                periods[i] = new Period(b, false);
+            }
+        }
+        if (!this.valid()) {
+            this.today.add("today", new JsonPrimitive("Unknown ?"));
+        }
+        INSTANCE = this;
+        ApiAccessor.todayLoaded = this.valid();
+    }
 
-	public boolean valid() {
-		return this.today.has("timetable");
-	}
+    public boolean valid() {
+        return this.today.has("timetable");
+    }
 
-	public String getDate() {
-		return valid() ? this.today.get("date").getAsString() : "";
-	}
+    public String getDate() {
+        return valid() ? this.today.get("date").getAsString() : "";
+    }
 
-    public String getDayName() { return this.today.get("today").getAsString(); }
+    public String getDayName() { return valid() ? this.today.get("today").getAsString() : ""; }
 
-	public Period getPeriod(int num) {
+    public Period getPeriod(int num) {
 		return periods[num-1];
 	}
 

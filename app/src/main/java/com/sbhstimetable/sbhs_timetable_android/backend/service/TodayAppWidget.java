@@ -51,9 +51,9 @@ public class TodayAppWidget extends AppWidgetProvider {
         int lock[] = new int[appWidgetIds.length];
         int lockIdx = 0;
         int homeIdx = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) { // no lockscreen widgets < 4.2, so don't check.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) { // no lockscreen widgets < 4.2, so don't check.
             for (int i : appWidgetIds) {
-                if (appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
                     lock[lockIdx++] = i;
                 } else {
                     home[homeIdx++] = i;
@@ -72,11 +72,9 @@ public class TodayAppWidget extends AppWidgetProvider {
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
             c += "000000"; // WHY JAVA
-            Log.i("todaywidget", "bg color (hs): " + c);
             homeScreenWidg.setInt(R.id.widget_today_root, "setBackgroundColor", Color.parseColor(c));
             Intent i = new Intent(context, TodayWidgetService.class);
             homeScreenWidg.setRemoteAdapter(R.id.widget_today_listview, i);
-            Log.i("todaywidget", "updating hs!");
             // Instruct the widget manager to update the widget
             appWidgetManager.updateAppWidget(home, homeScreenWidg);
         }

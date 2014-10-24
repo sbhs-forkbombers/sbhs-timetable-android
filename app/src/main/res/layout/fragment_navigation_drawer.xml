@@ -42,13 +42,47 @@
 		android:dividerHeight="1dp"
 		android:choiceMode="singleChoice" />
 
-	<TextView android:id="@+id/navdraw_timestamp"
+	<TextView android:id="@+id/navdraw_todaycached"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
-		android:layout_alignParentBottom="true" />
+		android:layout_alignParentBottom="true"
+        android:text="Today"/>
+
+    <TextView android:id="@+id/navdraw_bellscached_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="16dp"
+		android:layout_alignParentLeft="true"
+        android:layout_above="@id/navdraw_noticescached_label"
+        android:text="Bells"/>
+	<TextView android:id="@+id/navdraw_bellscached"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="0dp"
+		android:layout_alignParentLeft="true"
+		android:layout_above="@id/navdraw_noticescached_label"
+		android:text="\?"/>
+
+    <TextView android:id="@+id/navdraw_noticescached_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_above="@id/navdraw_todaycached"
+        android:text="Notices" />
+
+
 
 </RelativeLayout>

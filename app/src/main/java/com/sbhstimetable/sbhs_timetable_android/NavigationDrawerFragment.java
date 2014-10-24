@@ -22,6 +22,9 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -84,7 +87,10 @@ public class NavigationDrawerFragment extends Fragment {
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
-	public TextView lastTimestamp;
+    private TextView todayStatus;
+    private TextView noticesStatus;
+    private TextView bellsStatus;
+
 
 	private final ArrayList<String> elements = new ArrayList<String>();
 	private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
@@ -150,11 +156,14 @@ public class NavigationDrawerFragment extends Fragment {
 			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
 		));
 		smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
-			getActionBar().getThemedContext(),
-			android.R.layout.simple_list_item_activated_1,
-			this.botElements
+				getActionBar().getThemedContext(),
+				android.R.layout.simple_list_item_activated_1,
+				this.botElements
 		));
-		this.lastTimestamp = (TextView)l.findViewById(R.id.navdraw_timestamp);
+
+        this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
+        this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
+        this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
 		return l;
 	}
 
@@ -317,5 +326,16 @@ public class NavigationDrawerFragment extends Fragment {
 		 * Called when an item in the navigation drawer is selected.
 		 */
 		void onNavigationDrawerItemSelected(int position);
+	}
+
+	public static class CacheStatusUpdater extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+				if (intent.getBooleanExtra(ApiAccessor.EXTRA_CACHED, true)) {
+
+				}
+			}
+		}
 	}
 }

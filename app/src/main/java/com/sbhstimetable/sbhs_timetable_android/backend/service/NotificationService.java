@@ -127,7 +127,7 @@ public class NotificationService extends IntentService {
         if (BelltimesJson.getInstance() == null) return;
         BelltimesJson.Bell next = BelltimesJson.getInstance().getNextBell();
         if (next == null) {
-            // Don't show anything?
+            // Show tomorrow. TODO
             m.cancel(NOTIFICATION_NEXT);
             return;
         }

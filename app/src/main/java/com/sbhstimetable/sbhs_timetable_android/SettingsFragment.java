@@ -23,9 +23,11 @@ package com.sbhstimetable.sbhs_timetable_android;
 import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 
@@ -44,6 +46,19 @@ public class SettingsFragment extends PreferenceFragment {
                 PrefUtil.WIDGET_TRANSPARENCY_HS,
                 PrefUtil.WIDGET_TRANSPARENCY_LS
         }; // settings to attach listeners to
+
+        // don't offer lockscreen widget options on platforms that don't support them - removal doesn't work for some reason.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+            PreferenceCategory p = (PreferenceCategory)this.findPreference("widget_cat");
+            ListPreference l = (ListPreference)this.findPreference(PrefUtil.WIDGET_TRANSPARENCY_LS);
+            l.setEnabled(false);
+            l.setSummary("Your version of Android does not support lock screen widgets :(");
+            p.removePreference(l);
+            prefs = new String[] {
+                    PrefUtil.WIDGET_TRANSPARENCY_HS
+            };
+
+        }
         for (String pref : prefs) {
             Preference thePref = this.findPreference(pref);
             thePref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);

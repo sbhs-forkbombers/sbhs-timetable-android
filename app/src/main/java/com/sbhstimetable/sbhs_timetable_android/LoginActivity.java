@@ -58,18 +58,18 @@ public class LoginActivity extends ActionBarActivity {
 		});
 		wv.setWebViewClient(new WebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-			if (url.startsWith(baseURL) && (url.endsWith("/") || url.contains("mobile_loading"))) {
-				// this would be our website!
-				String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
-				for (String i : cookies) {
-					if (i.contains("SESSID")) {
-						String sessionID = i.split("=")[1];
-						ApiAccessor.finishedLogin(me, sessionID);
-						NavUtils.navigateUpFromSameTask(me);
-						view.clearCache(true);
+				if (url.startsWith(baseURL) && ((url.endsWith("/") || url.contains("mobile_loading")))) {
+					// this would be our website!
+					String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
+					for (String i : cookies) {
+						if (i.contains("SESSID")) {
+							String sessionID = i.split("=")[1];
+							ApiAccessor.finishedLogin(me, sessionID);
+							NavUtils.navigateUpFromSameTask(me);
+							view.clearCache(true);
+						}
 					}
 				}
-			}
 			}
 		});
 		//setContentView(wv);

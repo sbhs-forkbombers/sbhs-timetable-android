@@ -25,10 +25,12 @@ import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -47,8 +49,10 @@ import android.widget.TextView;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.NavBarFancyAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -111,7 +115,11 @@ public class NavigationDrawerFragment extends Fragment {
 			mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
 			mFromSavedInstanceState = true;
 		}
-
+		IntentFilter i = new IntentFilter();
+		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
+		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(new CacheStatusUpdater(this), i);
 		// Select either the default item (0) or the last selected item.
 		selectItem(mCurrentSelectedPosition);
 	}
@@ -329,12 +337,21 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	public static class CacheStatusUpdater extends BroadcastReceiver {
+		private NavigationDrawerFragment ndf;
+		public CacheStatusUpdater(NavigationDrawerFragment f) {
+			this.ndf = f;
+		}
 		@Override
 		public void onReceive(Context context, Intent intent) {
+			String fmt = "dd/MM hh:mm a";
 			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				if (intent.getBooleanExtra(ApiAccessor.EXTRA_CACHED, true)) {
-
-				}
+				this.ndf.bellsStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
+			}
+			else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+				this.ndf.noticesStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
+			}
+			else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
+				this.ndf.todayStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -52,6 +53,9 @@ public class ApiAccessor {
 	public static final String ACTION_NOTICES_JSON = "noticesData";
 	public static final String EXTRA_JSON_DATA = "jsonString";
 	public static final String EXTRA_CACHED = "isCached";
+	public static final String PREF_TODAY_LAST_UPDATE = "todayUpdate";
+	public static final String PREF_NOTICES_LAST_UPDATE = "noticesUpdate";
+	public static final String PREF_BELLTIMES_LAST_UPDATE = "bellsUpdate";
 	public static final String GLOBAL_ACTION_TODAY_JSON = "com.sbhstimetable.sbhs_timetable_android."+ACTION_TODAY_JSON;
 	private static String sessionID = null;
 
@@ -236,16 +240,23 @@ public class ApiAccessor {
             catch (Exception e) {
                 Log.e("downloadfiletask", "received invalid json");
             }
+			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
+			SharedPreferences.Editor ed = p.edit();
 			if (intentType.equals(ACTION_BELLTIMES_JSON)) {
                 bellsStatus = R.string.desc_current;
 				bellsCached = false;
+				ed.putLong(PREF_BELLTIMES_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			} else if (intentType.equals(ACTION_NOTICES_JSON)) {
                 noticesStatus = R.string.desc_current;
 				noticesCached = false;
+				ed.putLong(PREF_NOTICES_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			} else if (intentType.equals(ACTION_TODAY_JSON)) {
                 todayStatus = R.string.desc_current;
 				todayCached = false;
+				ed.putLong(PREF_TODAY_LAST_UPDATE, DateTimeHelper.getTimeMillis());
 			}
+
+			ed.commit();
 
 			Intent i = new Intent(this.intentType);
 			i.putExtra(EXTRA_JSON_DATA, result);

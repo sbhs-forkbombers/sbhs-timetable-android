@@ -167,13 +167,15 @@ public class NavigationDrawerFragment extends Fragment {
 				android.R.layout.simple_list_item_activated_1,
 				this.botElements
 		));
-
+		long temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0);
         this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
-		this.bellsStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
+		this.bellsStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
         this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
-		this.todayStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
+		temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0);
+		this.todayStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
         this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
-		this.noticesStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
+		temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0);
+		this.noticesStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
 		return l;
 	}
 

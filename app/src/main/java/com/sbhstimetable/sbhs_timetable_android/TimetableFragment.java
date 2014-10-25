@@ -37,6 +37,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -95,9 +96,21 @@ public class TimetableFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
 							 Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
+		if (!ApiAccessor.isLoggedIn()) {
+			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
+			TextView t = (TextView)v.findViewById(R.id.textview);
+			t.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					Intent i = new Intent(container.getContext(), LoginActivity.class);
+					container.getContext().startActivity(i);
+				}
+			});
+			return v;
+		}
 		final SwipeRefreshLayout v =  (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
 		this.layout = v;
 

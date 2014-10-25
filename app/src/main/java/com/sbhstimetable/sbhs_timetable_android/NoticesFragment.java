@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -112,8 +113,20 @@ public class NoticesFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
+		if (!ApiAccessor.isLoggedIn()) {
+			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
+			TextView t = (TextView)v.findViewById(R.id.textview);
+			t.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					Intent i = new Intent(container.getContext(), LoginActivity.class);
+					container.getContext().startActivity(i);
+				}
+			});
+			return v;
+		}
 		final SwipeRefreshLayout res = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_notices, container, false);
 		this.layout = res;
 		final ListView v = (ListView)res.findViewById(R.id.notices_listview);

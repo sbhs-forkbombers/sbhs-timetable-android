@@ -55,5 +55,6 @@
     <string name="desc_cached">May be outdated!</string>
     <string name="desc_current">Up to date!</string>
     <string name="desc_failed">Couldn\'t load!</string>
+	<string name="pls2login">You need to log in to view this!\nTap to log in.</string>
 
 </resources>

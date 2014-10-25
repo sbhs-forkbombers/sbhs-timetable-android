@@ -235,10 +235,12 @@ public class ApiAccessor {
 				JsonObject o = new JsonParser().parse(result).getAsJsonObject();
 				if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
 					Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
+					return;
 				}
 			}
 			catch (Exception e) {
 				Log.e("downloadfiletask", "received invalid json");
+				return;
 			}
 			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
 			SharedPreferences.Editor ed = p.edit();

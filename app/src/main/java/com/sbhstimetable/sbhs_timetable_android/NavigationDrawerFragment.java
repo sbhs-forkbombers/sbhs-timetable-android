@@ -77,6 +77,8 @@ public class NavigationDrawerFragment extends Fragment {
 	 */
 	private NavigationDrawerCallbacks mCallbacks;
 
+	private static final String FMT = "dd/MM hh:mm a";
+
 
 	/**
 	 * Helper component that ties the action bar to the navigation drawer.
@@ -167,8 +169,11 @@ public class NavigationDrawerFragment extends Fragment {
 		));
 
         this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
+		this.bellsStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
         this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
+		this.todayStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
         this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
+		this.noticesStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
 		return l;
 	}
 
@@ -348,15 +353,15 @@ public class NavigationDrawerFragment extends Fragment {
 		}
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String fmt = "dd/MM hh:mm a";
+
 			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				this.ndf.bellsStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
+				this.ndf.bellsStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
 			}
 			else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				this.ndf.noticesStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
+				this.ndf.noticesStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
 			}
 			else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-				this.ndf.todayStatus.setText(new SimpleDateFormat(fmt).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
+				this.ndf.todayStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
 			}
 		}
 	}

@@ -71,7 +71,6 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
     }
 
     private void notifyDSOs() {
-		Log.i("adapter", "dso changes!");
         for (DataSetObserver i : dsos) {
             i.onChanged();
         }
@@ -80,7 +79,6 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
     public void filter(NoticesJson.Year year) {
         this.filter = year;
         this.notices = noticesJson.getNotices();
-		Log.i("adapter", "filter to year " + year);
         if (year != null) {
             ArrayList<NoticesJson.Notice> res = new ArrayList<NoticesJson.Notice>();
             for (NoticesJson.Notice i : notices) {
@@ -130,7 +128,6 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		else if (i == 0) {
 			if (this.theFilterSelector != null) {
 				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
-				Log.i("adapter", "selected => " + s.getSelectedItem());
 				this.onItemSelected(null, null, s.getSelectedItemPosition(), 0);
 				s.setOnItemSelectedListener(this);
 				return theFilterSelector;
@@ -198,23 +195,15 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-		Log.i("spinner", "Selected " + i);
 		curIndex = i;
 		if (i != 0) {
 			this.filter(NoticesJson.Year.fromString(this.spinnerAdapter.getItem(i)));
 		}
 		else {
-						/*if (that.filtering) {
-							that.filtering = false;
-							return;
-						}*/
 			this.filter(null);
 		}
 	}
 
 	@Override
-	public void onNothingSelected(AdapterView<?> adapterView) {
-		Log.i("spinner", "nothing");
-		//Toast.makeText(viewGroup.getContext(), "Nothing selected", Toast.LENGTH_SHORT).show();
-	}
+	public void onNothingSelected(AdapterView<?> adapterView) {}
 }

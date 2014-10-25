@@ -140,7 +140,7 @@ public class NotificationService extends IntentService {
         if (next.isPeriod() && TodayJson.getInstance() != null) {
             TodayJson.Period p = TodayJson.getInstance().getPeriod(next.getPeriodNumber());
             title = p.name() + " in " + p.room();
-            subText += " with " + p.fullTeacher();
+            subText += " with " + p.teacher();
         }
         builder.setContentTitle(title);
         builder.setContentText(subText);

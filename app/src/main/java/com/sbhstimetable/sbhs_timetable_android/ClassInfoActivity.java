@@ -48,7 +48,7 @@ public class ClassInfoActivity extends Activity {
 		room.setText(b.room());
 
 		TextView teacher = (TextView)this.findViewById(R.id.classInfoTeacher);
-		teacher.setText(b.fullTeacher());
+		teacher.setText(b.teacher());
 
 		if (b.roomChanged()) {
 			room.setTextColor(getResources().getColor(R.color.standout));

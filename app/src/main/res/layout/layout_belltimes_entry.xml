@@ -19,58 +19,42 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
+	<!--<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:layout_marginLeft="8dp"
+		android:layout_marginRight="8dp"
+		card_view:cardUseCompatPadding="true"
+		card_view:contentPadding="8dp"
+		card_view:cardBackgroundColor="@color/cardview_dark_background">-->
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:padding="8dp">
 
-	<TextView android:id="@+id/bell_name"
-		android:layout_width="wrap_content"
-		android:layout_height="fill_parent"
-		android:gravity="start|center_vertical"
-		android:layout_alignParentBottom="true"
-		android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentStart="true"
-		android:layout_alignParentTop="true"
-		android:text="Transition"
-		android:minWidth="110dp" />
+			<TextView android:id="@+id/bell_name"
+				android:layout_width="wrap_content"
+				android:layout_height="fill_parent"
+				android:gravity="start|center_vertical"
+				android:layout_alignParentBottom="true"
+				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:text="Transition"
+				android:minWidth="110dp" />
 
-	<TextView android:id="@+id/bell_start_label"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/start"
-		android:layout_toRightOf="@id/bell_name"
-		android:layout_toEndOf="@id/bell_name"
-		android:layout_alignParentTop="true"
-		android:layout_marginLeft="2dp"
-		android:layout_marginRight="2dp" />
+			<TextView android:id="@+id/bell_time"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+				android:textColor="@android:color/primary_text_dark"
+				android:layout_alignParentRight="true"
+				android:text="Demo" />
 
-	<TextView android:id="@+id/bell_start"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textColor="@android:color/primary_text_dark"
-		android:layout_toRightOf="@id/bell_start_label"
-		android:layout_toEndOf="@id/bell_start_label"
-		android:layout_alignParentTop="true" />
-
-	<TextView android:id="@+id/bell_end_label"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/end"
-		android:layout_marginLeft="2dp"
-		android:layout_marginRight="2dp"
-		android:layout_below="@id/bell_start_label"
-		android:layout_toRightOf="@id/bell_name"
-		android:layout_toEndOf="@id/bell_name" />
-
-	<TextView android:id="@+id/bell_end"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textColor="@android:color/primary_text_dark"
-		android:layout_toRightOf="@id/bell_start_label"
-		android:layout_toEndOf="@id/bell_start_label"
-		android:layout_below="@id/bell_start_label"
-		android:text="Demo" />
-
-</RelativeLayout>
+		</RelativeLayout>
+	<!--</android.support.v7.widget.CardView>-->
+</FrameLayout>

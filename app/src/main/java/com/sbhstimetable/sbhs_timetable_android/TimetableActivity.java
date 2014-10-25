@@ -78,6 +78,7 @@ public class TimetableActivity extends ActionBarActivity
 		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
+		interesting.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
@@ -85,6 +86,7 @@ public class TimetableActivity extends ActionBarActivity
 		ApiAccessor.getBelltimes(this);
 		ApiAccessor.getToday(this);
 		ApiAccessor.getNotices(this);
+		ApiAccessor.getTimetable(this, true);
 		final Context c = this;
 		Thread t = new Thread(new Runnable() {
 			public void run() {
@@ -266,6 +268,10 @@ public class TimetableActivity extends ActionBarActivity
 				if (nj != null && NoticesJson.isValid(nj)) {
 					new NoticesJson(nj);
 				}
+			}
+			else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
+				ApiAccessor.timetableLoaded = true;
+				StorageCache.cacheTimetable(this.activity, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 			}
 			this.activity.updateCachedStatus(this.activity.menu);
 		}

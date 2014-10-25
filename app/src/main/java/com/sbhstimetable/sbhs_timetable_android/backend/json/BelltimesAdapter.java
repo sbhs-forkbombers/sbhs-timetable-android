@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -73,7 +74,7 @@ public class BelltimesAdapter implements ListAdapter {
 
 	@Override
 	public int getCount() {
-		return b!= null && b.valid() ? b.getMaxIndex()-1 : 1;
+		return b!= null && b.valid() ? b.getMaxIndex() : 1;
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class BelltimesAdapter implements ListAdapter {
 
 	@Override
 	public View getView(int i, View view, ViewGroup viewGroup) {
-		RelativeLayout r;
+		View r;
 		if (b == null || !b.valid()) {
 			TextView t = new TextView(viewGroup.getContext());
 			t.setText("Couldn't load belltimes!");
@@ -101,19 +102,22 @@ public class BelltimesAdapter implements ListAdapter {
 			t.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
 			return t;
 		}
-		if (view instanceof RelativeLayout) {
-			r = (RelativeLayout)view;
+		if (view instanceof FrameLayout) {
+			r = view;
 		} else {
-			r = (RelativeLayout) LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_belltimes_entry, null);
+			r = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.layout_belltimes_entry, null);
 		}
-		Integer[] a = b.getIndex(i+1).getBell();
-		String e = String.format("%02d:%02d", a);
-		BellWithEnd bell = new BellWithEnd(b.getIndex(i),e);
-		TextView start = (TextView)r.findViewById(R.id.bell_start);
-		TextView end = (TextView)r.findViewById(R.id.bell_end);
+		BelltimesJson.Bell bell = this.b.getIndex(i);
+		TextView time = (TextView)r.findViewById(R.id.bell_time);
 		TextView label = (TextView)r.findViewById(R.id.bell_name);
-		start.setText(bell.getStart());
-		end.setText(bell.getEnd());
+		Integer[] bt = bell.getBell();
+		String suffix = "am";
+		if (bt[0] > 11) {
+			bt[0] %= 12;
+			if (bt[0] == 0) bt[0] = 12;
+			suffix = "pm";
+		}
+		time.setText(String.format("%02d:%02d %s", new Object[] { bt[0], bt[1], suffix }));
 		label.setText(bell.getLabel());
 		return r;
 	}
@@ -133,24 +137,4 @@ public class BelltimesAdapter implements ListAdapter {
 		return false;
 	}
 
-	private class BellWithEnd {
-		private String end;
-		private BelltimesJson.Bell start;
-		public BellWithEnd(BelltimesJson.Bell b, String end) {
-			this.end = end;
-			this.start = b;
-		}
-
-		public String getStart() {
-			return String.format("%02d:%02d", this.start.getBell());
-		}
-
-		public String getEnd() {
-			return this.end;
-		}
-
-		public String getLabel() {
-			return this.start.getLabel();
-		}
-	}
 }

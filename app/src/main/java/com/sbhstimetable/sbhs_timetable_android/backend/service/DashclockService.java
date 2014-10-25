@@ -30,7 +30,6 @@ import android.util.Log;
 import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
@@ -108,7 +107,7 @@ public class DashclockService extends DashClockExtension {
                             .icon(R.drawable.ic_launcher)
                             .status(mine.getPeriod(num).getShortName() + " - " + mine.getPeriod(num).room())
                             .expandedTitle(mine.getPeriod(num).name())
-                            .expandedBody("in " + mine.getPeriod(num).room() + " with " + mine.getPeriod(num).fullTeacher())
+                            .expandedBody("in " + mine.getPeriod(num).room() + " with " + mine.getPeriod(num).teacher())
                             .visible(true)
             );
         }

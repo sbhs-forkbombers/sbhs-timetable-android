@@ -40,6 +40,7 @@ public class StorageCache {
 	public static final String TYPE_TODAY = "today";
 	public static final String TYPE_NOTICES = "notices";
 	public static final String TYPE_BELLTIMES = "belltimes";
+	public static final String TYPE_TIMETABLE = "timetable";
 	private static boolean isOld(File f) {
 		// don't touch non-JSONs
 		return f.getName().endsWith("json") && (DateTimeHelper.getTimeMillis() - f.lastModified()) > (1000 * 60 * 60 * 24 * 7); // older than a week
@@ -66,10 +67,13 @@ public class StorageCache {
 		}
 		return false;
 	}
+	public static boolean isStale(File f) {
+		return isStale(f, 1000 * 60 * 30);
+	}
 
-    public static boolean isStale(File f) {
+    public static boolean isStale(File f, long maxAge) {
         if (!f.exists() || !f.canRead()) return true;
-        return System.currentTimeMillis() - f.lastModified() > (1000 * 60 * 30); // max. 30 minutes old. TODO configuration
+        return System.currentTimeMillis() - f.lastModified() > maxAge; // max. 30 minutes old. TODO configuration
     }
 
 	public static File getFile(String date, String type, Context c) {
@@ -118,6 +122,14 @@ public class StorageCache {
 	public static JsonObject getTodayJson(Context context, String date) {
 		JsonObject res = readCacheFile(context, date, TYPE_TODAY);
 		return res != null && TodayJson.isValid(res) ? res : null;
+	}
+
+	public static JsonObject getTimetable(Context context) {
+		return readCacheFile(context, "", TYPE_TIMETABLE);
+	}
+
+	public static void cacheTimetable(Context context, String json) {
+		writeCacheFile(context, "", TYPE_TIMETABLE, json);
 	}
 
 	public static void cacheTodayJson(Context context, String date, String json) {

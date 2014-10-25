@@ -32,7 +32,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,6 +46,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentI
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
 
 public class CountdownFragment extends Fragment {
 
@@ -59,7 +59,7 @@ public class CountdownFragment extends Fragment {
 	private BroadcastListener listener;
     private int lastBells;
     private int lastToday;
-
+	private int tapCount = 0;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -90,6 +90,17 @@ public class CountdownFragment extends Fragment {
 		final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
 		Resources r = this.getResources();
+		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (tapCount++ == 5) {
+					Toast.makeText(getActivity(), "Secret mode activated! (Press back to leave)", Toast.LENGTH_SHORT).show();
+					tapCount = 0;
+					Intent i = new Intent(getActivity(), DebugActivity.class);
+					getActivity().startActivity(i);
+				}
+			}
+		});
 		f.setColorSchemeColors(r.getColor(R.color.blue),
 			r.getColor(R.color.green),
 			r.getColor(R.color.yellow),
@@ -175,7 +186,7 @@ public class CountdownFragment extends Fragment {
 					if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
 						p = TodayJson.getInstance().getPeriod(now.getPeriodNumber());
 						label = p.name();
-						teacher.setText(p.fullTeacher());
+						teacher.setText(p.teacher());
 						room.setText(p.room());
 						subject.setText(p.name());
 						extraData.setVisibility(View.VISIBLE);
@@ -192,7 +203,7 @@ public class CountdownFragment extends Fragment {
 					if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
 						p = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber());
 						label = p.name();
-						teacher.setText(p.fullTeacher());
+						teacher.setText(p.teacher());
 						room.setText(p.room());
 						subject.setText(p.name());
 						extraData.setVisibility(View.VISIBLE);
@@ -211,7 +222,7 @@ public class CountdownFragment extends Fragment {
 				if (TodayJson.getInstance() != null && TodayJson.getInstance().getPeriod(1) != null) {
 					extraData.setVisibility(View.VISIBLE);
 					p = TodayJson.getInstance().getPeriod(1);
-					teacher.setText(p.fullTeacher());
+					teacher.setText(p.teacher());
 					room.setText(p.room());
 					subject.setText(p.name());
 				} else {

@@ -70,6 +70,7 @@ public class TimetableFragment extends Fragment {
 	private Handler h;
 	private TodayAdapter adapter;
 	private BroadcastListener listener;
+
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -169,7 +170,7 @@ public class TimetableFragment extends Fragment {
 		this.today = o;
 		if (this.adapter == null) {
 			if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return;
-			this.adapter = new TodayAdapter(this.today);
+			this.adapter = new TodayAdapter(this.today, this.getActivity());
 			ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
 			z.setAdapter(this.adapter);
 		}

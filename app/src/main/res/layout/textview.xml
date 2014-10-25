@@ -20,22 +20,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	tools:context="com.sbhstimetable.sbhs_timetable_android.BelltimesFragment">
-
-	<FrameLayout android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:paddingLeft="16dp"
-		android:paddingRight="16dp">
-
-		<ListView android:id="@+id/belltimes_listview"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			/>
-
-	</FrameLayout>
-
-</android.support.v4.widget.SwipeRefreshLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+	android:padding="8dp"/>

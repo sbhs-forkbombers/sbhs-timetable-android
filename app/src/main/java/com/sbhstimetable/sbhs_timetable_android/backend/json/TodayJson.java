@@ -28,7 +28,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
-public class TodayJson {
+public class TodayJson implements IDayType {
 	private final JsonObject today;
 	private Period periods[] = new Period[5];
 	private static TodayJson INSTANCE;
@@ -113,7 +113,7 @@ public class TodayJson {
 		return res.has("timetable");
 	}
 
-	public static class Period {
+	public static class Period implements IDayType.IPeriod {
 		private final JsonObject period;
 		private boolean finalised = true;
 		public Period(JsonObject obj, boolean finalised) {
@@ -121,15 +121,26 @@ public class TodayJson {
 			this.period = obj;
 		}
 
-		public boolean changed() {
-			return period.get("changed").getAsBoolean();
+		public boolean showVariations() {
+			return finalised;
 		}
 
-		public String fullTeacher() {
+		public boolean changed() {
+			return period.get("changed").getAsBoolean() && showVariations();
+		}
+
+		public String teacher() {
 			if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean() && this.finalised) {
 				return period.get("casualDisplay").getAsString().trim();
 			}
 			return period.get("fullTeacher").getAsString();
+		}
+
+		public String getShortTeacher() {
+			if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean() && this.finalised) {
+				return period.get("casual").getAsString().trim();
+			}
+			return period.get("teacher").getAsString();
 		}
 
 		public String getShortName() {
@@ -137,7 +148,7 @@ public class TodayJson {
 		}
 
 		public boolean teacherChanged() {
-			return !this.fullTeacher().equals(period.get("fullTeacher").getAsString());
+			return !this.teacher().equals(period.get("fullTeacher").getAsString());
 		}
 
 		public boolean roomChanged() {

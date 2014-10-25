@@ -20,30 +20,70 @@
 
 package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
+import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
-import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TodayAdapter implements ListAdapter{
-	private TodayJson timetable;
+public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListener{
+	private TodayJson todayJson;
+	int todayJsonIndex = 0;
+	private IDayType today;
+	private TimetableJson timetable;
 	private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
-	public TodayAdapter(TodayJson tt) {
-		this.timetable = tt;
+	private FrameLayout theFilterSelector;
+	private int curIndex = 0;
+	public TodayAdapter(TodayJson tt, Context c) {
+		this.today = tt;
+		this.todayJson = tt;
+
+		JsonObject timt = StorageCache.getTimetable(c);
+		if (timt != null) {
+			Log.i("todayAdapter", "loading timetable.json!");
+			this.timetable = new TimetableJson(timt);
+			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName());
+		}
+		else {
+			ApiAccessor.getTimetable(c, true);
+		}
 	}
 
-	private TodayJson.Period getEntry(int i) {
-	   return timetable.getPeriod(i+1);
+	private IDayType.IPeriod getEntry(int i) {
+	   return today.getPeriod(i);
+	}
+
+	private void notifyDSOs() {
+		for (DataSetObserver i : dsos) {
+			i.onChanged();
+		}
+	}
+
+	public void setDay(int dayIndex) {
+		if (dayIndex == todayJsonIndex || this.timetable == null) {
+			this.today = this.todayJson;
+		}
+		else {
+			this.today = this.timetable.getDayFromNumber(dayIndex);
+		}
+
+		this.notifyDSOs();
 	}
 
 	@Override
@@ -57,7 +97,7 @@ public class TodayAdapter implements ListAdapter{
 	}
 
 	public void updateDataSet(TodayJson newValue) {
-		this.timetable = newValue;
+		this.today = newValue;
 		for (DataSetObserver i : dsos) {
 			i.onChanged();
 		}
@@ -65,12 +105,12 @@ public class TodayAdapter implements ListAdapter{
 
 	@Override
 	public int getCount() {
-		return 5;
+		return 6;
 	}
 
 	@Override
 	public Object getItem(int i) {
-		return this.getEntry(i);
+		return (i == 0 ? "combo box " : this.getEntry(i-1));
 	}
 
 	@Override
@@ -80,11 +120,40 @@ public class TodayAdapter implements ListAdapter{
 
 	@Override
 	public boolean hasStableIds() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public View getView(int i, View oldView, ViewGroup viewGroup) {
+		if (i == 0) {
+			if (this.theFilterSelector != null) {
+				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
+				this.onItemSelected(null, null, s.getSelectedItemPosition(), 0);
+				s.setOnItemSelectedListener(this);
+				return theFilterSelector;
+			}
+			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
+			Spinner s = (Spinner)f.findViewById(R.id.spinner);
+			String[] entries = new String[15];
+			int c = 0;
+			for (String j : new String[] { "A", "B", "C"}) {
+				for (String k : new String[] {
+						"Monday",
+						"Tuesday",
+						"Wednesday",
+						"Thursday",
+						"Friday" // yay hardcoded lists!
+				}) {
+					entries[c++] = k + " " + j;
+				}
+			}
+			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, entries);
+			s.setAdapter(a);
+			s.setSelection(this.curIndex);
+			s.setOnItemSelectedListener(this);
+			this.theFilterSelector = f;
+			return f;
+		}
 		final FrameLayout view;
 		final TextView header;
 		final TextView roomText;
@@ -100,7 +169,7 @@ public class TodayAdapter implements ListAdapter{
 		teacherText = (TextView)view.findViewById(R.id.timetable_class_teacher);
 		changed = (ImageView)view.findViewById(R.id.timetable_class_changed);
 
-		final TodayJson.Period b = this.getEntry(i);
+		final IDayType.IPeriod b = this.getEntry(i);
 		/*view.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -110,7 +179,7 @@ public class TodayAdapter implements ListAdapter{
 			}
 		});*/
 		String room = b.room();
-		String teacher = b.fullTeacher();
+		String teacher = b.teacher();
 		roomText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
 		teacherText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
 		if (b.changed()) {
@@ -158,5 +227,15 @@ public class TodayAdapter implements ListAdapter{
 	@Override
 	public boolean isEnabled(int i) {
 		return true;
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+		this.setDay(i + 1);
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> adapterView) {
+
 	}
 }

@@ -51,12 +51,14 @@ public class ApiAccessor {
 	public static final String ACTION_TODAY_JSON = "todayData";
 	public static final String ACTION_BELLTIMES_JSON = "belltimesData";
 	public static final String ACTION_NOTICES_JSON = "noticesData";
+	public static final String ACTION_TIMETABLE_JSON = "timetableData";
 	public static final String EXTRA_JSON_DATA = "jsonString";
 	public static final String EXTRA_CACHED = "isCached";
 	public static final String PREF_TODAY_LAST_UPDATE = "todayUpdate";
 	public static final String PREF_NOTICES_LAST_UPDATE = "noticesUpdate";
 	public static final String PREF_BELLTIMES_LAST_UPDATE = "bellsUpdate";
 	public static final String GLOBAL_ACTION_TODAY_JSON = "com.sbhstimetable.sbhs_timetable_android."+ACTION_TODAY_JSON;
+
 	private static String sessionID = null;
 
 
@@ -67,10 +69,13 @@ public class ApiAccessor {
 	public static boolean todayCached = true;
 	public static boolean bellsCached = true;
 	public static boolean noticesCached = true;
+	public static boolean timetableCached = true;
 
 	public static boolean todayLoaded = false;
 	public static boolean bellsLoaded = false;
 	public static boolean noticesLoaded = false;
+	public static boolean timetableLoaded = false;
+
 
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here
@@ -124,7 +129,7 @@ public class ApiAccessor {
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, todayCached);
 			LocalBroadcastManager.getInstance(c).sendBroadcast(i); // to tide us over - or if there's no internet.
-			if (todayCached) return; // no point wasting data!
+			if (!todayCached) return; // no point wasting data!
 		}
 		if (!isLoggedIn() || !hasInternetConnection(c)) {
 			todayLoaded  = true;
@@ -136,6 +141,28 @@ public class ApiAccessor {
 			Log.e("apiaccessor", "today.json dl failed", e);
 		}
 
+	}
+
+	public static void getTimetable(Context c, boolean tryCache) {
+		JsonObject obj = StorageCache.getTimetable(c);
+		if (obj != null && tryCache) {
+			timetableCached = StorageCache.isStale(StorageCache.getFile("", StorageCache.TYPE_TIMETABLE, c));
+			timetableLoaded = true;
+			Intent i = new Intent(ACTION_TIMETABLE_JSON);
+			i.putExtra(EXTRA_JSON_DATA, obj.toString());
+			i.putExtra(EXTRA_CACHED, timetableCached);
+			LocalBroadcastManager.getInstance(c).sendBroadcast(i);
+			if (!timetableCached) return;
+		}
+		if (!hasInternetConnection(c) || !ApiAccessor.isLoggedIn()) {
+			timetableLoaded = true;
+			return;
+		}
+		try {
+			new DownloadFileTask(c, ACTION_TIMETABLE_JSON).execute(new URL(baseURL + "/api/bettertimetable.json"));
+		} catch (Exception e) {
+			Log.e("apiaccessor", "timetable failed", e);
+		}
 	}
 
 	public static void getBelltimes(Context c) {
@@ -153,7 +180,7 @@ public class ApiAccessor {
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, bellsCached);
 			LocalBroadcastManager.getInstance(c).sendBroadcast(i);
-			if (bellsCached) return; // no point wasting data!
+			if (!bellsCached) return; // no point wasting data!
 		}
 		if (!hasInternetConnection(c)) {
 			bellsLoaded = true;
@@ -181,7 +208,7 @@ public class ApiAccessor {
 			i.putExtra(EXTRA_JSON_DATA, obj.toString());
 			i.putExtra(EXTRA_CACHED, noticesCached);
 			LocalBroadcastManager.getInstance(c).sendBroadcast(i);
-			if (noticesCached) return; // no point wasting data!
+			if (!noticesCached) return; // no point wasting data!
 		}
 		if (!isLoggedIn() || !hasInternetConnection(c)) {
 			noticesLoaded = true;

@@ -27,16 +27,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
-import android.text.Layout;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-import android.widget.TextView;
 
-import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
@@ -137,7 +132,7 @@ public class TodayWidgetService extends RemoteViewsService {
             if (p.roomChanged()) {
                 r.setTextColor(R.id.timetable_class_room, standout);
             }
-            r.setTextViewText(R.id.timetable_class_teacher, p.fullTeacher());
+            r.setTextViewText(R.id.timetable_class_teacher, p.teacher());
             if (p.teacherChanged()) {
                 r.setTextColor(R.id.timetable_class_teacher, standout);
             }

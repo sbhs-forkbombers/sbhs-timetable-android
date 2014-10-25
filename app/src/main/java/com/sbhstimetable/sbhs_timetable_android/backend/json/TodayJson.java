@@ -39,35 +39,45 @@ public class TodayJson {
 
 	public TodayJson(JsonObject obj) {
 		this.today = obj;
+		boolean bother = true;
         if (!this.valid()) {
             Log.w("TodayJson", "I am an INVALID TodayJson!");
+			bother = false;
         }
         for (int i = 0; i < 5; i++) {
+			boolean failed = false;
             try {
-                JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
-                if (j != null) {
-                    periods[i] = new Period(j.getAsJsonObject(), this.finalised());
-                } else {
-                    JsonObject b = new JsonObject();
-                    b.addProperty("fullName", "Free Period");
-                    b.addProperty("room", "N/A");
-                    b.addProperty("fullTeacher", "Nobody");
-                    b.addProperty("changed", false);
-                    b.addProperty("year", "");
-                    b.addProperty("title", "");
-                    periods[i] = new Period(b, false);
-                }
+				if (bother) {
+					JsonElement j = today.get("timetable").getAsJsonObject().get(String.valueOf(i + 1));
+					if (j != null) {
+						periods[i] = new Period(j.getAsJsonObject(), this.finalised());
+					} else {
+						JsonObject b = new JsonObject();
+						b.addProperty("fullName", "Free Period");
+						b.addProperty("room", "N/A");
+						b.addProperty("fullTeacher", "Nobody");
+						b.addProperty("changed", false);
+						b.addProperty("year", "");
+						b.addProperty("title", "");
+						periods[i] = new Period(b, false);
+					}
+				}
             } catch (NullPointerException e) {
-                Log.e("TodayJson", "Error handling period " + (i + 1), e);
-                JsonObject b = new JsonObject();
-                b.addProperty("fullName", "…");
-                b.addProperty("room", "…");
-                b.addProperty("fullTeacher", "…");
-                b.addProperty("changed", false);
-                b.addProperty("year", "");
-                b.addProperty("title", "");
-                periods[i] = new Period(b, false);
+                Log.v("TodayJson", "Error handling period " + (i + 1), e);
+                failed = true;
             }
+			finally {
+				if (!bother || failed) {
+					JsonObject b = new JsonObject();
+					b.addProperty("fullName", "…");
+					b.addProperty("room", "…");
+					b.addProperty("fullTeacher", "…");
+					b.addProperty("changed", false);
+					b.addProperty("year", "");
+					b.addProperty("title", "");
+					periods[i] = new Period(b, false);
+				}
+			}
         }
         if (!this.valid()) {
             this.today.add("today", new JsonPrimitive("Unknown ?"));

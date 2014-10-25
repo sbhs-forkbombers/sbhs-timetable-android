@@ -25,29 +25,38 @@ import android.database.DataSetObserver;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.NoticesDropDownAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoticesAdapter implements ListAdapter {
+public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedListener {
     private NoticesJson noticesJson;
     private ArrayList<NoticesJson.Notice> notices;
     private NoticesJson.Year filter = null;
     private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
+	private NoticesDropDownAdapter spinnerAdapter;
+	private FrameLayout theFilterSelector;
+	int curIndex = 0;;
 
     public NoticesAdapter(NoticesJson n) {
         this.noticesJson = n;
         this.notices = n.getNotices();
+		this.spinnerAdapter = new NoticesDropDownAdapter();
     }
 
     public void update(NoticesJson n) {
@@ -62,6 +71,7 @@ public class NoticesAdapter implements ListAdapter {
     }
 
     private void notifyDSOs() {
+		Log.i("adapter", "dso changes!");
         for (DataSetObserver i : dsos) {
             i.onChanged();
         }
@@ -70,6 +80,7 @@ public class NoticesAdapter implements ListAdapter {
     public void filter(NoticesJson.Year year) {
         this.filter = year;
         this.notices = noticesJson.getNotices();
+		Log.i("adapter", "filter to year " + year);
         if (year != null) {
             ArrayList<NoticesJson.Notice> res = new ArrayList<NoticesJson.Notice>();
             for (NoticesJson.Notice i : notices) {
@@ -89,12 +100,12 @@ public class NoticesAdapter implements ListAdapter {
 
     @Override
     public int getCount() {
-        return notices.size() == 0 ? 1 : notices.size();
+        return notices.size() == 0 ? 1 : notices.size() + 1;
     }
 
     @Override
     public Object getItem(int i) {
-        return notices.get(i);
+        return i == 0 ? "Spinner" : notices.get(i);
     }
 
     @Override
@@ -108,7 +119,7 @@ public class NoticesAdapter implements ListAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int i, View view, final ViewGroup viewGroup) {
         if (notices.size() == 0) {
             TextView res = new TextView(viewGroup.getContext());
             res.setTextAppearance(viewGroup.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
@@ -116,7 +127,23 @@ public class NoticesAdapter implements ListAdapter {
             res.setText("There are no notices!");
             return res;
         }
-        NoticesJson.Notice n = this.notices.get(i);
+		else if (i == 0) {
+			if (this.theFilterSelector != null) {
+				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
+				Log.i("adapter", "selected => " + s.getSelectedItem());
+				this.onItemSelected(null, null, s.getSelectedItemPosition(), 0);
+				s.setOnItemSelectedListener(this);
+				return theFilterSelector;
+			}
+			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
+			Spinner s = (Spinner)f.findViewById(R.id.spinner);
+			s.setAdapter(this.spinnerAdapter);
+			s.setSelection(this.curIndex);
+			s.setOnItemSelectedListener(this);
+			this.theFilterSelector = f;
+			return f;
+		}
+        NoticesJson.Notice n = this.notices.get(i-1);
         View res;
         if (view instanceof FrameLayout && view.findViewById(R.id.notice_title) instanceof TextView) {
             res = view;
@@ -168,4 +195,26 @@ public class NoticesAdapter implements ListAdapter {
     public boolean isEnabled(int i) {
         return true;
     }
+
+	@Override
+	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+		Log.i("spinner", "Selected " + i);
+		curIndex = i;
+		if (i != 0) {
+			this.filter(NoticesJson.Year.fromString(this.spinnerAdapter.getItem(i)));
+		}
+		else {
+						/*if (that.filtering) {
+							that.filtering = false;
+							return;
+						}*/
+			this.filter(null);
+		}
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> adapterView) {
+		Log.i("spinner", "nothing");
+		//Toast.makeText(viewGroup.getContext(), "Nothing selected", Toast.LENGTH_SHORT).show();
+	}
 }

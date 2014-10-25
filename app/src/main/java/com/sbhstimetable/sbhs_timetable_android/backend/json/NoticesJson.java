@@ -183,7 +183,9 @@ public class NoticesJson {
 		}
 
 		public static Year fromString(String s) {
-			if (!s.startsWith("Staff")) {
+			s = s.toLowerCase();
+			if (s.startsWith("year ")) s = s.replace("year ", "");
+			if (!s.startsWith("staff")) {
 				int i = Integer.valueOf(s);
 				switch (i) {
 					case 7:

@@ -107,8 +107,7 @@ public class TimetableJson {
 					j.addProperty("room", "N/A");
 					periods[i - 1] = new Period(j, i, null);
 
-				}
-				else {
+				} else {
 					JsonObject p = q.get(i+"").getAsJsonObject();
 					Log.i("timetable", p.get("year").getAsString() + p.get("title").getAsString());
 					periods[i - 1] = new Period(p, i, parent.getInfoForSubject(p.get("year").getAsString(), p.get("title").getAsString()));
@@ -139,8 +138,7 @@ public class TimetableJson {
 		public String name() {
 			if (myInfo != null) {
 				return myInfo.getTitle();
-			}
-			else {
+			} else {
 				return "Nothing";
 			}
 		}
@@ -164,8 +162,7 @@ public class TimetableJson {
 		public String teacher() {
 			if (myInfo != null) {
 				return this.myInfo.getTeacher();
-			}
-			else {
+			} else {
 				return "Mr X";
 			}
 		}

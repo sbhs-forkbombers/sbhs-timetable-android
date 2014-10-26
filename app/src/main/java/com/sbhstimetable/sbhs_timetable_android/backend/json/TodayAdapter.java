@@ -59,8 +59,7 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 			Log.i("todayAdapter", "loading timetable.json!");
 			this.timetable = new TimetableJson(timt);
 			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName());
-		}
-		else {
+		} else {
 			ApiAccessor.getTimetable(c, true);
 		}
 	}
@@ -82,7 +81,6 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 		else {
 			this.today = this.timetable.getDayFromNumber(dayIndex);
 		}
-
 		this.notifyDSOs();
 	}
 
@@ -188,12 +186,10 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 			if (b.roomChanged()) {
 				roomText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
 			}
-
 			if (b.teacherChanged()) {
 				teacherText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
 			}
-		}
-		else {
+		} else {
 			changed.setVisibility(View.INVISIBLE);
 		}
 		header.setText(b.name());
@@ -236,6 +232,5 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 
 	@Override
 	public void onNothingSelected(AdapterView<?> adapterView) {
-
 	}
 }

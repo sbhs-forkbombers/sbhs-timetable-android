@@ -268,8 +268,7 @@ public class TimetableActivity extends ActionBarActivity
 				if (nj != null && NoticesJson.isValid(nj)) {
 					new NoticesJson(nj);
 				}
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
+			} else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
 				ApiAccessor.timetableLoaded = true;
 				StorageCache.cacheTimetable(this.activity, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 			}

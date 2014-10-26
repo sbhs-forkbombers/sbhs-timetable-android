@@ -44,15 +44,18 @@
 
 	<TextView android:id="@+id/navdraw_todaycached_label"
 		android:layout_width="53dp"
-		android:gravity="left"
+		android:gravity="start"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="8dp"
+		android:layout_marginStart="8dp"
 		android:layout_marginRight="0dp"
+		android:layout_marginEnd="0dp"
 		android:layout_alignParentBottom="true"
 		android:layout_alignParentLeft="true"
-        android:text="Today: " />
+		android:layout_alignParentStart="true"
+		android:text="@string/today_cached" />
 
 	<TextView android:id="@+id/navdraw_todaycached"
 		android:layout_width="wrap_content"
@@ -62,42 +65,53 @@
 		android:layout_marginLeft="0dp"
 		android:layout_marginRight="0dp"
 		android:layout_toRightOf="@id/navdraw_todaycached_label"
+		android:layout_toEndOf="@id/navdraw_todaycached_label"
 		android:layout_alignParentBottom="true"
-		android:text="\?" />
+		android:text="@string/question" />
 
-    <TextView android:id="@+id/navdraw_bellscached_label"
-        android:layout_width="53dp"
-        android:layout_height="wrap_content"
-		android:gravity="left"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="0dp"
+	<TextView android:id="@+id/navdraw_bellscached_label"
+		android:layout_width="53dp"
+		android:layout_height="wrap_content"
+		android:gravity="start"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginRight="0dp"
+		android:layout_marginEnd="0dp"
 		android:layout_alignParentLeft="true"
-        android:layout_above="@+id/navdraw_noticescached_label"
-        android:text="Bells: " />
+		android:layout_alignParentStart="true"
+		android:layout_above="@+id/navdraw_noticescached_label"
+		android:text="@string/bells_cached" />
+
 	<TextView android:id="@+id/navdraw_bellscached"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="0dp"
+		android:layout_marginStart="0dp"
 		android:layout_marginRight="0dp"
+		android:layout_marginEnd="0dp"
 		android:layout_toRightOf="@id/navdraw_bellscached_label"
+		android:layout_toEndOf="@id/navdraw_bellscached_label"
 		android:layout_above="@id/navdraw_noticescached_label"
-		android:text="\?" />
+		android:text="@string/question" />
 
-    <TextView android:id="@+id/navdraw_noticescached_label"
-        android:layout_width="53dp"
-        android:layout_height="wrap_content"
-		android:gravity="left"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="0dp"
-        android:layout_above="@id/navdraw_todaycached"
+	<TextView android:id="@+id/navdraw_noticescached_label"
+		android:layout_width="53dp"
+		android:layout_height="wrap_content"
+		android:gravity="start"
+		android:layout_marginTop="8dp"
+		android:layout_marginBottom="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginStart="8dp"
+		android:layout_marginRight="0dp"
+		android:layout_marginEnd="0dp"
+		android:layout_above="@id/navdraw_todaycached"
 		android:layout_alignParentLeft="true"
-        android:text="Notices: " />
+		android:layout_alignParentStart="true"
+		android:text="@string/notices_cached" />
 
 	<TextView android:id="@+id/navdraw_noticescached"
 		android:layout_width="wrap_content"
@@ -105,9 +119,12 @@
 		android:layout_marginTop="8dp"
 		android:layout_marginBottom="8dp"
 		android:layout_marginLeft="0dp"
+		android:layout_marginStart="0dp"
 		android:layout_marginRight="0dp"
+		android:layout_marginEnd="0dp"
 		android:layout_toRightOf="@id/navdraw_noticescached_label"
+		android:layout_toEndOf="@id/navdraw_noticescached_label"
 		android:layout_above="@id/navdraw_todaycached"
-		android:text="\?" />
+		android:text="@string/question" />
 
 </RelativeLayout>

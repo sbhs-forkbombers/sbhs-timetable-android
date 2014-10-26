@@ -93,7 +93,7 @@ public class CountdownFragment extends Fragment {
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				if (tapCount++ == 5) {
+				if (tapCount++ == 6) {
 					Toast.makeText(getActivity(), "Secret mode activated! (Press back to leave)", Toast.LENGTH_SHORT).show();
 					tapCount = 0;
 					Intent i = new Intent(getActivity(), DebugActivity.class);

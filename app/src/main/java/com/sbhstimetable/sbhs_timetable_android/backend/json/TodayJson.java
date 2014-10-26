@@ -65,8 +65,7 @@ public class TodayJson implements IDayType {
             } catch (NullPointerException e) {
                 Log.v("TodayJson", "Error handling period " + (i + 1), e);
                 failed = true;
-            }
-			finally {
+            } finally {
 				if (!bother || failed) {
 					JsonObject b = new JsonObject();
 					b.addProperty("fullName", "…");

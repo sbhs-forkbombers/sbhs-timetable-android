@@ -19,121 +19,102 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sbhstimetable.sbhs_timetable_android" >
+	package="com.sbhstimetable.sbhs_timetable_android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+	<application android:allowBackup="true"
+		android:icon="@drawable/ic_launcher"
+		android:label="@string/app_name"
+		android:theme="@style/AppTheme">
 
-        <!-- Main Activity -->
-        <activity
-            android:name=".TimetableActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+		<!-- Activities -->
+		<activity android:name=".TimetableActivity"
+			android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+		<activity android:name=".LoginActivity"
+			android:label="@string/title_activity_login"
+			android:parentActivityName=".TimetableActivity"
+			android:theme="@style/LoginTheme">
+			<meta-data android:name="android.support.PARENT_ACTIVITY"
+				android:value="TimetableActivity" />
+		</activity>
 
-        <!-- Other Activities -->
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
-            android:parentActivityName=".TimetableActivity"
-            android:theme="@style/LoginTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="TimetableActivity" />
-        </activity>
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".TimetableActivity"
-            android:theme="@style/AppTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
-        </activity>
-        <activity
-            android:name=".ClassInfoActivity"
-            android:label="@string/title_activity_class_info"
-            android:parentActivityName=".TimetableActivity"
-            android:theme="@style/AppTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
-        </activity>
+		<activity android:name=".SettingsActivity"
+			android:label="@string/title_activity_settings"
+			android:parentActivityName=".TimetableActivity"
+			android:theme="@style/AppTheme">
+			<meta-data android:name="android.support.PARENT_ACTIVITY"
+				android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
+		</activity>
 
-        <!-- Services -->
-        <service
-            android:name=".backend.service.DashclockService"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/app_name"
-            android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA" >
-            <intent-filter>
-                <action android:name="com.google.android.apps.dashclock.Extension" />
-            </intent-filter>
+		<activity android:name=".ClassInfoActivity"
+			android:label="@string/title_activity_class_info"
+			android:parentActivityName=".TimetableActivity"
+			android:theme="@style/AppTheme">
+			<meta-data android:name="android.support.PARENT_ACTIVITY"
+				android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
+		</activity>
 
-            <meta-data
-                android:name="protocolVersion"
-                android:value="2" />
-            <meta-data
-                android:name="worldReadable"
-                android:value="true" />
-            <meta-data
-                android:name="description"
-                android:value="@string/dashclock_desc" />
-        </service>
-        <service
-            android:name=".backend.service.NotificationService"
-            android:exported="false" >
-        </service>
-        <service
-            android:name=".backend.service.TodayWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+		<activity android:name=".debug.DebugActivity"
+		          android:label="@string/title_activity_debug" >
+		</activity>
 
-        <!-- BroadcastReceivers -->
+		<!-- Services -->
+		<service android:name=".backend.service.DashclockService"
+			android:icon="@drawable/ic_launcher"
+			android:label="@string/app_name"
+			android:permission="com.google.android.apps.dashclock.permission.READ_EXTENSION_DATA">
+			<intent-filter>
+				<action android:name="com.google.android.apps.dashclock.Extension" />
+			</intent-filter>
 
-        <receiver
-            android:name=".backend.service.TimetableAppWidget"
-            android:label="SBHS Timetable - Countdown" >
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
+			<meta-data android:name="protocolVersion"
+				android:value="2" />
+			<meta-data android:name="worldReadable"
+				android:value="true" />
+			<meta-data android:name="description"
+				android:value="@string/dashclock_desc" />
+		</service>
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/timetable_app_widget_info" />
-        </receiver>
-        <receiver android:name=".backend.service.BootFinishedReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".backend.service.TodayAppWidget"
-            android:label="SBHS Timetable - Today" >
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.sbhstimetable.action.TODAY_UPDATE" />
-            </intent-filter>
+		<service android:name=".backend.service.NotificationService"
+			android:exported="false" />
 
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/today_app_widget_info" />
-        </receiver>
+		<service android:name=".backend.service.TodayWidgetService"
+			android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <activity
-            android:name=".debug.DebugActivity"
-            android:label="@string/title_activity_debug" >
-        </activity>
-    </application>
+		<!-- Broadcast Receivers -->
 
+		<receiver android:name=".backend.service.TimetableAppWidget"
+			android:label="SBHS Timetable - Countdown" >
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+				android:resource="@xml/timetable_app_widget_info" />
+		</receiver>
+
+		<receiver android:name=".backend.service.BootFinishedReceiver" >
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+		</receiver>
+
+		<receiver android:name=".backend.service.TodayAppWidget"
+			android:label="SBHS Timetable - Today" >
+			<intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<action android:name="com.sbhstimetable.action.TODAY_UPDATE" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+				android:resource="@xml/today_app_widget_info" />
+		</receiver>
+	</application>
 </manifest>

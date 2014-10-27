@@ -25,21 +25,18 @@ import android.database.DataSetObserver;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.NoticesDropDownAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,14 +46,22 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
     private ArrayList<NoticesJson.Notice> notices;
     private NoticesJson.Year filter = null;
     private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
-	private NoticesDropDownAdapter spinnerAdapter;
+	private ArrayAdapter<String> spinnerAdapter;
+	private static final String[] years = new String[]{
+			"All notices",
+			"Year 12",
+			"Year 11",
+			"Year 10",
+			"Year 9",
+			"Year 8",
+			"Year 7"
+	};
 	private FrameLayout theFilterSelector;
 	int curIndex = 0;;
 
     public NoticesAdapter(NoticesJson n) {
         this.noticesJson = n;
         this.notices = n.getNotices();
-		this.spinnerAdapter = new NoticesDropDownAdapter();
     }
 
     public void update(NoticesJson n) {
@@ -132,6 +137,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 				s.setOnItemSelectedListener(this);
 				return theFilterSelector;
 			}
+			this.spinnerAdapter = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, years);
 			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
 			s.setAdapter(this.spinnerAdapter);

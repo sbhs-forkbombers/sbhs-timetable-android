@@ -50,7 +50,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentI
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.NoticesDropDownAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
@@ -59,7 +58,6 @@ public class NoticesFragment extends Fragment {
 	private CommonFragmentInterface mListener;
 	private Menu menu;
 	private NoticesAdapter adapter;
-	private NoticesDropDownAdapter spinnerAdapter;
 	private Handler h;
 	private Runnable runnable;
 	private SwipeRefreshLayout layout;
@@ -87,23 +85,6 @@ public class NoticesFragment extends Fragment {
 		this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
 		this.mListener.updateCachedStatus(this.menu);
-		this.mListener.setNavigationStyle(ActionBar.NAVIGATION_MODE_LIST);
-		this.spinnerAdapter = new NoticesDropDownAdapter();
-		((ActionBarActivity)getActivity()).getSupportActionBar().setListNavigationCallbacks(spinnerAdapter, new ActionBar.OnNavigationListener() {
-			@Override
-			public boolean onNavigationItemSelected(int i, long l) {
-			if (adapter == null) {
-				return true;
-			}
-			if (i == 0) {
-				adapter.filter(null);
-			}
-			else {
-				adapter.filter(NoticesJson.Year.fromString(spinnerAdapter.getItem(i).replace("Year ", "")));
-			}
-			return true;
-			}
-		});
 	}
 
 	@Override

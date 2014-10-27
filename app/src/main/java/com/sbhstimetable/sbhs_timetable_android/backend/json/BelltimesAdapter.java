@@ -27,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;

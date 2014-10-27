@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,21 +7,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity">
+	<ScrollView
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<!--<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"></LinearLayout>-->
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+			<Button
+				android:id="@+id/timetablejson_debug"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Request timetable.json" />
+			<Button android:id="@+id/timetablejson_load"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_toRightOf="@id/timetablejson_debug"
+					android:text="Load timetable.json from cache" />
 
-    <Button
-		android:id="@+id/timetablejson_debug"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Request timetable.json" />
-	<Button android:id="@+id/timetablejson_load"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/timetablejson_debug"
-			android:text="Load timetable.json from cache" />
+			<TextView android:layout_below="@id/timetablejson_debug"
+					  android:layout_width="wrap_content"
+					  android:layout_height="wrap_content"
+				android:id="@+id/status"
+				android:layout_marginBottom="16dp"/>
 
-	<TextView android:layout_below="@id/timetablejson_debug"
-			  android:layout_width="wrap_content"
-			  android:layout_height="wrap_content"
-		android:id="@+id/status"/>
-
-</RelativeLayout>
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center_horizontal"
+				android:layout_alignParentBottom="true"
+				android:text="Sik UI"/>
+		</RelativeLayout>
+	</ScrollView>
+</FrameLayout>

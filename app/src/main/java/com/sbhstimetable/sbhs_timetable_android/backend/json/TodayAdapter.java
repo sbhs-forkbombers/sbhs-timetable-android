@@ -49,7 +49,13 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 	private TimetableJson timetable;
 	private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
 	private FrameLayout theFilterSelector;
-	private int curIndex = 0;
+	private int curDayIndex = 0;
+	private int curWeekIndex = 0;
+	private static final String[] days = new String[] {
+			"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
+	};
+	private static final String[] weeks = new String[] { "A", "B", "C" };
+
 	public TodayAdapter(TodayJson tt, Context c) {
 		this.today = tt;
 		this.todayJson = tt;
@@ -125,29 +131,24 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 	public View getView(int i, View oldView, ViewGroup viewGroup) {
 		if (i == 0) {
 			if (this.theFilterSelector != null) {
-				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
-				this.onItemSelected(null, null, s.getSelectedItemPosition(), 0);
+				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner_day);
+				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
+				s.setOnItemSelectedListener(this);
+				s = (Spinner)theFilterSelector.findViewById(R.id.spinner_week);
+				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
 				s.setOnItemSelectedListener(this);
 				return theFilterSelector;
 			}
-			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
-			Spinner s = (Spinner)f.findViewById(R.id.spinner);
-			String[] entries = new String[15];
-			int c = 0;
-			for (String j : new String[] { "A", "B", "C"}) {
-				for (String k : new String[] {
-						"Monday",
-						"Tuesday",
-						"Wednesday",
-						"Thursday",
-						"Friday" // yay hardcoded lists!
-				}) {
-					entries[c++] = k + " " + j;
-				}
-			}
-			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, entries);
+			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_today_spinner, null);
+			Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
+			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, days);
 			s.setAdapter(a);
-			s.setSelection(this.curIndex);
+			s.setSelection(this.curDayIndex);
+			s.setOnItemSelectedListener(this);
+			s = (Spinner)f.findViewById(R.id.spinner_week);
+			a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, weeks);
+			s.setAdapter(a);
+			s.setSelection(this.curWeekIndex);
 			s.setOnItemSelectedListener(this);
 			this.theFilterSelector = f;
 			return f;
@@ -227,7 +228,19 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-		this.setDay(i + 1);
+		// XXX using view *will* cause NPEs.
+		Log.i("today", "called onItemSelected with int i => " + i + " curWeekIndex => " + this.curWeekIndex + " curDayIndex => " + this.curDayIndex);
+		if (adapterView.getId() == R.id.spinner_week) {
+			this.curWeekIndex = i;
+			Log.i("today", "set week to " + weeks[i]);
+			this.setDay((i * 5) + this.curDayIndex + 1);
+		}
+		else if (adapterView.getId() == R.id.spinner_day) {
+			Log.i("today", "set day to " + days[i]);
+			this.curDayIndex = i;
+			Log.i("today", "in cycle that's day #" + ((this.curWeekIndex * 5) + i));
+			this.setDay((this.curWeekIndex * 5) + i + 1);
+		}
 	}
 
 	@Override

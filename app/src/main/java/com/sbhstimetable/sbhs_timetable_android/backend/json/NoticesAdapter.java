@@ -133,14 +133,14 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		else if (i == 0) {
 			if (this.theFilterSelector != null) {
 				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
-				this.onItemSelected(null, null, s.getSelectedItemPosition(), 0);
+				this.onItemSelected(null, null, this.curIndex, 0);
 				s.setOnItemSelectedListener(this);
 				return theFilterSelector;
 			}
-			this.spinnerAdapter = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, years);
+			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, years);
 			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
-			s.setAdapter(this.spinnerAdapter);
+			s.setAdapter(a);
 			s.setSelection(this.curIndex);
 			s.setOnItemSelectedListener(this);
 			this.theFilterSelector = f;

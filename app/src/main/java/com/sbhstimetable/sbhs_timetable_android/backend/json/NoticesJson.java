@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -51,21 +52,34 @@ public class NoticesJson {
 	@SuppressWarnings("all")
 	private JsonObject notices;
 	private ArrayList<Notice> n = new ArrayList<Notice>();
+	private HashMap<Year,ArrayList<Notice>> noticesByYear = new HashMap<Year, ArrayList<Notice>>();
 	public NoticesJson(JsonObject obj) {
 		this.notices = obj;
 		ArrayList<NoticeList> why = new ArrayList<NoticeList>();
+		Year[] years = Year.values();
+		for (int k = 0; k < years.length; k++) {
+			this.noticesByYear.put(years[k], new ArrayList<Notice>());
+		}
 		for (Map.Entry<String, JsonElement> i : this.notices.get("notices").getAsJsonObject().entrySet()) {
 			NoticeList l = new NoticeList(i.getValue().getAsJsonArray(), Integer.valueOf(i.getKey()));
-			why.add(l);
+			for (int j = 0; j < l.length(); j++) {
+				Notice temp = l.get(j);
+				this.n.add(temp);
+				for (Year y : temp.years) {
+					this.noticesByYear.get(y).add(temp);
+				}
+			}
 		}
-		for (int i = why.size()-1; i > -1; i--) {
-			n.addAll(why.get(i).getAllNotices());
-		}
+
 		INSTANCE = this;
 	}
 
 	public ArrayList<Notice> getNotices() {
 		return this.n;
+	}
+
+	public ArrayList<Notice> getNoticesForYear(Year y) {
+		return this.noticesByYear.get(y);
 	}
 
 	public static class NoticeList {
@@ -97,7 +111,7 @@ public class NoticesJson {
 		}
 	}
 
-	public static class Notice {
+	public static class Notice implements Comparable<Notice> {
 		private JsonObject notice;
 		private List<Year> years;
 		private int weight;
@@ -169,6 +183,11 @@ public class NoticesJson {
 
 		public String getMeetingPlace() {
 			return this.notice.get("meetingPlace").getAsString();
+		}
+
+		@Override
+		public int compareTo(Notice n) {
+			return this.getWeight() - n.getWeight();
 		}
 	}
 

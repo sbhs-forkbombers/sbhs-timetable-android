@@ -25,6 +25,7 @@ import android.database.DataSetObserver;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +47,6 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
     private ArrayList<NoticesJson.Notice> notices;
     private NoticesJson.Year filter = null;
     private List<DataSetObserver> dsos = new ArrayList<DataSetObserver>();
-	private ArrayAdapter<String> spinnerAdapter;
 	private static final String[] years = new String[]{
 			"All notices",
 			"Year 12",
@@ -57,7 +57,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 			"Year 7"
 	};
 	private FrameLayout theFilterSelector;
-	int curIndex = 0;;
+	int curIndex = 0;
 
     public NoticesAdapter(NoticesJson n) {
         this.noticesJson = n;
@@ -82,17 +82,14 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
     }
 
     public void filter(NoticesJson.Year year) {
+		Log.i("notices", "filter to year " + year);
         this.filter = year;
-        this.notices = noticesJson.getNotices();
-        if (year != null) {
-            ArrayList<NoticesJson.Notice> res = new ArrayList<NoticesJson.Notice>();
-            for (NoticesJson.Notice i : notices) {
-                if (i.isForYear(year)) {
-                    res.add(i);
-                }
-            }
-            this.notices = res;
-        }
+        if (year == null) {
+			this.notices = this.noticesJson.getNotices();
+		}
+		else {
+			this.notices = this.noticesJson.getNoticesForYear(year);
+		}
         this.notifyDSOs();
     }
 
@@ -131,18 +128,25 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
             return res;
         }
 		else if (i == 0) {
+			Log.i("notices", "getting i = 0");
 			if (this.theFilterSelector != null) {
+				Log.i("notices", "yay cache");
 				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
-				this.onItemSelected(null, null, this.curIndex, 0);
-				s.setOnItemSelectedListener(this);
+				//this.filter(NoticesJson.Year.fromString())
+				//this.onItemSelected(s, null, this.curIndex, 0);
+				//s.setOnItemSelectedListener(this);
+				curIndex = s.getSelectedItemPosition();
+				this.filter(curIndex == 0 ? null : NoticesJson.Year.fromString(this.years[curIndex]));
 				return theFilterSelector;
 			}
-			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, years);
+			Log.i("notices", "no cache :(");
+
 			FrameLayout f = (FrameLayout)((LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
+			ArrayAdapter<String> a = new ArrayAdapter<String>(viewGroup.getContext(), R.layout.textview, years);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
 			s.setAdapter(a);
 			s.setSelection(this.curIndex);
-			s.setOnItemSelectedListener(this);
+			//s.setOnItemSelectedListener(this);
 			this.theFilterSelector = f;
 			return f;
 		}
@@ -201,15 +205,13 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+		Log.i("notices", "changed!");
+		Log.e("notices", "now " + i);
 		curIndex = i;
-		if (i != 0) {
-			this.filter(NoticesJson.Year.fromString(this.spinnerAdapter.getItem(i)));
-		}
-		else {
-			this.filter(null);
-		}
 	}
 
 	@Override
-	public void onNothingSelected(AdapterView<?> adapterView) {}
+	public void onNothingSelected(AdapterView<?> adapterView) {
+		Log.i("notices", "nothing selected!");
+	}
 }

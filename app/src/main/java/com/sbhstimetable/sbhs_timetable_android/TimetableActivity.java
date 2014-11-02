@@ -32,6 +32,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -61,20 +62,18 @@ public class TimetableActivity extends ActionBarActivity
 	public NavigationDrawerFragment mNavigationDrawerFragment;
 	private Menu menu;
 	public boolean isActive = false;
-	private int navStyle = ActionBar.NAVIGATION_MODE_STANDARD;
-	/**
-	 * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-	 */
-	private CharSequence mTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
 		ApiAccessor.load(this);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-		mTitle = getTitle();
 		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
@@ -122,16 +121,19 @@ public class TimetableActivity extends ActionBarActivity
 			case 1:
 				fragmentManager.beginTransaction()
 					.replace(R.id.container, TimetableFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+					.addToBackStack("timetable")
 					.commit();
 				break;
 			case 2:
 				fragmentManager.beginTransaction()
 					.replace(R.id.container, NoticesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+					.addToBackStack("notices")
 					.commit();
 				break;
 			case 3:
 				fragmentManager.beginTransaction()
 					.replace(R.id.container, BelltimesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+					.addToBackStack("belltimes")
 					.commit();
 				break;
 			case 4:
@@ -154,17 +156,8 @@ public class TimetableActivity extends ActionBarActivity
 
 	@Override
 	public void setNavigationStyle(int s) {
+		// required
 	}
-
-	public void restoreActionBar() {
-		ActionBar actionBar = getActionBar();
-		if (actionBar == null) {
-			return;
-		}
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setTitle(mTitle);
-	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -174,7 +167,6 @@ public class TimetableActivity extends ActionBarActivity
 			// if the drawer is not showing. Otherwise, let the drawer
 			// decide what to show in the action bar.
 			getMenuInflater().inflate(R.menu.timetable, menu);
-			restoreActionBar();
 			return true;
 		}
 		return super.onCreateOptionsMenu(menu);

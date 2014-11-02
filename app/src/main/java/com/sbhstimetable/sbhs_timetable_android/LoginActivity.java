@@ -26,6 +26,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -43,7 +45,11 @@ public class LoginActivity extends ActionBarActivity {
 		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		WebView wv = (WebView) findViewById(R.id.loginview);
 		wv.setBackgroundColor(Color.parseColor("#000000"));
 		wv.getSettings().setSaveFormData(true);
@@ -65,8 +71,8 @@ public class LoginActivity extends ActionBarActivity {
 						if (i.contains("SESSID")) {
 							String sessionID = i.split("=")[1];
 							ApiAccessor.finishedLogin(me, sessionID);
-							NavUtils.navigateUpFromSameTask(me);
 							view.clearCache(true);
+							finish();
 						}
 					}
 				}
@@ -77,7 +83,18 @@ public class LoginActivity extends ActionBarActivity {
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		if (id == android.R.id.home) {
+			//NavUtils.navigateUpFromSameTask(this);
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
 	public void onBackPressed() {
-		NavUtils.navigateUpFromSameTask(this);
+		finish();
 	}
 }

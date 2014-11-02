@@ -146,7 +146,7 @@ public class NavigationDrawerFragment extends Fragment {
 			getString(R.string.title_belltimes)
 		));
 		mDrawerListView.setAdapter(new ArrayAdapter<String>(
-			((ActionBarActivity)getActivity()).getSupportActionBar().getThemedContext(),
+			((ActionBarActivity)getActivity()).getBaseContext(),
 			android.R.layout.simple_list_item_activated_1,
 			this.elements));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
@@ -163,7 +163,7 @@ public class NavigationDrawerFragment extends Fragment {
 			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
 		));
 		smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
-				getActionBar().getThemedContext(),
+			((ActionBarActivity)getActivity()).getBaseContext(),
 				android.R.layout.simple_list_item_activated_1,
 				this.botElements
 		));

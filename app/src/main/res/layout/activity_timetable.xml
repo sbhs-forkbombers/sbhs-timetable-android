@@ -35,7 +35,7 @@
 
 		<android.support.v7.widget.Toolbar android:id="@+id/toolbar"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="?attr/actionBarSize"
 			android:minHeight="?attr/actionBarSize"
 			android:background="?attr/colorPrimary" />
 
@@ -59,7 +59,7 @@
 	<!-- The drawer is given a fixed width in dp and extends the full height of
 		 the container. -->
 	<fragment android:id="@+id/navigation_drawer"
-		android:layout_width="180dp"
+		android:layout_width="240dp"
 		android:layout_height="match_parent"
 		android:name="com.sbhstimetable.sbhs_timetable_android.NavigationDrawerFragment"
 		android:layout_gravity="start"

@@ -1,2 +1,3 @@
 # sbhs-timetable-android
-No promises. 
+~~No promises.~~
+I suppose this counts as being delivered, no?

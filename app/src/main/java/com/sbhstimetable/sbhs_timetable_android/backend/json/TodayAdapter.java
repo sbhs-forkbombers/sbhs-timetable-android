@@ -64,11 +64,13 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 		if (timt != null) {
 			Log.i("todayAdapter", "loading timetable.json!");
 			this.timetable = new TimetableJson(timt);
-			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName());
+			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName()) -  1;
+			Log.i("todayAdapter", "TJI => " +this.todayJsonIndex);
 			this.curDayIndex = this.todayJsonIndex % 5;
-			this.curDayIndex--;
-			this.curWeekIndex = (int)Math.floor(this.todayJsonIndex / 3);
-			this.curWeekIndex--;
+			//this.curDayIndex++;
+			this.curWeekIndex = (int)Math.floor(this.todayJsonIndex / 5);
+			//this.curWeekIndex--;
+
 		} else {
 			ApiAccessor.getTimetable(c, true);
 		}

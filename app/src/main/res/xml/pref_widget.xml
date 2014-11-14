@@ -26,19 +26,19 @@
 		 when checked/unchecked. -->
 	<PreferenceCategory
 		android:title="@string/pref_header_widget"
-        android:key="widget_cat"/>
+		android:key="widget_cat"/>
 	<ListPreference
 		android:key="widget_transparency_homescreen"
 		android:title="@string/pref_title_widget_transparency_hs"
-        android:entries="@array/widget_transparency_display"
-        android:entryValues="@array/widget_transparency_val"
-        android:defaultValue="32"/> <!-- 50% transparent by default -->
+		android:entries="@array/widget_transparency_display"
+		android:entryValues="@array/widget_transparency_val"
+		android:defaultValue="32"/> <!-- 50% transparent by default -->
 
-    <ListPreference
-        android:key="widget_transparency_lockscreen"
-        android:title="@string/pref_title_widget_transparency_ls"
-        android:entries="@array/widget_transparency_display"
-        android:entryValues="@array/widget_transparency_val"
-        android:defaultValue="00"/> <!-- 0% transparent by default -->
+	<ListPreference
+		android:key="widget_transparency_lockscreen"
+		android:title="@string/pref_title_widget_transparency_ls"
+		android:entries="@array/widget_transparency_display"
+		android:entryValues="@array/widget_transparency_val"
+		android:defaultValue="00"/> <!-- 0% transparent by default -->
 
 </PreferenceScreen>

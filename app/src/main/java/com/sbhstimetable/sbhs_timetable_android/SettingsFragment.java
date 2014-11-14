@@ -45,29 +45,29 @@ public class SettingsFragment extends PreferenceFragment {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.pref_notification);
-        addPreferencesFromResource(R.xml.pref_widget);
-        String[] prefs = new String[] {
-                PrefUtil.WIDGET_TRANSPARENCY_HS,
-                PrefUtil.WIDGET_TRANSPARENCY_LS
-        }; // settings to attach listeners to
+		addPreferencesFromResource(R.xml.pref_widget);
+		String[] prefs = new String[] {
+				PrefUtil.WIDGET_TRANSPARENCY_HS,
+				PrefUtil.WIDGET_TRANSPARENCY_LS
+		}; // settings to attach listeners to
 
-        // don't offer lockscreen widget options on platforms that don't support them - removal doesn't work for some reason.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-	        mPreferenceScreen = getPreferenceScreen();
-            mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
-            mPreferenceScreen.removePreference(mListPreference);
-            prefs = new String[] {
-                    PrefUtil.WIDGET_TRANSPARENCY_HS
-            };
+		// don't offer lockscreen widget options on platforms that don't support them - removal doesn't work for some reason.
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+			mPreferenceScreen = getPreferenceScreen();
+			mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
+			mPreferenceScreen.removePreference(mListPreference);
+			prefs = new String[] {
+					PrefUtil.WIDGET_TRANSPARENCY_HS
+			};
 
-        }
-        for (String pref : prefs) {
-            Preference thePref = this.findPreference(pref);
-            thePref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-            SharedPreferences p = thePref.getSharedPreferences();
-            String defaultVal = ((ListPreference) thePref).getValue();
-            thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
-        }
+		}
+		for (String pref : prefs) {
+			Preference thePref = this.findPreference(pref);
+			thePref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+			SharedPreferences p = thePref.getSharedPreferences();
+			String defaultVal = ((ListPreference) thePref).getValue();
+			thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
+		}
 	}
 
 	/**
@@ -86,13 +86,13 @@ public class SettingsFragment extends PreferenceFragment {
 				int index = listPreference.findIndexOfValue(stringValue);
 				// Set the summary to reflect the new value.
 				preference.setSummary((index >= 0 ? String.valueOf(listPreference.getEntries()[index]).replace("%", "%%") : null));
-                if (preference.getKey().contains("widget")) {
-                    // update widgets
-                    Intent i = new Intent(preference.getContext(), TodayAppWidget.class);
-                    i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                    i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
-                    preference.getContext().sendBroadcast(i);
-                }
+				if (preference.getKey().contains("widget")) {
+					// update widgets
+					Intent i = new Intent(preference.getContext(), TodayAppWidget.class);
+					i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+					i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
+					preference.getContext().sendBroadcast(i);
+				}
 			}
 			return true;
 		}

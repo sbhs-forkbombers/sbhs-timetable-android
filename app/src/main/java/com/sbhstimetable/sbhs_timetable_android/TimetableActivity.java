@@ -27,6 +27,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -36,6 +37,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -60,12 +63,13 @@ public class TimetableActivity extends ActionBarActivity
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
 	public NavigationDrawerFragment mNavigationDrawerFragment;
+	public DrawerLayout mDrawerLayout;
 	private Menu menu;
 	public boolean isActive = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
 
@@ -73,27 +77,28 @@ public class TimetableActivity extends ActionBarActivity
 		setSupportActionBar(toolbar);
 
 		ApiAccessor.load(this);
+		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
 		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
 		// Set up the drawer.
-		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 		// Grab belltimes.json
 		ApiAccessor.getBelltimes(this);
 		ApiAccessor.getToday(this);
 		ApiAccessor.getNotices(this);
 		ApiAccessor.getTimetable(this, true);
 		final Context c = this;
+
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				StorageCache.cleanCache(c);
 			}
 		});
 		t.start();
-		setProgressBarIndeterminateVisibility(true);
 	}
 
 	@Override
@@ -150,7 +155,7 @@ public class TimetableActivity extends ActionBarActivity
 				} else {
 					ApiAccessor.login(this);
 				}
-			break; // HAVE YOU GOT A PLAN BREAK?®
+				break; // HAVE YOU GOT A PLAN BREAK?®
 		}
 	}
 

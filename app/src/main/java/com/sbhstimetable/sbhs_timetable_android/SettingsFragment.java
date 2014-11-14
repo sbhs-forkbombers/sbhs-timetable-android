@@ -29,6 +29,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
@@ -36,6 +37,9 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 public class SettingsFragment extends PreferenceFragment {
+	private PreferenceScreen mPreferenceScreen;
+	private ListPreference mListPreference;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,11 +53,9 @@ public class SettingsFragment extends PreferenceFragment {
 
         // don't offer lockscreen widget options on platforms that don't support them - removal doesn't work for some reason.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            PreferenceCategory p = (PreferenceCategory)this.findPreference("widget_cat");
-            ListPreference l = (ListPreference)this.findPreference(PrefUtil.WIDGET_TRANSPARENCY_LS);
-            l.setEnabled(false);
-            l.setSummary("Your version of Android does not support lock screen widgets :(");
-            p.removePreference(l);
+	        mPreferenceScreen = getPreferenceScreen();
+            mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
+            mPreferenceScreen.removePreference(mListPreference);
             prefs = new String[] {
                     PrefUtil.WIDGET_TRANSPARENCY_HS
             };

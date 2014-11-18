@@ -51,7 +51,7 @@ public class SettingsFragment extends PreferenceFragment {
 				PrefUtil.WIDGET_TRANSPARENCY_LS
 		}; // settings to attach listeners to
 
-		// don't offer lockscreen widget options on platforms that don't support them - removal doesn't work for some reason.
+		// don't offer lockscreen widget options on platforms that don't support them
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
 			mPreferenceScreen = getPreferenceScreen();
 			mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");

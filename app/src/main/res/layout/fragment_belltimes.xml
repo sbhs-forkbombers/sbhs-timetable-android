@@ -32,8 +32,7 @@
 		<ListView android:id="@+id/belltimes_listview"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
-			android:paddingLeft="16dp"
-			android:paddingRight="16dp"	/>
+			android:divider="@null" />
 
 	</FrameLayout>
 

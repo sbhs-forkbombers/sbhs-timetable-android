@@ -104,7 +104,7 @@ public class DashclockService extends DashClockExtension {
         }
         if (mine != null && !summary) {
             publishUpdate(new ExtensionData()
-                            .icon(R.drawable.ic_launcher)
+                            .icon(R.mipmap.ic_launcher)
                             .status(mine.getPeriod(num).getShortName() + " - " + mine.getPeriod(num).room())
                             .expandedTitle(mine.getPeriod(num).name())
                             .expandedBody("in " + mine.getPeriod(num).room() + " with " + mine.getPeriod(num).teacher())
@@ -144,7 +144,7 @@ public class DashclockService extends DashClockExtension {
                 shortTitle = "TMR";
             }
             publishUpdate(new ExtensionData()
-                .icon(R.drawable.ic_launcher)
+                .icon(R.mipmap.ic_launcher)
                 .status(shortTitle)
                 .expandedTitle(mine.getDayName())
                 .expandedBody(subjects)

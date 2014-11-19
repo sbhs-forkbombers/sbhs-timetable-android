@@ -123,7 +123,7 @@ public class NotificationService extends IntentService {
             return;
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.drawable.ic_launcher);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
         if (BelltimesJson.getInstance() == null) return;
         BelltimesJson.Bell next = BelltimesJson.getInstance().getNextBell();
         if (next == null) {

@@ -21,11 +21,9 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 
 public class SettingsActivity extends ActionBarActivity {
 

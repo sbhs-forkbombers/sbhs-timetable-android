@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;

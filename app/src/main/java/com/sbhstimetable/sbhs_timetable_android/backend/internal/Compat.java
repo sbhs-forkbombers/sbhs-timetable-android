@@ -27,8 +27,6 @@ import android.content.Context;
 import android.os.Build;
 import android.view.View;
 
-import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Compat {

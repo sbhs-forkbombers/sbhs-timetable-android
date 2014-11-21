@@ -65,10 +65,9 @@ public class TimetableFragment extends Fragment {
 	private CommonFragmentInterface mListener;
 	private TodayJson today;
 	private SwipeRefreshLayout layout;
-	private Runnable runnable;
-	private Handler h;
 	private TodayAdapter adapter;
 	private BroadcastListener listener;
+	private boolean refreshing = false;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -86,7 +85,6 @@ public class TimetableFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		this.h = new Handler();
 	}
 
 	@Override
@@ -118,17 +116,10 @@ public class TimetableFragment extends Fragment {
 		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			if (!ApiAccessor.hasInternetConnection(c)) {
-				Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-				v.setRefreshing(false);
-				return;
-			}
+			refreshing = true;
 			ApiAccessor.getBelltimes(c, false);
 			ApiAccessor.getNotices(c, false);
 			ApiAccessor.getToday(c, false);
-			h.removeCallbacks(runnable);
-			runnable = new CountdownFragment.StopSwiping(v);
-			h.postDelayed(runnable, 10000);
 			}
 		});
 		Resources r = this.getResources();
@@ -237,11 +228,19 @@ public class TimetableFragment extends Fragment {
 					return;
 				}
 				this.f.setRefreshing(false);
-				this.frag.h.removeCallbacks(this.frag.runnable);
 				if (act.equals(ApiAccessor.ACTION_TODAY_JSON)) {
-                    Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+					if (refreshing)
+                    	Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+					refreshing = false;
 					this.frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				}
+			}
+			if (act.equals(ApiAccessor.ACTION_TODAY_FAILED)) {
+				if (refreshing)
+					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
+				refreshing = false;
+				if (this.frag == null) return;
+				this.frag.layout.setRefreshing(false);
 			}
 		}
 	}

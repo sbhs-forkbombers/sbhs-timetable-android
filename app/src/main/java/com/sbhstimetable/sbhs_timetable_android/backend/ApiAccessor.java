@@ -46,19 +46,25 @@ import java.net.URL;
 public class ApiAccessor {
 	public static final String baseURL = "http://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
 	public static final String PREFS_NAME = "timetablePrefs";
+
 	public static final String ACTION_TODAY_JSON = "todayData";
 	public static final String ACTION_BELLTIMES_JSON = "belltimesData";
 	public static final String ACTION_NOTICES_JSON = "noticesData";
 	public static final String ACTION_TIMETABLE_JSON = "timetableData";
+	public static final String ACTION_TODAY_FAILED = "noToday";
+	public static final String ACTION_BELLTIMES_FAILED = "noBelltimes";
+	public static final String ACTION_NOTICES_FAILED = "noNotices";
+	public static final String ACTION_TIMETABLE_FAILED = "noTimetable";
+
 	public static final String EXTRA_JSON_DATA = "jsonString";
 	public static final String EXTRA_CACHED = "isCached";
+	public static final String EXTRA_ERROR_MESSAGE = "error";
+
 	public static final String PREF_TODAY_LAST_UPDATE = "todayUpdate";
 	public static final String PREF_NOTICES_LAST_UPDATE = "noticesUpdate";
 	public static final String PREF_BELLTIMES_LAST_UPDATE = "bellsUpdate";
-	public static final String GLOBAL_ACTION_TODAY_JSON = "com.sbhstimetable.sbhs_timetable_android."+ACTION_TODAY_JSON;
 
 	private static String sessionID = null;
-
 
 	public static int noticesStatus = R.string.desc_failed;
 	public static int bellsStatus = R.string.desc_failed;
@@ -134,7 +140,7 @@ public class ApiAccessor {
 		}
 		try {
 			Log.i("ApiAccessor", "Going to get today.json…");
-			new DownloadFileTask(c, ACTION_TODAY_JSON).execute(new URL(baseURL + "/api/today.json"));
+			new DownloadFileTask(c, ACTION_TODAY_JSON, ACTION_TODAY_FAILED).execute(new URL(baseURL + "/api/today.json"));
 		} catch (Exception e) {
 			Log.e("apiaccessor", "today.json dl failed", e);
 		}
@@ -157,7 +163,7 @@ public class ApiAccessor {
 			return;
 		}
 		try {
-			new DownloadFileTask(c, ACTION_TIMETABLE_JSON).execute(new URL(baseURL + "/api/bettertimetable.json"));
+			new DownloadFileTask(c, ACTION_TIMETABLE_JSON, ACTION_TIMETABLE_FAILED).execute(new URL(baseURL + "/api/bettertimetable.json"));
 		} catch (Exception e) {
 			Log.e("apiaccessor", "timetable failed", e);
 		}
@@ -182,10 +188,10 @@ public class ApiAccessor {
 		}
 		if (!hasInternetConnection(c)) {
 			bellsLoaded = true;
-			return; // TODO fallback bells
 		}
 		try {
-			new DownloadFileTask(c, ACTION_BELLTIMES_JSON).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString(c)));
+			Log.i("ApiAccessor", "Going to get belltimes.json…");
+			new DownloadFileTask(c, ACTION_BELLTIMES_JSON, ACTION_BELLTIMES_FAILED).execute(new URL(baseURL + "/api/belltimes?date=" + DateTimeHelper.getDateString(c)));
 		} catch (Exception e) {
 			Log.e("apiaccessor", "belltimes failed", e);
 		}
@@ -210,10 +216,10 @@ public class ApiAccessor {
 		}
 		if (!isLoggedIn() || !hasInternetConnection(c)) {
 			noticesLoaded = true;
-			return;
 		}
 		try {
-			new DownloadFileTask(c, ACTION_NOTICES_JSON).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString(c)));
+			Log.i("ApiAccessor", "Going to get notices.json…");
+			new DownloadFileTask(c, ACTION_NOTICES_JSON, ACTION_NOTICES_FAILED).execute(new URL(baseURL + "/api/notices.json?date=" + DateTimeHelper.getDateString(c)));
 		} catch (Exception e) {
 			Log.e("apiaccessor", "notices wat", e);
 		}
@@ -222,10 +228,11 @@ public class ApiAccessor {
 	private static class DownloadFileTask extends AsyncTask<URL, Void, String> {
 		private Context c;
 		private final String intentType;
-
-		public DownloadFileTask(Context c, String type) {
+		private final String intentFailed;
+		public DownloadFileTask(Context c, String type, String failure) {
 			this.intentType = type;
 			this.c = c;
+			this.intentFailed = failure;
 		}
 
 		@Override
@@ -245,19 +252,30 @@ public class ApiAccessor {
 					return result;
 				} catch (Exception e) {
 					Log.e("apiaccessor", "failed to load " + i.toString(), e);
+					sendFailure(LocalBroadcastManager.getInstance(c), R.string.err_nointernet);
 				}
 			}
 			return null;
 		}
 
+		private void sendFailure(LocalBroadcastManager lbm, int whySoFail) {
+			Intent intent = new Intent(this.intentFailed);
+			Log.i("downloadfiletask", "Sending failure intent: " + this.intentFailed);
+			intent.putExtra(EXTRA_ERROR_MESSAGE, whySoFail);
+			lbm.sendBroadcast(intent);
+		}
+
 		@Override
 		protected void onPostExecute(String result) {
+			LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this.c);
 			if (result == null) {
+				this.sendFailure(lbm, R.string.err_idek);
 				Log.e("downloadfiletask", "failed to download a result for " + this.intentType);
 				return;
 			}
+			JsonObject o;
 			try {
-				JsonObject o = new JsonParser().parse(result).getAsJsonObject();
+				o = new JsonParser().parse(result).getAsJsonObject();
 				if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
 					Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
 					return;
@@ -265,10 +283,18 @@ public class ApiAccessor {
 			}
 			catch (Exception e) {
 				Log.e("downloadfiletask", "received invalid json");
+				// fail
+				this.sendFailure(lbm, R.string.err_badjson);
+				return;
+			}
+			if (o.has("status") && o.get("status").getAsString().equals("401")) {
+				// need to log in
+				this.sendFailure(lbm, R.string.err_auth);
 				return;
 			}
 			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
 			SharedPreferences.Editor ed = p.edit();
+
 			if (intentType.equals(ACTION_BELLTIMES_JSON)) {
 				bellsStatus = R.string.desc_current;
 				bellsCached = false;
@@ -285,28 +311,12 @@ public class ApiAccessor {
 
 			ed.commit();
 
+
 			Intent i = new Intent(this.intentType);
 			i.putExtra(EXTRA_JSON_DATA, result);
-			try {
-				JsonObject o = new JsonParser().parse(result).getAsJsonObject();
-				if (o.has("status") && o.get("status").getAsString().equals("401")) {
-					// need to log in
-				}
-			} catch (Exception e) {
-				// whatever
-				Log.d("ApiAccessor", "failed to parse json", e);
-			}
-			if (this.c instanceof TimetableActivity) {
-				TimetableActivity a = (TimetableActivity)c;
-				//a.mNavigationDrawerFragment.lastTimestamp.setText("Last updated: " + new SimpleDateFormat("h:mm:ss a").format(new Date()));
-			}
 			i.putExtra(EXTRA_CACHED, false);
-
-			if (intentType.equals(GLOBAL_ACTION_TODAY_JSON)) {
-				this.c.sendBroadcast(i);
-			} else {
-				LocalBroadcastManager.getInstance(this.c).sendBroadcast(i);
-			}
+			Log.i("downloadfiletask", "got " + this.intentType);
+			lbm.sendBroadcast(i);
 		}
 	}
 }

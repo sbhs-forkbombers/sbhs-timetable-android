@@ -54,12 +54,9 @@ public class CountdownFragment extends Fragment {
 	private static CountDownTimer timeLeft;
 	private static boolean cancelling = false;
 	private SwipeRefreshLayout mainView;
-	private Handler stopSwipeToRefresh;
-	private StopSwiping runnable;
 	private BroadcastListener listener;
-    private int lastBells;
-    private int lastToday;
 	private int tapCount = 0;
+	private boolean refreshing = false;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -109,17 +106,10 @@ public class CountdownFragment extends Fragment {
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			if (!ApiAccessor.hasInternetConnection(me.getActivity())) {
-				Toast.makeText(me.getActivity(), R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-				f.setRefreshing(false);
-				return;
-			}
-			ApiAccessor.getNotices(me.getActivity(), false);
-			ApiAccessor.getToday(me.getActivity(), false);
-			ApiAccessor.getBelltimes(me.getActivity(), false);
-			stopSwipeToRefresh = new Handler();
-			runnable = new StopSwiping(f);
-			stopSwipeToRefresh.postDelayed(runnable, 10000);
+				refreshing = true;
+				ApiAccessor.getNotices(me.getActivity(), false);
+				ApiAccessor.getToday(me.getActivity(), false);
+				ApiAccessor.getBelltimes(me.getActivity(), false);
 			}
 		});
 		this.mainView = f;
@@ -153,14 +143,7 @@ public class CountdownFragment extends Fragment {
 		if (f == null) {
 			return;
 		}
-		if (stopSwipeToRefresh != null && runnable != null) {
-			stopSwipeToRefresh.removeCallbacks(runnable);
-			runnable = null;
-		}
-		if (mainView.isRefreshing()) {
-			mainView.setRefreshing(false);
-			Toast.makeText(this.getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
-		}
+
 		if (timeLeft != null) {
 			cancelling = true;
 			timeLeft.cancel();
@@ -286,6 +269,7 @@ public class CountdownFragment extends Fragment {
 		i.addAction(TimetableActivity.TODAY_AVAILABLE);
 		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+		i.addAction(ApiAccessor.ACTION_TODAY_FAILED);
 		if (this.listener == null) {
 			this.listener = new BroadcastListener();
 		}
@@ -308,22 +292,22 @@ public class CountdownFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			updateTimer();
-			if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE)) {
+			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+				mainView.setRefreshing(false);
+				if (refreshing)
+					Toast.makeText(getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
+				refreshing = false;
+			}
+			if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE) && BelltimesJson.getInstance() != null) {
 				ApiAccessor.getBelltimes(context);
+
+			}
+			else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_FAILED)) {
+				if (refreshing)
+					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
+				refreshing = false;
 			}
 		}
 	}
 
-	public static final class StopSwiping implements Runnable {
-		private SwipeRefreshLayout f;
-		public StopSwiping(SwipeRefreshLayout f) {
-			this.f = f;
-		}
-
-		@Override
-		public void run() {
-			f.setRefreshing(false);
-			Toast.makeText(f.getContext(), R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-		}
-	}
 }

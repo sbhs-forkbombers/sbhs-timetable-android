@@ -25,9 +25,4 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context=".TimetableActivity" >
 
-	<item android:id="@+id/action_cache_status"
-		android:title="@string/title_cache_status"
-		android:icon="@drawable/ic_warning_white_48dp"
-		app:showAsAction="always" />
-
 </menu>

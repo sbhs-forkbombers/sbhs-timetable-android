@@ -48,13 +48,15 @@
 	<string name="desc_current">Up to date!</string>
 	<string name="desc_failed">Couldn\'t load!</string>
 	<string name="err_nointernet">You need an internet connection to refresh!</string>
-	<string name="err_idek">Couldn't contact SBHS. Oops.</string>
+	<string name="err_idek">Couldn\'t contact SBHS. Oops.</string>
+	<string name="err_noerr">Something bad happened? *shrug*</string> <!-- Error: no error -->
 	<string name="err_badjson">Got an invalid response. Try again maybe?</string>
 	<string name="err_auth">You need to log in to load your timetable and the notices!</string>
 
-	<!-- dashclock -->
+	<!-- dashclock/homescreen widgets -->
 	<string name="add_widget">Add widget</string>
 	<string name="dashclock_desc">Shows information about today\'s next lesson.</string>
+	<string name="filler">some amount of time</string>
 
 	<!-- misc. labels -->
 	<string name="start">Start:</string>

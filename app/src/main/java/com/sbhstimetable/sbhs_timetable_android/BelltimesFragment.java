@@ -31,6 +31,7 @@ import android.app.Fragment;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,11 +60,14 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 public class BelltimesFragment extends Fragment {
 
 	private CommonFragmentInterface mListener;
-	private Runnable runnable;
 	private SwipeRefreshLayout layout;
-	private Handler h;
 	private BelltimesAdapter adapter;
 	private BroadcastListener listener;
+
+	/** are we refreshing
+	 *  in the UI?
+	 */
+	public boolean refreshing = false;
 	//private Menu menu;
 
 	public static BelltimesFragment newInstance() {
@@ -103,25 +107,17 @@ public class BelltimesFragment extends Fragment {
 				int topRowVerticalPosition =
 					(lv == null || v.getChildCount() == 0) ?
 					0 : v.getChildAt(0).getTop();
-				v.setEnabled(topRowVerticalPosition >= 0);
+				Log.i("belltimesFragment", "scroll? COMPUTER SAYS " + topRowVerticalPosition);
+				v.setEnabled(topRowVerticalPosition >= -100);
 			}
 		});
 		final Context c = this.getActivity();
-		h = new Handler();
 		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			if (!ApiAccessor.hasInternetConnection(c)) {
-				Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-				v.setRefreshing(false);
-				return;
-			}
-			ApiAccessor.getBelltimes(c, false);
-			ApiAccessor.getNotices(c, false);
-			ApiAccessor.getToday(c, false);
-			h.removeCallbacks(runnable);
-			runnable = new CountdownFragment.StopSwiping(v);
-			h.postDelayed(runnable, 10000);
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
 			}
 		});
 		Resources r = this.getResources();
@@ -141,6 +137,8 @@ public class BelltimesFragment extends Fragment {
 		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
 		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
+		i.addAction(ApiAccessor.ACTION_BELLTIMES_FAILED);
+		Log.i("belltimesFragment", "I want " + i.getAction(3));
 
 		if (this.listener == null) {
 			this.listener = new BroadcastListener(this);
@@ -161,10 +159,8 @@ public class BelltimesFragment extends Fragment {
 	}
 
 	private class BroadcastListener extends BroadcastReceiver {
-		private SwipeRefreshLayout f;
 		private BelltimesFragment frag;
 		BroadcastListener(BelltimesFragment f) {
-			this.f = f.layout;
 			this.frag = f;
 		}
 
@@ -172,18 +168,21 @@ public class BelltimesFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			String act = intent.getAction();
 			if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				if (this.f == null) return;
-				this.f.setRefreshing(false);
-				this.frag.h.removeCallbacks(this.frag.runnable);
-				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+				if (this.frag == null) return;
+				this.frag.layout.setRefreshing(false);
 				if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
+					Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 					JsonObject o = new JsonParser().parse(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)).getAsJsonObject();
 					if (o.has("bells")) {
 						BelltimesJson b = new BelltimesJson(o);
 						this.frag.adapter.updateBelltimes(b);
-						//this.frag.adapter.update(nj);
 					}
 				}
+			}
+			else if (act.equals(ApiAccessor.ACTION_BELLTIMES_FAILED)) {
+				Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
+				if (this.frag == null) return;
+				this.frag.layout.setRefreshing(false);
 			}
 		}
 	}

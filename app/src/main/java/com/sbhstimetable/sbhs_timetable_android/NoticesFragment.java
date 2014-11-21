@@ -56,17 +56,15 @@ public class NoticesFragment extends Fragment {
 	private CommonFragmentInterface mListener;
 	private Menu menu;
 	private NoticesAdapter adapter;
-	private Handler h;
-	private Runnable runnable;
 	private SwipeRefreshLayout layout;
 	private BroadcastListener listener;
+	private boolean refreshing = false;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
 	 * @return A new instance of fragment NoticesFragment.
 	 */
-	// TODO: Rename and change types and number of parameters
 	public static NoticesFragment newInstance() {
 		NoticesFragment fragment = new NoticesFragment();
 		Bundle args = new Bundle();
@@ -123,21 +121,14 @@ public class NoticesFragment extends Fragment {
 			}
 		});
 		final Context c = this.getActivity();
-		h = new Handler();
 		res.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			if (!ApiAccessor.hasInternetConnection(c)) {
-				Toast.makeText(c, R.string.refresh_failure, Toast.LENGTH_SHORT).show();
-				res.setRefreshing(false);
-				return;
-			}
+			refreshing = true;
 			ApiAccessor.getBelltimes(c, false);
 			ApiAccessor.getNotices(c, false);
 			ApiAccessor.getToday(c, false);
-			h.removeCallbacks(runnable);
-			runnable = new CountdownFragment.StopSwiping(res);
-			h.postDelayed(runnable, 10000);
+
 			}
 		});
 		Resources r = this.getResources();
@@ -202,19 +193,23 @@ public class NoticesFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String act = intent.getAction();
-			if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				if (this.f == null) return;
-				this.f.setRefreshing(false);
-				this.frag.h.removeCallbacks(this.frag.runnable);
-                if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) // show once per refresh cycle
-				    Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
-				if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-					JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-					if (o.has("notices")) {
-						NoticesJson nj = new NoticesJson(o);
-						this.frag.adapter.update(nj);
-					}
+			if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
+				this.frag.layout.setRefreshing(false);
+                if (refreshing)// show once per refresh cycle
+				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+				refreshing = false;
+				JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+				if (o.has("notices")) {
+					NoticesJson nj = new NoticesJson(o);
+					this.frag.adapter.update(nj);
 				}
+			}
+			else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
+				if (refreshing)
+					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
+				refreshing = false;
+				if (this.frag == null) return;
+				this.frag.layout.setRefreshing(false);
 			}
 		}
 	}

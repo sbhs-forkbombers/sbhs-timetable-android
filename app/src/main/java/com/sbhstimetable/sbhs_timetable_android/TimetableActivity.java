@@ -178,17 +178,7 @@ public class TimetableActivity extends ActionBarActivity
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-
-		int id = item.getItemId();
-		if (id == R.id.action_cache_status) {
-			if (ApiAccessor.isLoggedIn()) {
-				ApiAccessor.getNotices(this);
-				ApiAccessor.getToday(this);
-			}
-			return true;
-		} else {
-			return super.onOptionsItemSelected(item);
-		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -198,23 +188,7 @@ public class TimetableActivity extends ActionBarActivity
 	}
 
 	public void updateCachedStatus(Menu m) {
-		if (this.menu == null) {
-			return;
-		}
-		MenuItem i = this.menu.findItem(R.id.action_cache_status);
-		if (i == null) {
-			return;
-		}
-		if (ApiAccessor.noticesLoaded && ApiAccessor.todayLoaded && ApiAccessor.bellsLoaded) {
-			setProgressBarIndeterminateVisibility(false);
-		} else {
-			setProgressBarIndeterminateVisibility(true);
-		}
-		if (ApiAccessor.noticesCached || ApiAccessor.todayCached || ApiAccessor.bellsCached) {
-			i.setVisible(true);
-		} else {
-			i.setVisible(false);
-		}
+
 	}
 
 	private class ReceiveBroadcast extends BroadcastReceiver {
@@ -254,7 +228,6 @@ public class TimetableActivity extends ActionBarActivity
 				DateTimeHelper.bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
 				LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
 			} else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				//activity.setProgressBarIndeterminateVisibility(false);
 				ApiAccessor.noticesLoaded = true;
 				StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				JsonObject nj = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));

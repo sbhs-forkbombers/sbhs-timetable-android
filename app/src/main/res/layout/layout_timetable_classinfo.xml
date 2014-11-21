@@ -19,6 +19,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
@@ -30,7 +31,7 @@
 		android:layout_marginRight="8dp"
 		card_view:cardUseCompatPadding="true"
 		card_view:contentPadding="8dp"
-		card_view:cardBackgroundColor="@color/cardview_dark_background">
+		card_view:cardBackgroundColor="?attr/cardBackgroundColor">
 
 		<RelativeLayout android:layout_width="match_parent"
 			android:layout_height="match_parent"
@@ -63,9 +64,10 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+					android:textColor="?android:textColorHighlight"
 					android:layout_toRightOf="@id/timetable_class_in"
 					android:layout_toEndOf="@id/timetable_class_in"
-					android:text="class.room" />
+					android:text="classroom" />
 
 				<TextView android:id="@+id/timetable_class_with"
 					android:layout_width="wrap_content"
@@ -79,9 +81,10 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
+					android:textColor="?android:textColorHighlight"
 					android:layout_toRightOf="@id/timetable_class_with"
 					android:layout_toEndOf="@id/timetable_class_with"
-					android:text="class.teacher" />
+					android:text="teacher" />
 
 				</RelativeLayout>
 

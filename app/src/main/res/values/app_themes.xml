@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="themes">
-		<item>Material Dark (default)</item>
-		<item>Material Light</item>
-		<item>Holo Dark</item>
-		<item>Holo Light</item>
+		<item>Dark (default)</item>
+		<item>Light</item>
 	</string-array>
 	<string-array name="themes_internal">
-		<item>mdark</item>
-		<item>mlight</item>
-		<item>hdark</item>
-		<item>hlight</item>
+		<item>dark</item>
+		<item>light</item>
 	</string-array>
 </resources>

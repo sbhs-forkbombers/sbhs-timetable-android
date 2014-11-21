@@ -185,8 +185,8 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 		});*/
 		String room = b.room();
 		String teacher = b.teacher();
-		roomText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
-		teacherText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
+		//roomText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
+		//teacherText.setTextColor(viewGroup.getResources().getColor(R.color.primary_text_default_material_dark));
 		if (b.changed()) {
 			// variations!
 			changed.setVisibility(View.VISIBLE);

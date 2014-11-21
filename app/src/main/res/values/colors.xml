@@ -22,11 +22,11 @@
 
 <resources>
 
-	<color name="primary">#ff455ede</color> <!-- blue 700 -->
-	<color name="primary_dark">#ff3b50ce</color> <!-- blue 800 -->
+	<color name="primary">#ff3f51b5</color> <!-- indigo 500 -->
+	<color name="primary_dark">#ff303f9f</color> <!-- indigo 700 -->
 	<color name="accent">#ff00bfa5</color> <!-- teal A700 -->
 	<color name="accent_alt">#ff1de9b6</color> <!-- teal A400 -->
-	<color name="standout">#ffc107</color> <!-- amber 500 -->
+	<color name="standout">#ffffc107</color> <!-- amber 500 -->
 	<color name="background">#ff303030</color>
     <color name="cardBackground">#ff424242</color>
 	<color name="pressed">#1affffff</color>

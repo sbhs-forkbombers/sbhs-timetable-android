@@ -44,9 +44,11 @@ public class SettingsFragment extends PreferenceFragment {
 
 		addPreferencesFromResource(R.xml.pref_notification);
 		addPreferencesFromResource(R.xml.pref_widget);
+		addPreferencesFromResource(R.xml.pref_app);
 		String[] prefs = new String[] {
 				PrefUtil.WIDGET_TRANSPARENCY_HS,
-				PrefUtil.WIDGET_TRANSPARENCY_LS
+				PrefUtil.WIDGET_TRANSPARENCY_LS,
+				PrefUtil.THEME
 		}; // settings to attach listeners to
 
 		// don't offer lockscreen widget options on platforms that don't support them
@@ -55,7 +57,8 @@ public class SettingsFragment extends PreferenceFragment {
 			mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
 			mPreferenceScreen.removePreference(mListPreference);
 			prefs = new String[] {
-					PrefUtil.WIDGET_TRANSPARENCY_HS
+					PrefUtil.WIDGET_TRANSPARENCY_HS,
+					PrefUtil.THEME
 			};
 
 		}

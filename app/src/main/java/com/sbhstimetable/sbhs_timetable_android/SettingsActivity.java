@@ -25,10 +25,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+
 public class SettingsActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		ThemeHelper.setTheme(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 

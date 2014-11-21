@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory
+	android:title="Themes"
+	android:key="theme_cat" />
+	<ListPreference
+		android:key="app_theme"
+		android:title="Theme"
+		android:entries="@array/themes"
+		android:entryValues="@array/themes_internal"
+		android:defaultValue="mdark"/>
+</PreferenceScreen>

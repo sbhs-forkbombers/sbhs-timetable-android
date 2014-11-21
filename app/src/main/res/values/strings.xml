@@ -19,7 +19,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources>
-
+	<!-- titles -->
 	<string name="app_name">SBHS Timetable</string>
 	<string name="title_countdown">Countdown</string>
 	<string name="title_timetable">Timetable</string>
@@ -28,40 +28,54 @@
 	<string name="title_activity_login">Login</string>
 	<string name="title_activity_debug">Debuggering</string>
 	<string name="title_activity_class_info">Some Class</string>
+
+	<!-- action labels -->
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
 	<string name="action_login">Login…</string>
 	<string name="action_logout">Logout</string>
 	<string name="action_settings">Settings</string>
-	<string name="hello_blank_fragment">Hello blank fragment</string>
 	<string name="load_today_json">Load today.json</string>
+	<string name="no_show">OK</string>
+	<string name="yes_show">Show this again!</string>
+
+	<!-- cached-ness -->
 	<string name="title_cache_status">Cached status</string>
-	<string name="appwidget_text">EXAMPLE</string>
+	<string name="today_cached">Today: </string>
+	<string name="bells_cached">Bells: </string>
+	<string name="notices_cached">Notices: </string>
+	<string name="desc_cached">May be outdated!</string>
+	<string name="desc_current">Up to date!</string>
+	<string name="desc_failed">Couldn\'t load!</string>
+	<string name="err_nointernet">You need an internet connection to refresh!</string>
+	<string name="err_idek">Couldn't contact SBHS. Oops.</string>
+	<string name="err_badjson">Got an invalid response. Try again maybe?</string>
+	<string name="err_auth">You need to log in to load your timetable and the notices!</string>
+
+	<!-- dashclock -->
 	<string name="add_widget">Add widget</string>
 	<string name="dashclock_desc">Shows information about today\'s next lesson.</string>
+
+	<!-- misc. labels -->
 	<string name="start">Start:</string>
 	<string name="end">End:</string>
 	<string name="refresh_failure">Failed to refresh</string>
 	<string name="refresh_success">Refreshed</string>
+
+	<!-- that dialog -->
 	<string name="pls2feedback">If the app crashes, please report it using the \"Report\" button in the \"Unfortunately, SBHS Timetable has stopped\" dialog, so we can fix it.</string>
-	<string name="no_show">OK</string>
-	<string name="yes_show">Show this again!</string>
 	<string name="dialog_title">Please report crashes!</string>
-	<string name="pref_header_widget">Widgets</string>
-	<string name="pref_title_widget_transparency_hs">Home screen widget background</string>
-	<string name="pref_title_widget_transparency_ls">Lock screen widget background</string>
-	<string name="desc_cached">May be outdated!</string>
-	<string name="desc_current">Up to date!</string>
-	<string name="desc_failed">Couldn\'t load!</string>
+
+	<!-- login strings/why is there even a question mark here -->
 	<string name="pls2login">You need to log in to view this!\nTap to log in.</string>
 	<string name="question">\?</string>
-	<string name="today_cached">Today: </string>
-	<string name="bells_cached">Bells: </string>
-	<string name="notices_cached">Notices: </string>
+
+	<!-- debug stuff -->
 	<string name="test">ಠ_ಠ</string>
 	<string name="sikui">Sik UI</string>
 	<string name="toast_debug_entry">Secret mode activated! (Press back to leave)</string>
 	<string name="debug_gettimetablejson">Request timetable.json</string>
 	<string name="debug_loadtimetablejson">Load timetable.json from cache</string>
+
 
 </resources>

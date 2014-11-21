@@ -26,4 +26,7 @@
 	<string name="pref_title_allow_notifications">Show notifications</string>
 	<string name="pref_desc_allow_notifications">Show notifications for the next period</string>
 	<string name="pref_header_notifications">Notifications</string>
+	<string name="pref_header_widget">Widgets</string>
+	<string name="pref_title_widget_transparency_hs">Home screen widget background</string>
+	<string name="pref_title_widget_transparency_ls">Lock screen widget background</string>
 </resources>

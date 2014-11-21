@@ -26,8 +26,8 @@ android {
 		applicationId 'com.sbhstimetable.sbhs_timetable_android'
 		minSdkVersion 15
 		targetSdkVersion 21
-		versionCode 9
-		versionName '0.9-beta'
+		versionCode 10
+		versionName '0.9.1-beta'
 	}
 	buildTypes {
 		release {

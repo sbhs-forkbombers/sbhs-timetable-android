@@ -16,7 +16,7 @@ public class ThemeHelper {
 
 		}
 		else {
-			a.setTheme(R.style.Material_Light);
+			a.setTheme(R.style.AppThemeLight);
 		}
 	}
 }

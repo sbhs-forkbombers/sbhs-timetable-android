@@ -66,12 +66,12 @@ public class TimetableActivity extends ActionBarActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setTheme(R.style.Material_Light);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
 
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
 		ApiAccessor.load(this);
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);

@@ -48,6 +48,7 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.NavBarFancyAdapter;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -158,9 +159,11 @@ public class NavigationDrawerFragment extends Fragment {
 			selectItem(i+elements.size());
 			}
 		});
+		int settings_drawable = (ThemeHelper.isBackgroundDark() ? R.drawable.ic_settings_white_24dp : R.drawable.ic_settings_dark_24dp);
+		int login_drawable = (ThemeHelper.isBackgroundDark() ? R.drawable.ic_edit_white_24dp : R.drawable.ic_edit_dark_24dp);
 		this.botElements.addAll(Arrays.asList(
-			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_settings_white_24dp, getString(R.string.action_settings), this.getActivity()),
-			new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity())
+			new NavBarFancyAdapter.DrawerEntry(settings_drawable, getString(R.string.action_settings), this.getActivity()),
+			new NavBarFancyAdapter.DrawerEntry(login_drawable, getString(R.string.action_login), this.getActivity())
 		));
 		smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
 			((ActionBarActivity)getActivity()).getBaseContext(),
@@ -182,12 +185,13 @@ public class NavigationDrawerFragment extends Fragment {
 	@SuppressWarnings("unchecked")
 	public void updateList() {
 		ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
+		int drawable = (ThemeHelper.isBackgroundDark() ? R.drawable.ic_edit_white_24dp : R.drawable.ic_edit_dark_24dp);
 		if (ApiAccessor.isLoggedIn()) {
 			this.botElements.remove(1);
-			this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_logout), this.getActivity()));
+			this.botElements.add(new NavBarFancyAdapter.DrawerEntry(drawable, getString(R.string.action_logout), this.getActivity()));
 		} else {
 			if (a.getCount() < 2) {
-				this.botElements.add(new NavBarFancyAdapter.DrawerEntry(R.drawable.ic_edit_white_24dp, getString(R.string.action_login), this.getActivity()));
+				this.botElements.add(new NavBarFancyAdapter.DrawerEntry(drawable, getString(R.string.action_login), this.getActivity()));
 			}
 		}
 	}
@@ -212,7 +216,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
+		actionBar.setHomeButtonEnabled(true);	
 
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the navigation drawer and the action bar app icon.

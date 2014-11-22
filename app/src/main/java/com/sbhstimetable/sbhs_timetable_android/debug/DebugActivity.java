@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -17,11 +18,15 @@ import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 public class DebugActivity extends ActionBarActivity {
+	public Toolbar mToolbar;
+	public TypedValue mTypedValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+	    ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
 		IntentFilter i = new IntentFilter();
 		i.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
@@ -29,6 +34,11 @@ public class DebugActivity extends ActionBarActivity {
         setContentView(R.layout.activity_debug);
 
 	    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+	    mTypedValue = new TypedValue();
+	    getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+	    int colorPrimary = mTypedValue.data;
+	    mToolbar = (Toolbar) findViewById(R.id.toolbar);
+	    mToolbar.setBackgroundColor(colorPrimary);
 	    setSupportActionBar(toolbar);
 	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

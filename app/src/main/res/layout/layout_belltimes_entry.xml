@@ -39,8 +39,8 @@
 			android:padding="8dp">
 
 			<TextView android:id="@+id/bell_name"
-				android:layout_width="fill_parent"
-				android:layout_height="fill_parent"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
 				android:gravity="start|center_vertical"
 				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
 				android:layout_alignParentLeft="true"
@@ -49,7 +49,7 @@
 
 			<TextView android:id="@+id/bell_time"
 				android:layout_width="wrap_content"
-				android:layout_height="fill_parent"
+				android:layout_height="match_parent"
 				android:gravity="end|center_vertical"
 				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
 				android:layout_alignParentRight="true"

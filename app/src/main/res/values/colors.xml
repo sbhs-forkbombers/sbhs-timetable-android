@@ -30,11 +30,6 @@
 	<color name="primary_red_dark">#ffd32f2f</color> <!-- red 700 -->
 	<color name="accent">#ff00bfa5</color> <!-- teal A700 -->
 	<color name="standout">#ffffc107</color> <!-- amber 500 -->
-	<color name="background">#ff303030</color>
-    <color name="cardBackground">#ff424242</color>
-	<color name="pressed">#1affffff</color>
-	<color name="focused">#77ffffff</color>
-	<color name="divider">#ff888888</color>
 	<color name="red">#f44336</color> <!-- red 500 -->
 	<color name="green">#4caf50</color> <!-- green 500 -->
 	<color name="blue">#2196f3</color> <!-- blue 500 -->

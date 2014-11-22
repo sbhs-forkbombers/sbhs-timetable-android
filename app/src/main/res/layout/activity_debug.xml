@@ -22,36 +22,37 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
 	tools:context="com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity">
 
 	<android.support.v7.widget.Toolbar android:id="@+id/toolbar"
 		android:layout_width="match_parent"
 		android:layout_height="?attr/actionBarSize"
 		android:minHeight="?attr/actionBarSize"
-		android:background="?attr/colorPrimary" />
+		app:theme="@style/AppTheme" />
 
-	<RelativeLayout android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
+	<RelativeLayout android:layout_width="match_parent"
+		android:layout_height="match_parent"
 		android:layout_marginTop="?attr/actionBarSize">
 
 		<Button android:id="@+id/get_timetablejson"
-			android:layout_width="fill_parent"
+			android:layout_width="match_parent"
 			android:layout_height="48dp"
 			android:text="Request timetable.json" />
 
 		<Button android:id="@+id/load_timetablejson"
-			android:layout_width="fill_parent"
+			android:layout_width="match_parent"
 			android:layout_height="48dp"
 			android:layout_below="@id/get_timetablejson"
 			android:text="Load timetable.json from cache" />
 
-		<ScrollView android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+		<ScrollView android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:layout_below="@id/load_timetablejson">
 
-			<LinearLayout android:layout_width="fill_parent"
+			<LinearLayout android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
 				<TextView android:id="@+id/status"
@@ -63,7 +64,7 @@
 
 				<TextView android:id="@+id/sikui"
 					android:layout_width="match_parent"
-					android:layout_height="fill_parent"
+					android:layout_height="match_parent"
 					android:gravity="center_horizontal"
 					android:text="@string/sikui" />
 

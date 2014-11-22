@@ -37,7 +37,7 @@
 
 	<TextView android:id="@+id/navbar_label"
 		android:layout_width="match_parent"
-		android:layout_height="fill_parent"
+		android:layout_height="match_parent"
 		android:layout_centerVertical="true"
 		android:layout_toRightOf="@id/navbar_icon"
 		android:layout_toEndOf="@id/navbar_icon"

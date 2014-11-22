@@ -38,8 +38,8 @@
 		android:layout_marginTop="?attr/actionBarSize">
 
 		<WebView android:id="@+id/loginview"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
 			android:fitsSystemWindows="true" />
 
 	</FrameLayout>

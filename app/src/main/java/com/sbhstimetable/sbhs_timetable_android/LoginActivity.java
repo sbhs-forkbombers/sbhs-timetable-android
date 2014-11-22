@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.CookieManager;
@@ -39,6 +40,8 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
 
 public class LoginActivity extends ActionBarActivity {
+	public Toolbar mToolbar;
+	public TypedValue mTypedValue;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +50,12 @@ public class LoginActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		mTypedValue = new TypedValue();
+		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+		int colorPrimary = mTypedValue.data;
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		mToolbar.setBackgroundColor(colorPrimary);
+		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		WebView wv = (WebView) findViewById(R.id.loginview);

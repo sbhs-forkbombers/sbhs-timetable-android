@@ -42,7 +42,7 @@
 		<activity android:name=".LoginActivity"
 			android:label="@string/title_activity_login"
 			android:parentActivityName="com.sbhstimetable.sbhs_timetable_android.TimetableActivity"
-			android:theme="@style/LoginTheme">
+			android:theme="@style/AppTheme">
 		</activity>
 
 		<activity android:name=".SettingsActivity"

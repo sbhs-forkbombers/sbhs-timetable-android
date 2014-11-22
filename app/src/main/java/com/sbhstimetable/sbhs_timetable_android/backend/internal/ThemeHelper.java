@@ -12,14 +12,24 @@ public class ThemeHelper {
 	public static void setTheme(Activity a) {
 		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "mdark");
 		Log.i("ThemeHelper", "setting theme to " + theme);
-		if (theme.equals("mdark") || theme.equals("hdark")) { // TODO holo themes
-			a.setTheme(R.style.AppTheme);
+		if (theme.equals("dark")) {
 			isDark = true;
-
-		}
-		else {
+			a.setTheme(R.style.AppTheme);
+		} else if (theme.equals("light")) {
 			isDark = false;
-			a.setTheme(R.style.AppThemeLight);
+			a.setTheme(R.style.AppTheme_Light);
+		} else if (theme.equals("darkgr")) {
+			isDark = true;
+			a.setTheme(R.style.AppTheme_Green);
+		} else if (theme.equals("lightgr")) {
+			isDark = false;
+			a.setTheme(R.style.AppTheme_Green_Light);
+		} else if (theme.equals("darkrd")) {
+			isDark = true;
+			a.setTheme(R.style.AppTheme_Red);
+		} else if (theme.equals("lightrd")) {
+			isDark = false;
+			a.setTheme(R.style.AppTheme_Red_Light);
 		}
 	}
 

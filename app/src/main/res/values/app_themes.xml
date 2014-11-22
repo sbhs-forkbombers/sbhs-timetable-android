@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="themes">
-		<item>Dark (default)</item>
-		<item>Light</item>
+		<item>Dark Blue (default)</item>
+		<item>Light Blue</item>
+		<item>Dark Green</item>
+		<item>Light Green</item>
+		<item>Dark Red</item>
+		<item>Light Red</item>
 	</string-array>
 	<string-array name="themes_internal">
 		<item>dark</item>
 		<item>light</item>
+		<item>darkgr</item>
+		<item>lightgr</item>
+		<item>darkrd</item>
+		<item>lightrd</item>
 	</string-array>
 </resources>

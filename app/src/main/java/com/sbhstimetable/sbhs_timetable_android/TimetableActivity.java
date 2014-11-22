@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -61,6 +62,8 @@ public class TimetableActivity extends ActionBarActivity
 	 */
 	public NavigationDrawerFragment mNavigationDrawerFragment;
 	public DrawerLayout mDrawerLayout;
+	public Toolbar mToolbar;
+	public TypedValue mTypedValue;
 	private Menu menu;
 	public boolean isActive = false;
 
@@ -71,8 +74,12 @@ public class TimetableActivity extends ActionBarActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		mTypedValue = new TypedValue();
+		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+		int colorPrimary = mTypedValue.data;
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		mToolbar.setBackgroundColor(colorPrimary);
+		setSupportActionBar(mToolbar);
 		ApiAccessor.load(this);
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);

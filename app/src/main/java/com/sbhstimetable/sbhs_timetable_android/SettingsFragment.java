@@ -44,7 +44,7 @@ public class SettingsFragment extends PreferenceFragment {
 
 		addPreferencesFromResource(R.xml.pref_notification);
 		addPreferencesFromResource(R.xml.pref_widget);
-		addPreferencesFromResource(R.xml.pref_app);
+		addPreferencesFromResource(R.xml.pref_appearance);
 		String[] prefs = new String[] {
 				PrefUtil.WIDGET_TRANSPARENCY_HS,
 				PrefUtil.WIDGET_TRANSPARENCY_LS,

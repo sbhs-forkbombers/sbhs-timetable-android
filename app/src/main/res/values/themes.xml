@@ -39,24 +39,24 @@
 		<item name="android:textColorHighlight">@color/primary_text_default_material_light</item>
 	</style>
 
-	<style name="AppTheme.Green" parent="AppTheme">
+	<style name="Green">
 		<item name="colorPrimary">@color/primary_green</item>
 		<item name="colorPrimaryDark">@color/primary_green_dark</item>
 	</style>
 
-	<style name="AppTheme.Green.Light" parent="AppTheme.Light">
+	<!--<style name="AppTheme.Green.Light" parent="AppTheme.Light">
 		<item name="colorPrimary">@color/primary_green</item>
 		<item name="colorPrimaryDark">@color/primary_green_dark</item>
-	</style>
+	</style>-->
 
-	<style name="AppTheme.Red" parent="AppTheme">
+	<style name="Red">
 		<item name="colorPrimary">@color/primary_red</item>
 		<item name="colorPrimaryDark">@color/primary_red_dark</item>
 	</style>
 
-	<style name="AppTheme.Red.Light" parent="AppTheme.Light">
+	<!--<style name="AppTheme.Red.Light" parent="AppTheme.Light">
 		<item name="colorPrimary">@color/primary_red</item>
 		<item name="colorPrimaryDark">@color/primary_red_dark</item>
-	</style>
+	</style>-->
 
 </resources>

@@ -48,7 +48,8 @@ public class SettingsFragment extends PreferenceFragment {
 		String[] prefs = new String[] {
 				PrefUtil.WIDGET_TRANSPARENCY_HS,
 				PrefUtil.WIDGET_TRANSPARENCY_LS,
-				PrefUtil.THEME
+				PrefUtil.THEME,
+				PrefUtil.COLOUR
 		}; // settings to attach listeners to
 
 		// don't offer lockscreen widget options on platforms that don't support them
@@ -58,7 +59,8 @@ public class SettingsFragment extends PreferenceFragment {
 			mPreferenceScreen.removePreference(mListPreference);
 			prefs = new String[] {
 					PrefUtil.WIDGET_TRANSPARENCY_HS,
-					PrefUtil.THEME
+					PrefUtil.THEME,
+					PrefUtil.COLOUR
 			};
 
 		}

@@ -2,35 +2,44 @@ package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 
+import java.lang.reflect.Field;
+
 public class ThemeHelper {
 	private static boolean isDark = true;
+	private static Resources.Theme curAppTheme = null;
 	public static void setTheme(Activity a) {
+		if (curAppTheme != null) {
+			a.getTheme().setTo(curAppTheme);
+		}
 		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "mdark");
+		String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "blue");
+		Resources.Theme toChange = a.getResources().newTheme();
 		Log.i("ThemeHelper", "setting theme to " + theme);
 		if (theme.equals("dark")) {
 			isDark = true;
-			a.setTheme(R.style.AppTheme);
+			toChange.applyStyle(R.style.AppTheme, true);
 		} else if (theme.equals("light")) {
 			isDark = false;
-			a.setTheme(R.style.AppTheme_Light);
-		} else if (theme.equals("darkgr")) {
-			isDark = true;
-			a.setTheme(R.style.AppTheme_Green);
-		} else if (theme.equals("lightgr")) {
-			isDark = false;
-			a.setTheme(R.style.AppTheme_Green_Light);
-		} else if (theme.equals("darkrd")) {
-			isDark = true;
-			a.setTheme(R.style.AppTheme_Red);
-		} else if (theme.equals("lightrd")) {
-			isDark = false;
-			a.setTheme(R.style.AppTheme_Red_Light);
+			toChange.applyStyle(R.style.AppTheme_Light, true);
 		}
+		if (!colour.equals("Blue")) {
+			try {
+				Field f = R.style.class.getField(colour);
+				int colourRes = f.getInt(null);
+				toChange.applyStyle(colourRes, true);
+			} catch (Exception e) {
+				Log.w("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
+			}
+		}
+
+		curAppTheme = toChange;
+		a.getTheme().setTo(curAppTheme);
 	}
 
 	public static boolean isBackgroundDark() {

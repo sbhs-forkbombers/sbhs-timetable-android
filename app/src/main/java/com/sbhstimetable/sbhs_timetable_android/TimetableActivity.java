@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -149,6 +150,7 @@ public class TimetableActivity extends ActionBarActivity
 				break;
 			case 4:
 				if (!isActive) break; // don't do weirdness
+				Log.i("timetableactivity", "isActive = false (launching SettingsActivity)");
 				Intent settings = new Intent(this, SettingsActivity.class);
 				isActive = false;
 				this.startActivity(settings);
@@ -193,11 +195,12 @@ public class TimetableActivity extends ActionBarActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
+	/*@Override
 	protected void onPause() {
 		super.onPause();
+		Log.i("timetableactivity", "isActive = false");
 		this.isActive = false;
-	}
+	}*/
 
 	@Override
 	protected void onPostResume() {
@@ -205,6 +208,7 @@ public class TimetableActivity extends ActionBarActivity
 			this.needToRecreate = false;
 			this.recreate();
 		}
+		Log.i("timetableactivity", "isActive = true");
 		this.isActive = true;
 	}
 
@@ -225,7 +229,7 @@ public class TimetableActivity extends ActionBarActivity
 			if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
 				ApiAccessor.todayLoaded = true;
 
-				if (this.activity.isActive && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
+				if (this.activity.hasWindowFocus() && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
 					TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
 					if (frag != null) {
 						frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));

@@ -204,6 +204,7 @@ public class TimetableActivity extends ActionBarActivity
 
 	@Override
 	protected void onPostResume() {
+		super.onPostResume();
 		if (this.needToRecreate) {
 			this.needToRecreate = false;
 			this.recreate();

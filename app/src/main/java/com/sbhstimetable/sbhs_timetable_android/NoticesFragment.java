@@ -194,13 +194,19 @@ public class NoticesFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			String act = intent.getAction();
 			if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				this.frag.layout.setRefreshing(false);
+				if (this.frag.layout != null) {
+					this.frag.layout.setRefreshing(false);
+				}
+				else {
+					this.frag.onCreate(new Bundle());
+				}
                 if (refreshing)// show once per refresh cycle
 				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				refreshing = false;
 				JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				if (o.has("notices")) {
 					NoticesJson nj = new NoticesJson(o);
+					if (this.frag.adapter == null) return;
 					this.frag.adapter.update(nj);
 				}
 			}

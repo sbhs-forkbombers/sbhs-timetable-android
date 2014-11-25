@@ -293,7 +293,8 @@ public class CountdownFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			updateTimer();
 			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				mainView.setRefreshing(false);
+				if (mainView != null)
+					mainView.setRefreshing(false);
 				if (refreshing)
 					Toast.makeText(getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				refreshing = false;

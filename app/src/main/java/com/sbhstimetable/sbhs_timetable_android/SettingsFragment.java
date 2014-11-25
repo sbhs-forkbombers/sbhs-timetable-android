@@ -29,9 +29,12 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v4.content.LocalBroadcastManager;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -95,6 +98,13 @@ public class SettingsFragment extends PreferenceFragment {
 					i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 					i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
 					preference.getContext().sendBroadcast(i);
+				}
+				else if (preference.getKey().startsWith("app_")) {
+					Intent i = new Intent();
+					i.setAction(ApiAccessor.ACTION_THEME_CHANGED);
+					ThemeHelper.invalidateTheme();
+					LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(preference.getContext());
+					lbm.sendBroadcast(i);
 				}
 			}
 			return true;

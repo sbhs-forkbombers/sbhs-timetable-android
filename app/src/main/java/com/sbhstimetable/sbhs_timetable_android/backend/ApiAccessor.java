@@ -56,6 +56,8 @@ public class ApiAccessor {
 	public static final String ACTION_NOTICES_FAILED = "noNotices";
 	public static final String ACTION_TIMETABLE_FAILED = "noTimetable";
 
+	public static final String ACTION_THEME_CHANGED = "ohMyHowExcitingAThemeChange"; // well all the other actions are here???
+
 	public static final String EXTRA_JSON_DATA = "jsonString";
 	public static final String EXTRA_CACHED = "isCached";
 	public static final String EXTRA_ERROR_MESSAGE = "error";

@@ -14,5 +14,5 @@
 		android:title="Colour"
 		android:entries="@array/colours"
 		android:entryValues="@array/colours_internal"
-		android:defaultValue="Blue" />
+		android:defaultValue="AppTheme.Blue" />
 </PreferenceScreen>

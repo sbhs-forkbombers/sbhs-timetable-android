@@ -48,6 +48,10 @@ public class ThemeHelper {
 
 	}
 
+	public static void invalidateTheme() {
+		curAppTheme = null;
+	}
+
 	public static boolean isBackgroundDark() {
 		return isDark;
 	}

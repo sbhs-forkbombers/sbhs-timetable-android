@@ -66,6 +66,7 @@ public class TimetableActivity extends ActionBarActivity
 	public TypedValue mTypedValue;
 	private Menu menu;
 	public boolean isActive = false;
+	private boolean needToRecreate = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class TimetableActivity extends ActionBarActivity
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
+		interesting.addAction(ApiAccessor.ACTION_THEME_CHANGED);
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
 		// Set up the drawer.
 		// Grab belltimes.json
@@ -146,7 +148,9 @@ public class TimetableActivity extends ActionBarActivity
 					.commit();
 				break;
 			case 4:
+				if (!isActive) break; // don't do weirdness
 				Intent settings = new Intent(this, SettingsActivity.class);
+				isActive = false;
 				this.startActivity(settings);
 				break;
 			case 5:
@@ -193,6 +197,15 @@ public class TimetableActivity extends ActionBarActivity
 	protected void onPause() {
 		super.onPause();
 		this.isActive = false;
+	}
+
+	@Override
+	protected void onPostResume() {
+		if (this.needToRecreate) {
+			this.needToRecreate = false;
+			this.recreate();
+		}
+		this.isActive = true;
 	}
 
 	public void updateCachedStatus(Menu m) {
@@ -245,6 +258,11 @@ public class TimetableActivity extends ActionBarActivity
 			} else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
 				ApiAccessor.timetableLoaded = true;
 				StorageCache.cacheTimetable(this.activity, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
+			}
+			else if (intent.getAction().equals(ApiAccessor.ACTION_THEME_CHANGED)) {
+				if (this.activity != null) {
+					activity.needToRecreate = true;
+				}
 			}
 			this.activity.updateCachedStatus(this.activity.menu);
 		}

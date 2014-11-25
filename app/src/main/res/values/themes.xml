@@ -20,7 +20,6 @@
   -->
 
 <resources>
-
 	<style name="AppTheme" parent="Theme.AppCompat">
 		<item name="colorPrimary">@color/primary</item>
 		<item name="colorPrimaryDark">@color/primary_dark</item>
@@ -39,7 +38,7 @@
 		<item name="android:textColorHighlight">@color/primary_text_default_material_light</item>
 	</style>
 
-	<style name="Green">
+	<style name="AppTheme.Green">
 		<item name="colorPrimary">@color/primary_green</item>
 		<item name="colorPrimaryDark">@color/primary_green_dark</item>
 	</style>
@@ -49,7 +48,7 @@
 		<item name="colorPrimaryDark">@color/primary_green_dark</item>
 	</style>-->
 
-	<style name="Red">
+	<style name="AppTheme.Red">
 		<item name="colorPrimary">@color/primary_red</item>
 		<item name="colorPrimaryDark">@color/primary_red_dark</item>
 	</style>

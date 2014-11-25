@@ -16,8 +16,8 @@
 	</string-array>
 
 	<string-array name="colours_internal"> <!-- should match theme names in themes.xml -->
-		<item>Blue</item>
-		<item>Green</item>
-		<item>Red</item>
+		<item>AppTheme.Blue</item>
+		<item>AppTheme.Green</item>
+		<item>AppTheme.Red</item>
 	</string-array>
 </resources>

@@ -25,8 +25,8 @@
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
 	android:padding="5dp"
-	android:paddingTop="10dp"
-	android:paddingBottom="10dp">
+	android:paddingTop="20dp"
+	android:paddingBottom="20dp">
 
 	<ImageView android:id="@+id/navbar_icon"
 		android:layout_width="wrap_content"
@@ -44,6 +44,7 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignParentBottom="true"
 		android:gravity="center|center_vertical"
+		android:textAppearance="?attr/textAppearanceListItem"
 		android:textAllCaps="true"
 		android:text="Hello" />
 

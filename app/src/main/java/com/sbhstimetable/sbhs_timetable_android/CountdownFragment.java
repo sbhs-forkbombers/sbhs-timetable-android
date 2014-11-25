@@ -218,12 +218,12 @@ public class CountdownFragment extends Fragment {
 			if (p.teacherChanged()) {
 				teacher.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
-				teacher.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+				//teacher.setTextColor(getActivity().getResources().getColor(R.color.secondary_text_dark));
 			}
 			if (p.roomChanged()) {
 				room.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
-				room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+				//room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
 			}
 		}
 

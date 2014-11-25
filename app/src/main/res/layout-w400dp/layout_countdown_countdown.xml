@@ -31,6 +31,7 @@
 		android:gravity="center"
 		android:textSize="60sp"
 		android:fontFamily="sans-serif-thin"
+		android:textAppearance="@style/TextAppearance.AppCompat.Large"
 		android:text="Something happens" />
 
 	<TextView android:id="@+id/countdown_in"
@@ -48,6 +49,7 @@
 		android:fontFamily="sans-serif-thin"
 		android:textSize="60sp"
 		android:gravity="center"
+		android:textAppearance="@style/TextAppearance.AppCompat.Large"
 		android:layout_below="@id/countdown_in" />
 
 </RelativeLayout>

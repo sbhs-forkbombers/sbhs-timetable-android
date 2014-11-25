@@ -36,6 +36,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Teacher: " />
 
 		<TextView android:id="@+id/countdown_extraData_teacher"
@@ -43,6 +44,7 @@
 			android:layout_height="wrap_content"
 			android:layout_toRightOf="@id/countdown_extraData_teacherLabel"
 			android:layout_toEndOf="@id/countdown_extraData_teacherLabel"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Unknown" />
 
 	</RelativeLayout>
@@ -56,6 +58,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Room: " />
 
 		<TextView android:id="@+id/countdown_extraData_room"
@@ -63,6 +66,7 @@
 			android:layout_height="wrap_content"
 			android:layout_toRightOf="@id/countdown_extraData_roomLabel"
 			android:layout_toEndOf="@id/countdown_extraData_roomLabel"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Unknown" />
 
 	</RelativeLayout>
@@ -77,6 +81,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
 			android:layout_alignParentStart="true"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Subject: " />
 
 		<TextView android:id="@+id/countdown_extraData_subject"
@@ -84,6 +89,7 @@
 			android:layout_height="wrap_content"
 			android:layout_toRightOf="@id/countdown_extraData_subjectLabel"
 			android:layout_toEndOf="@id/countdown_extraData_subjectLabel"
+			android:textAppearance="@android:style/TextAppearance.DeviceDefault"
 			android:text="Unknown" />
 
 	</RelativeLayout>

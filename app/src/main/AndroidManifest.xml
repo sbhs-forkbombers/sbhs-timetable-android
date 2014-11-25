@@ -58,7 +58,8 @@
 		</activity>
 
 		<activity android:name=".debug.DebugActivity"
-		          android:label="@string/title_activity_debug" >
+			android:label="@string/title_activity_debug"
+			android:theme="@style/AppTheme">
 		</activity>
 
 		<!-- Services -->

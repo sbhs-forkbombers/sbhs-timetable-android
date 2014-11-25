@@ -64,7 +64,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-					android:textColor="?android:textColorHighlight"
+					android:textStyle="bold"
 					android:layout_toRightOf="@id/timetable_class_in"
 					android:layout_toEndOf="@id/timetable_class_in"
 					android:text="classroom" />
@@ -81,7 +81,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-					android:textColor="?android:textColorHighlight"
+					android:textStyle="bold"
 					android:layout_toRightOf="@id/timetable_class_with"
 					android:layout_toEndOf="@id/timetable_class_with"
 					android:text="teacher" />

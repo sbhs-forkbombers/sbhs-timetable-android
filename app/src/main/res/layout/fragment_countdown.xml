@@ -31,7 +31,7 @@
 		android:layout_gravity="center"
 		tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment" >
 
-		<include layout="@layout/layout_countdown_countdown" />
+		<include layout="@layout/layout_countdown" />
 
 		<include layout="@layout/layout_countdown_moreinfo" />
 

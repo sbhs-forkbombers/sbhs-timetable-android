@@ -175,32 +175,12 @@ public class TimetableActivity extends ActionBarActivity
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menu = menu;
-		if (!mNavigationDrawerFragment.isDrawerOpen()) {
-			// Only show items in the action bar relevant to this screen
-			// if the drawer is not showing. Otherwise, let the drawer
-			// decide what to show in the action bar.
-			getMenuInflater().inflate(R.menu.timetable, menu);
-			return true;
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*@Override
-	protected void onPause() {
-		super.onPause();
-		Log.i("timetableactivity", "isActive = false");
-		this.isActive = false;
-	}*/
 
 	@Override
 	protected void onPostResume() {

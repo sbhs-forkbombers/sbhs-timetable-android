@@ -20,9 +20,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<TextView android:id="@+id/countdown_name"
 		android:layout_width="match_parent"
@@ -51,4 +49,4 @@
 		android:textAppearance="@style/TextAppearance.AppCompat.Large"
 		android:layout_below="@id/countdown_in" />
 
-</RelativeLayout>
+</merge>

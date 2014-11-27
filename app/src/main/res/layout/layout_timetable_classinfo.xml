@@ -86,7 +86,7 @@
 					android:layout_toEndOf="@id/timetable_class_with"
 					android:text="teacher" />
 
-				</RelativeLayout>
+			</RelativeLayout>
 
 			<ImageView android:id="@+id/timetable_class_changed"
 				android:layout_width="wrap_content"

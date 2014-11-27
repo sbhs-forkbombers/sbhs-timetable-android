@@ -26,14 +26,9 @@
 	android:layout_height="match_parent"
 	tools:context="com.sbhstimetable.sbhs_timetable_android.BelltimesFragment">
 
-	<FrameLayout android:layout_width="match_parent"
-		android:layout_height="match_parent">
-
-		<ListView android:id="@+id/belltimes_listview"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:divider="@null" />
-
-	</FrameLayout>
+	<ListView android:id="@+id/belltimes_listview"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:divider="@null" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

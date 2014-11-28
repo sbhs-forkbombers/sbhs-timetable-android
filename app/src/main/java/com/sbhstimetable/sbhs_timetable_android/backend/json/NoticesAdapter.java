@@ -146,6 +146,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
 			s.setAdapter(a);
 			s.setSelection(this.curIndex);
+			s.setOnItemSelectedListener(this);
 			//s.setOnItemSelectedListener(this);
 			this.theFilterSelector = f;
 			return f;
@@ -205,13 +206,11 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-		Log.i("notices", "changed!");
-		Log.e("notices", "now " + i);
 		curIndex = i;
+		this.filter(curIndex == 0 ? null : NoticesJson.Year.fromString(this.years[curIndex]));
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> adapterView) {
-		Log.i("notices", "nothing selected!");
 	}
 }

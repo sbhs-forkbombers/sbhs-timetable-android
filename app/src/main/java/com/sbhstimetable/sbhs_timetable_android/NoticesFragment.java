@@ -131,11 +131,10 @@ public class NoticesFragment extends Fragment {
 
 			}
 		});
-		Resources r = this.getResources();
-		res.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
+		res.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
 		JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString(getActivity()));
 		NoticesJson n = NoticesJson.getInstance();
 		if (o != null) {

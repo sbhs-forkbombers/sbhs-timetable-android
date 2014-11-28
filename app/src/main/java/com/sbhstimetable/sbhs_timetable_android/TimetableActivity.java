@@ -68,6 +68,7 @@ public class TimetableActivity extends ActionBarActivity
 	private Menu menu;
 	public boolean isActive = false;
 	private boolean needToRecreate = false;
+	private int onMaster = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,26 +128,27 @@ public class TimetableActivity extends ActionBarActivity
 		switch (position) { // USE THE BREAK, LUKE!
 			case 0:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, CountdownFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
+					.replace(R.id.container, CountdownFragment.newInstance())
 					.commit();
+				onMaster = 1;
 				break;
 			case 1:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, TimetableFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
-					.addToBackStack("timetable")
+					.replace(R.id.container, TimetableFragment.newInstance())
 					.commit();
+				onMaster = 0;
 				break;
 			case 2:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, NoticesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
-					.addToBackStack("notices")
+					.replace(R.id.container, NoticesFragment.newInstance())
 					.commit();
+				onMaster = 0;
 				break;
 			case 3:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, BelltimesFragment.newInstance(), COUNTDOWN_FRAGMENT_TAG)
-					.addToBackStack("belltimes")
+					.replace(R.id.container, BelltimesFragment.newInstance())
 					.commit();
+				onMaster = 0;
 				break;
 			case 4:
 				if (!isActive) break; // don't do weirdness
@@ -166,6 +168,16 @@ public class TimetableActivity extends ActionBarActivity
 					ApiAccessor.login(this);
 				}
 				break; // HAVE YOU GOT A PLAN BREAK?®
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (onMaster == 1) {
+			finish();
+		} else {
+			getFragmentManager().beginTransaction().replace(R.id.container, CountdownFragment.newInstance()).commit();
+			onMaster = 1;
 		}
 	}
 

@@ -95,6 +95,22 @@ public class BelltimesFragment extends Fragment {
 		// Inflate the layout for this fragment
 		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
 		this.layout = v;
+
+		final Context c = this.getActivity();
+		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				refreshing = true;
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
+			}
+		});
+		v.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
+
 		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
 
 		lv.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -111,20 +127,6 @@ public class BelltimesFragment extends Fragment {
 				v.setEnabled(topRowVerticalPosition >= -100);
 			}
 		});
-		final Context c = this.getActivity();
-		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				ApiAccessor.getBelltimes(c, false);
-				ApiAccessor.getNotices(c, false);
-				ApiAccessor.getToday(c, false);
-			}
-		});
-		Resources r = this.getResources();
-		v.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
 		this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
 		lv.setAdapter(this.adapter);
 		return v;

@@ -94,8 +94,7 @@ public class TimetableFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-							 Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		if (!ApiAccessor.isLoggedIn()) {
 			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
@@ -109,24 +108,24 @@ public class TimetableFragment extends Fragment {
 			});
 			return v;
 		}
-		final SwipeRefreshLayout v =  (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
+		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
 		this.layout = v;
 
 		final Context c = this.getActivity();
 		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			refreshing = true;
-			ApiAccessor.getBelltimes(c, false);
-			ApiAccessor.getNotices(c, false);
-			ApiAccessor.getToday(c, false);
+				refreshing = true;
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
 			}
 		});
-		Resources r = this.getResources();
-		v.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
+		v.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
+
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
 		if (z != null) {
 			ApiAccessor.getToday(this.getActivity());

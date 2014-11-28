@@ -86,7 +86,6 @@ public class CountdownFragment extends Fragment {
 		// Inflate the layout for this fragment
 		final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
-		Resources r = this.getResources();
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -98,11 +97,10 @@ public class CountdownFragment extends Fragment {
 				}
 			}
 		});
-		f.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red)
-		);
+		f.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {

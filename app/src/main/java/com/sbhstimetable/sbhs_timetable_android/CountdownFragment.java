@@ -77,6 +77,7 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(true);
 	}
 
@@ -271,6 +272,8 @@ public class CountdownFragment extends Fragment {
 			this.listener = new BroadcastListener();
 		}
 		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
+		ApiAccessor.getBelltimes(activity, true);
+		ApiAccessor.getToday(activity, true);
 		try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {

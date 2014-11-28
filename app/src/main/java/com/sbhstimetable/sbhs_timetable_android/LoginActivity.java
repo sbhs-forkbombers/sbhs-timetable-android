@@ -28,7 +28,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
-import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -42,11 +41,11 @@ import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseU
 public class LoginActivity extends ActionBarActivity {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
+	public WebView mWebView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		ThemeHelper.setTheme(this);
-		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
@@ -58,19 +57,18 @@ public class LoginActivity extends ActionBarActivity {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		WebView wv = (WebView) findViewById(R.id.loginview);
-		wv.setBackgroundColor(Color.parseColor("#000000"));
-		wv.getSettings().setSaveFormData(true);
+		mWebView = (WebView) findViewById(R.id.loginview);
+		mWebView.setBackgroundColor(Color.parseColor("#000000"));
+		mWebView.getSettings().setSaveFormData(true);
 		final Activity me = this;
-		//wv.getSettings().setJavaScriptEnabled(true);
-		wv.setWebChromeClient(new WebChromeClient() {
+		mWebView.setWebChromeClient(new WebChromeClient() {
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
 			super.onProgressChanged(view, newProgress);
 			me.setProgress(newProgress * 1000);
 			}
 		});
-		wv.setWebViewClient(new WebViewClient() {
+		mWebView.setWebViewClient(new WebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				if (url.startsWith(baseURL) && ((url.endsWith("/") || url.contains("mobile_loading")))) {
 					// this would be our website!
@@ -86,15 +84,13 @@ public class LoginActivity extends ActionBarActivity {
 				}
 			}
 		});
-		//setContentView(wv);
-		wv.loadUrl(baseURL + "/try_do_oauth?app=1");
+		mWebView.loadUrl(baseURL + "/try_do_oauth?app=1");
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			//NavUtils.navigateUpFromSameTask(this);
 			finish();
 			return true;
 		}

@@ -72,7 +72,6 @@ public class TimetableActivity extends ActionBarActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		ThemeHelper.setTheme(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
@@ -83,10 +82,12 @@ public class TimetableActivity extends ActionBarActivity
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mToolbar.setBackgroundColor(colorPrimary);
 		setSupportActionBar(mToolbar);
-		ApiAccessor.load(this);
+
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
+
+		ApiAccessor.load(this);
 		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
@@ -99,11 +100,10 @@ public class TimetableActivity extends ActionBarActivity
 		ApiAccessor.getToday(this);
 		ApiAccessor.getNotices(this);
 		ApiAccessor.getTimetable(this, true);
-		final Context c = this;
 
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				StorageCache.cleanCache(c);
+				StorageCache.cleanCache(getApplicationContext());
 			}
 		});
 		t.start();
@@ -180,6 +180,7 @@ public class TimetableActivity extends ActionBarActivity
 				finish();
 			} else {
 				getFragmentManager().beginTransaction().replace(R.id.container, CountdownFragment.newInstance()).commit();
+				mNavigationDrawerFragment.selectItem(0);
 				onMaster = 1;
 			}
 		}

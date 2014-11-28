@@ -76,7 +76,6 @@ public class NoticesFragment extends Fragment {
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
@@ -195,8 +194,7 @@ public class NoticesFragment extends Fragment {
 			if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
 				if (this.frag.layout != null) {
 					this.frag.layout.setRefreshing(false);
-				}
-				else {
+				} else {
 					this.frag.onCreate(new Bundle());
 				}
                 if (refreshing)// show once per refresh cycle
@@ -208,8 +206,7 @@ public class NoticesFragment extends Fragment {
 					if (this.frag.adapter == null) return;
 					this.frag.adapter.update(nj);
 				}
-			}
-			else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
+			} else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
 				if (refreshing)
 					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
 				refreshing = false;

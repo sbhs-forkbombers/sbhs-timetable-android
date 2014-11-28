@@ -66,11 +66,10 @@ public class CountdownFragment extends Fragment {
 	public static CountdownFragment newInstance() {
 		CountdownFragment fragment = new CountdownFragment();
 		Bundle args = new Bundle();
-		//args.putString(ARG_PARAM1, param1);
-		//args.putString(ARG_PARAM2, param2);
 		fragment.setArguments(args);
 		return fragment;
 	}
+
 	public CountdownFragment() {
 		// Required empty public constructor
 	}

@@ -48,6 +48,9 @@ public class ThemeHelper {
 			colour += ".Light";
 			isDark = false;
 		}
+		else {
+			isDark = true;
+		}
 		Log.i("ThemeHelper", "Setting colour to " + colour);
 		if (!colour.equals("AppTheme.Blue")) {
 			colour = colour.replace('.', '_');

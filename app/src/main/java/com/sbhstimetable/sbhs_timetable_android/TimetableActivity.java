@@ -173,11 +173,15 @@ public class TimetableActivity extends ActionBarActivity
 
 	@Override
 	public void onBackPressed() {
-		if (onMaster == 1) {
-			finish();
+		if (mNavigationDrawerFragment.isDrawerOpen()) {
+			mNavigationDrawerFragment.closeDrawer();
 		} else {
-			getFragmentManager().beginTransaction().replace(R.id.container, CountdownFragment.newInstance()).commit();
-			onMaster = 1;
+			if (onMaster == 1) {
+				finish();
+			} else {
+				getFragmentManager().beginTransaction().replace(R.id.container, CountdownFragment.newInstance()).commit();
+				onMaster = 1;
+			}
 		}
 	}
 

@@ -281,9 +281,9 @@ public class NavigationDrawerFragment extends Fragment {
 			if (mDrawerListView != null) {
 				mDrawerListView.setItemChecked(position, true);
 			}
-			if (mDrawerLayout != null) {
-				mDrawerLayout.closeDrawer(mFragmentContainerView);
-			}
+		}
+		if (mDrawerLayout != null) {
+			mDrawerLayout.closeDrawer(mFragmentContainerView);
 		}
 		if (mCallbacks != null) {
 			mCallbacks.onNavigationDrawerItemSelected(position);

@@ -146,9 +146,9 @@ public class NavigationDrawerFragment extends Fragment {
 			getString(R.string.title_notices),
 			getString(R.string.title_belltimes)
 		));
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(
-			((ActionBarActivity)getActivity()).getBaseContext(),
-			R.layout.textview,
+		mDrawerListView.setAdapter(new ArrayAdapter<>(
+			getActivity().getBaseContext(),
+			android.R.layout.simple_list_item_activated_1,
 			this.elements));
 		mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
 
@@ -165,9 +165,9 @@ public class NavigationDrawerFragment extends Fragment {
 			new NavBarFancyAdapter.DrawerEntry(settings_drawable, getString(R.string.action_settings), this.getActivity()),
 			new NavBarFancyAdapter.DrawerEntry(login_drawable, getString(R.string.action_login), this.getActivity())
 		));
-		smallView.setAdapter(new NavBarFancyAdapter<NavBarFancyAdapter.DrawerEntry>(
-			((ActionBarActivity)getActivity()).getBaseContext(),
-				android.R.layout.simple_list_item_activated_1,
+		smallView.setAdapter(new NavBarFancyAdapter<>(
+			getActivity().getBaseContext(),
+				android.R.layout.simple_list_item_1,
 				this.botElements
 		));
 		long temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0);
@@ -182,7 +182,6 @@ public class NavigationDrawerFragment extends Fragment {
 		return l;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void updateList() {
 		ArrayAdapter<NavBarFancyAdapter.DrawerEntry> a = (ArrayAdapter<NavBarFancyAdapter.DrawerEntry>)mDrawerListView.getAdapter();
 		int drawable = (ThemeHelper.isBackgroundDark() ? R.drawable.ic_edit_white_24dp : R.drawable.ic_edit_dark_24dp);
@@ -277,12 +276,14 @@ public class NavigationDrawerFragment extends Fragment {
 	}
 
 	public void selectItem(int position) {
-		mCurrentSelectedPosition = position;
-		if (mDrawerListView != null) {
-			mDrawerListView.setItemChecked(position, true);
-		}
-		if (mDrawerLayout != null) {
-			mDrawerLayout.closeDrawer(mFragmentContainerView);
+		if (position < elements.size()) {
+			mCurrentSelectedPosition = position;
+			if (mDrawerListView != null) {
+				mDrawerListView.setItemChecked(position, true);
+			}
+			if (mDrawerLayout != null) {
+				mDrawerLayout.closeDrawer(mFragmentContainerView);
+			}
 		}
 		if (mCallbacks != null) {
 			mCallbacks.onNavigationDrawerItemSelected(position);

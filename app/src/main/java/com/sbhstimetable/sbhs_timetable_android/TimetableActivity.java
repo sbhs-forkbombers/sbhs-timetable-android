@@ -179,7 +179,6 @@ public class TimetableActivity extends ActionBarActivity
 			if (onMaster == 1) {
 				finish();
 			} else {
-				getFragmentManager().beginTransaction().replace(R.id.container, CountdownFragment.newInstance()).commit();
 				mNavigationDrawerFragment.selectItem(0);
 				onMaster = 1;
 			}

@@ -19,11 +19,11 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
         >
-    <com.android.systemui.egg.LLand
+    <com.sbhstimetable.sbhs_timetable_android.secret.LLand
             android:id="@+id/world"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-    </com.android.systemui.egg.LLand>
+    </com.sbhstimetable.sbhs_timetable_android.secret.LLand>
     <TextView
             android:id="@+id/score"
             android:layout_width="wrap_content"

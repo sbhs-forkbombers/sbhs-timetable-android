@@ -39,6 +39,7 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.secret.LLandActivity;
 
 public class DebugActivity extends ActionBarActivity {
 	public Toolbar mToolbar;
@@ -75,6 +76,14 @@ public class DebugActivity extends ActionBarActivity {
 			public void onClick(View view) {
 				JsonObject j = StorageCache.getTimetable(view.getContext());
 				((TextView)findViewById(R.id.status)).setText(j.toString());
+			}
+		});
+
+		this.findViewById(R.id.launch_topsecret).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Intent i = new Intent(view.getContext(), LLandActivity.class);
+				view.getContext().startActivity(i);
 			}
 		});
     }

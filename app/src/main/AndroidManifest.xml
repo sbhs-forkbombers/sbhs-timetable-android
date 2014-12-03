@@ -51,10 +51,10 @@
 			android:theme="@style/AppTheme">
 		</activity>
 
-		<activity android:name=".ClassInfoActivity"
-			android:label="@string/title_activity_class_info"
-			android:parentActivityName="com.sbhstimetable.sbhs_timetable_android.TimetableActivity"
-			android:theme="@style/AppTheme">
+		<activity android:name=".secret.LLandActivity"
+				  android:label="ಠ_ಠ"
+				  android:parentActivityName="com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity"
+				  android:theme="@style/AppTheme">
 		</activity>
 
 		<activity android:name=".debug.DebugActivity"

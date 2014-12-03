@@ -39,6 +39,13 @@
 		android:layout_height="48dp"
 		android:layout_below="@id/get_timetablejson"
 		android:text="Load timetable.json from cache" />
+	<Button android:id="@+id/launch_topsecret"
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:text="DO NOT PRESS"
+			android:background="@color/primary_red"
+			android:layout_below="@id/load_timetablejson"
+			android:textColor="#000" />
 
 	<ScrollView android:layout_width="match_parent"
 		android:layout_height="match_parent"

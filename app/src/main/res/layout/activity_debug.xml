@@ -43,13 +43,19 @@
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
 			android:text="DO NOT PRESS"
-			android:background="@color/primary_red"
+			android:background="#f00"
 			android:layout_below="@id/load_timetablejson"
-			android:textColor="#000" />
+			android:textColor="#000"
+			android:textColorHighlight="#000"/>
+	<ImageView android:id="@+id/test_imageview"
+			   android:layout_height="48dp"
+			   android:layout_width="48dp"
+			   android:layout_below="@id/launch_topsecret"
+			   android:src="@drawable/android_test" />
 
 	<ScrollView android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/load_timetablejson">
+		android:layout_below="@id/test_imageview">
 
 		<RelativeLayout android:layout_width="match_parent"
 			android:layout_height="wrap_content">

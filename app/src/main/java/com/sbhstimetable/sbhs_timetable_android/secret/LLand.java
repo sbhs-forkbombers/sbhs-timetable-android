@@ -66,16 +66,16 @@ public class LLand extends FrameLayout {
 
     public static final float DEBUG_SPEED_MULTIPLIER = 1f; // 0.1f;
     public static final boolean DEBUG_IDDQD = false;
-
+	static final boolean VECTOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     final static int[] POPS = {
             // resid                // spinny!
-            R.drawable.pop_belt,    0,
-            R.drawable.pop_droid,   0,
-            R.drawable.pop_pizza,   1,
-            R.drawable.pop_stripes, 0,
-            R.drawable.pop_swirl,   1,
-            R.drawable.pop_vortex,  1,
-            R.drawable.pop_vortex2, 1,
+            VECTOR ? R.drawable.pop_belt : R.drawable.nov_pop_belt,    0,
+            VECTOR ? R.drawable.pop_droid : R.drawable.nov_pop_droid,   0,
+            VECTOR ? R.drawable.pop_pizza : R.drawable.nov_pop_pizza,   1,
+            VECTOR ? R.drawable.pop_stripes : R.drawable.nov_pop_stripes, 0,
+            VECTOR ? R.drawable.pop_swirl : R.drawable.nov_pop_swirl,   1,
+            VECTOR ? R.drawable.pop_vortex : R.drawable.nov_pop_vortex,  1,
+            VECTOR ? R.drawable.pop_vortex2 : R.drawable.nov_pop_vortex2, 1,
     };
 
     private static class Params {
@@ -242,7 +242,7 @@ public class LLand extends FrameLayout {
         boolean showingSun = (mTimeOfDay == DAY || mTimeOfDay == SUNSET) && frand() > 0.25;
         if (showingSun) {
             final Star sun = new Star(getContext());
-            sun.setBackgroundResource(R.drawable.sun);
+            sun.setBackgroundResource(VECTOR ? R.drawable.sun : R.drawable.nov_sun);
             final int w = getResources().getDimensionPixelSize(R.dimen.sun_size);
             sun.setTranslationX(frand(w, mWidth-w));
             if (mTimeOfDay == DAY) {
@@ -264,7 +264,7 @@ public class LLand extends FrameLayout {
             final float ff = frand();
             if ((dark && ff < 0.75f) || ff < 0.5f) {
                 final Star moon = new Star(getContext());
-                moon.setBackgroundResource(R.drawable.moon);
+                moon.setBackgroundResource(VECTOR ? R.drawable.moon : R.drawable.nov_moon);
                 moon.getBackground().setAlpha(dark ? 255 : 128);
                 moon.setScaleX(frand() > 0.5 ? -1 : 1);
                 moon.setRotation(moon.getScaleX() * frand(5, 30));
@@ -724,7 +724,8 @@ public class LLand extends FrameLayout {
         public Player(Context context) {
             super(context);
 
-            setBackgroundResource(R.drawable.android);
+            setBackgroundResource(VECTOR ? R.drawable.android : R.drawable.nov_android);
+
 			if (hasShadows()) {
 				getBackground().setTintMode(PorterDuff.Mode.SRC_ATOP);
 				getBackground().setTint(0xFF00FF00);
@@ -738,6 +739,7 @@ public class LLand extends FrameLayout {
 						outline.setRect(ix, iy, w - ix, h - iy);
 					}
 				});
+
 			}
         }
 
@@ -967,7 +969,9 @@ public class LLand extends FrameLayout {
     private class Cloud extends Scenery {
         public Cloud(Context context) {
             super(context);
-            setBackgroundResource(frand() < 0.01f ? R.drawable.cloud_off : R.drawable.cloud);
+			int coff = VECTOR ? R.drawable.cloud_off : R.drawable.nov_cloud_off;
+			int con = VECTOR ? R.drawable.cloud : R.drawable.nov_cloud;
+            setBackgroundResource(frand() < 0.01f ? coff : con);
             getBackground().setAlpha(0x40);
             w = h = irand(PARAMS.CLOUD_SIZE_MIN, PARAMS.CLOUD_SIZE_MAX);
             z = 0;
@@ -978,7 +982,7 @@ public class LLand extends FrameLayout {
     private class Star extends Scenery {
         public Star(Context context) {
             super(context);
-            setBackgroundResource(R.drawable.star);
+            setBackgroundResource(VECTOR ? R.drawable.star : R.drawable.nov_star);
             w = h = irand(PARAMS.STAR_SIZE_MIN, PARAMS.STAR_SIZE_MAX);
             v = z = 0;
         }

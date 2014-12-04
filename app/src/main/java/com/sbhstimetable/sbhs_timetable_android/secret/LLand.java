@@ -67,6 +67,7 @@ public class LLand extends FrameLayout {
     public static final float DEBUG_SPEED_MULTIPLIER = 1f; // 0.1f;
     public static final boolean DEBUG_IDDQD = false;
 	static final boolean VECTOR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+	static final boolean JELLYBEAN = Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1;
     final static int[] POPS = {
             // resid                // spinny!
             VECTOR ? R.drawable.pop_belt : R.drawable.nov_pop_belt,    0,
@@ -319,7 +320,7 @@ public class LLand extends FrameLayout {
         mDroid.setX(mWidth / 2);
         mDroid.setY(mHeight / 2);
         addView(mDroid, new LayoutParams(PARAMS.PLAYER_SIZE, PARAMS.PLAYER_SIZE));
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) { // XXX
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) { // XXX
 			mAnim = new TimeAnimator();
 			mAnim.setTimeListener(new TimeAnimator.TimeListener() {
 				@Override
@@ -925,9 +926,11 @@ public class LLand extends FrameLayout {
             final int w = c.getWidth();
             final int h = c.getHeight();
             final GradientDrawable g = new GradientDrawable();
-            g.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
+			if (JELLYBEAN)
+            	g.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
             g.setGradientCenter(w * 0.75f, 0);
-            g.setColors(new int[] { 0xFFFFFFFF, 0xFFAAAAAA });
+			if (JELLYBEAN)
+            	g.setColors(new int[] { 0xFFFFFFFF, 0xFFAAAAAA });
             g.setBounds(0, 0, w, h);
             g.draw(c);
             if (!mDrawShadow) return;

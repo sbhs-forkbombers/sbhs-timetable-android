@@ -52,8 +52,8 @@ import java.util.ArrayList;
 public class LLand extends FrameLayout {
     public static final String TAG = "LLand";
 
-    public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
-    public static final boolean DEBUG_DRAW = false; // DEBUG
+    public static final boolean DEBUG = true;//Log.isLoggable(TAG, Log.DEBUG);
+    public static final boolean DEBUG_DRAW = true; // DEBUG
 
     public static final void L(String s, Object ... objects) {
         if (DEBUG) {

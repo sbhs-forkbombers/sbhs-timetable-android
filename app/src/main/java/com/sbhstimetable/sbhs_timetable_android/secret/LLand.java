@@ -883,13 +883,20 @@ public class LLand extends FrameLayout {
         public void step(long t_ms, long dt_ms, float t, float dt) {
             super.step(t_ms, dt_ms, t, dt);
             if (mRotate != 0) {
-                setRotation(getRotation() + dt * 45 * mRotate);
+                //setRotation(getRotation() + dt * 45 * mRotate);
             }
-
-            cx = (hitRect.left + hitRect.right)/2;
-            cy = (hitRect.top + hitRect.bottom)/2;
+			if (VECTOR) {
+				if (getGameHeight() / 2 > hitRect.bottom) {
+					cx = hitRect.right;//(hitRect.left + hitRect.right)/2;
+					cy = hitRect.bottom;//(hitRect.top + hitRect.bottom)/2;
+				} else {
+					cx = hitRect.right;
+					cy = hitRect.bottom;
+				}
+			}
             r = getWidth()/2;
         }
+
     }
 
     private class Stem extends Obstacle {
@@ -942,6 +949,15 @@ public class LLand extends FrameLayout {
             mShadow.close();
             c.drawPath(mShadow, mPaint);
         }
+
+		@Override
+		public void getHitRect(Rect out) {
+			super.getHitRect(out);
+			/*if (out.bottom - getGameHeight() >= 0) {
+				out.set(out.left, out.top/2, out.right, out.bottom);
+			}*/
+			//out.set(out.left, out.top, out.right, out.bottom);
+		}
     }
 
     private class Scenery extends FrameLayout implements GameView {

@@ -48,6 +48,7 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.NavBarFancyAdapter;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ScrimInsetsFrameLayout;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import java.text.SimpleDateFormat;
@@ -133,7 +134,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		RelativeLayout l = (RelativeLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+		ScrimInsetsFrameLayout l = (ScrimInsetsFrameLayout) inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 		this.mDrawerListView = (ListView)l.findViewById(R.id.navdraw_listview);
 		mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override

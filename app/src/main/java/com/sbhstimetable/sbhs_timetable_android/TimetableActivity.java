@@ -84,6 +84,11 @@ public class TimetableActivity extends ActionBarActivity
 		setSupportActionBar(mToolbar);
 
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+			int colorPrimaryDark = mTypedValue.data;
+			mDrawerLayout.setBackgroundColor(colorPrimaryDark);
+		}
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
 

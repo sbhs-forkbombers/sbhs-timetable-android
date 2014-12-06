@@ -57,6 +57,12 @@ public class LoginActivity extends ActionBarActivity {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+			int colorPrimaryDark = mTypedValue.data;
+			getWindow().setStatusBarColor(colorPrimaryDark);
+		}
+
 		mWebView = (WebView) findViewById(R.id.loginview);
 		mWebView.setBackgroundColor(Color.parseColor("#000000"));
 		mWebView.getSettings().setSaveFormData(true);

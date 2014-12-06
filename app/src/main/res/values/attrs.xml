@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   SBHS-Timetable-Android: Countdown and timetable all at once (Android app).
   Copyright (C) 2014 Simon Shields, James Ye
@@ -20,13 +19,8 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto">
-
-	<android.support.v7.widget.Toolbar android:id="@+id/toolbar"
-		android:layout_width="match_parent"
-		android:layout_height="?attr/actionBarSize"
-		android:minHeight="?attr/actionBarSize"
-		app:theme="@style/AppTheme" />
-
-</merge>
+<resources>
+	<declare-styleable name="ScrimInsetsView">
+		<attr name="insetForeground" format="reference|color" />
+	</declare-styleable>
+</resources>

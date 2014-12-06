@@ -62,6 +62,12 @@ public class DebugActivity extends ActionBarActivity {
 	    setSupportActionBar(toolbar);
 	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+	    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+		    getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+		    int colorPrimaryDark = mTypedValue.data;
+		    getWindow().setStatusBarColor(colorPrimaryDark);
+	    }
+
 		this.findViewById(R.id.get_timetablejson).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {

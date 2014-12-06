@@ -20,7 +20,6 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +43,12 @@ public class SettingsActivity extends ActionBarActivity {
 		int colorPrimary = mTypedValue.data;
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mToolbar.setBackgroundColor(colorPrimary);
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+			int colorPrimaryDark = mTypedValue.data;
+			getWindow().setStatusBarColor(colorPrimaryDark);
+		}
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}

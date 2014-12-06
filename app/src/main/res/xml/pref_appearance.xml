@@ -28,11 +28,11 @@
 		android:title="Theme"
 		android:entries="@array/themes"
 		android:entryValues="@array/themes_internal"
-		android:defaultValue="dark" />
+		android:defaultValue="Dark" />
 	<ListPreference
 		android:key="app_colour"
 		android:title="Colour"
 		android:entries="@array/colours"
 		android:entryValues="@array/colours_internal"
-		android:defaultValue="AppTheme.Blue" />
+		android:defaultValue="AppTheme" />
 </PreferenceScreen>

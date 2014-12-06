@@ -19,13 +19,23 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sbhstimetable.sbhs_timetable_android.backend.internal.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/scrim"
+	android:layout_width="@dimen/navigation_drawer_width"
 	android:layout_height="match_parent"
+	android:layout_gravity="start"
+	android:fitsSystemWindows="true"
+	android:elevation="10dp"
+	app:insetForeground="#4000"
 	tools:context=".NavigationDrawerFragment"
 	android:background="?android:windowBackground">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="@dimen/scrim_pad">
 
 	<ListView android:id="@+id/navdraw_listview"
 		android:layout_width="match_parent"
@@ -122,5 +132,6 @@
 		android:layout_toEndOf="@id/navdraw_noticescached_label"
 		android:layout_above="@id/navdraw_todaycached"
 		android:text="@string/question" />
+	</RelativeLayout>
 
-</RelativeLayout>
+</com.sbhstimetable.sbhs_timetable_android.backend.internal.ScrimInsetsFrameLayout>

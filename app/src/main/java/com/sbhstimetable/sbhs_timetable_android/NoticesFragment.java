@@ -48,6 +48,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentI
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
@@ -76,7 +77,6 @@ public class NoticesFragment extends Fragment {
 	}
 
 	@Override
-	@SuppressWarnings("all")
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
@@ -124,18 +124,21 @@ public class NoticesFragment extends Fragment {
 		res.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			refreshing = true;
-			ApiAccessor.getBelltimes(c, false);
-			ApiAccessor.getNotices(c, false);
-			ApiAccessor.getToday(c, false);
-
+				refreshing = true;
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
 			}
 		});
-		Resources r = this.getResources();
-		res.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
+		if (ThemeHelper.isBackgroundDark()) {
+			res.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			res.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
+		res.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
 		JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString(getActivity()));
 		NoticesJson n = NoticesJson.getInstance();
 		if (o != null) {
@@ -194,17 +197,21 @@ public class NoticesFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			String act = intent.getAction();
 			if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				this.frag.layout.setRefreshing(false);
+				if (this.frag.layout != null) {
+					this.frag.layout.setRefreshing(false);
+				} else {
+					this.frag.onCreate(new Bundle());
+				}
                 if (refreshing)// show once per refresh cycle
 				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				refreshing = false;
 				JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 				if (o.has("notices")) {
 					NoticesJson nj = new NoticesJson(o);
+					if (this.frag.adapter == null) return;
 					this.frag.adapter.update(nj);
 				}
-			}
-			else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
+			} else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
 				if (refreshing)
 					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
 				refreshing = false;

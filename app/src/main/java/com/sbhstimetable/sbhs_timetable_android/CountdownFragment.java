@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -66,11 +67,10 @@ public class CountdownFragment extends Fragment {
 	public static CountdownFragment newInstance() {
 		CountdownFragment fragment = new CountdownFragment();
 		Bundle args = new Bundle();
-		//args.putString(ARG_PARAM1, param1);
-		//args.putString(ARG_PARAM2, param2);
 		fragment.setArguments(args);
 		return fragment;
 	}
+
 	public CountdownFragment() {
 		// Required empty public constructor
 	}
@@ -78,6 +78,7 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(true);
 	}
 
@@ -86,7 +87,6 @@ public class CountdownFragment extends Fragment {
 		// Inflate the layout for this fragment
 		final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
-		Resources r = this.getResources();
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
@@ -98,11 +98,15 @@ public class CountdownFragment extends Fragment {
 				}
 			}
 		});
-		f.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red)
-		);
+		if (ThemeHelper.isBackgroundDark()) {
+			f.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			f.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
+		f.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
@@ -218,12 +222,12 @@ public class CountdownFragment extends Fragment {
 			if (p.teacherChanged()) {
 				teacher.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
-				teacher.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+				//teacher.setTextColor(getActivity().getResources().getColor(R.color.secondary_text_dark));
 			}
 			if (p.roomChanged()) {
 				room.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
-				room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+				//room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
 			}
 		}
 
@@ -274,6 +278,8 @@ public class CountdownFragment extends Fragment {
 			this.listener = new BroadcastListener();
 		}
 		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
+		ApiAccessor.getBelltimes(activity, true);
+		ApiAccessor.getToday(activity, true);
 		try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {
@@ -293,7 +299,8 @@ public class CountdownFragment extends Fragment {
 		public void onReceive(Context context, Intent intent) {
 			updateTimer();
 			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				mainView.setRefreshing(false);
+				if (mainView != null)
+					mainView.setRefreshing(false);
 				if (refreshing)
 					Toast.makeText(getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
 				refreshing = false;

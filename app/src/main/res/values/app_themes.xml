@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   SBHS-Timetable-Android: Countdown and timetable all at once (Android app).
   Copyright (C) 2014 Simon Shields, James Ye
@@ -20,19 +19,25 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingLeft="@dimen/activity_horizontal_margin"
-	android:paddingRight="@dimen/activity_horizontal_margin"
-	android:paddingTop="@dimen/activity_vertical_margin"
-	android:paddingBottom="@dimen/activity_vertical_margin"
-	android:fitsSystemWindows="true"
-	tools:context=".TimetableActivity$PlaceholderFragment">
+<resources>
+	<string-array name="themes">
+		<item>Dark (default)</item>
+		<item>Light</item>
+	</string-array>
+	<string-array name="themes_internal">
+		<item>Dark</item>
+		<item>Light</item>
+	</string-array>
 
-	<TextView android:id="@+id/section_label"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content" />
+	<string-array name="colours">
+		<item>Blue (default)</item>
+		<item>Green</item>
+		<item>Red</item>
+	</string-array>
 
-</RelativeLayout>
+	<string-array name="colours_internal"> <!-- should match theme names in themes.xml -->
+		<item>AppTheme</item>
+		<item>AppTheme_Green</item>
+		<item>AppTheme_Red</item>
+	</string-array>
+</resources>

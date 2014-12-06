@@ -22,19 +22,17 @@
 
 <resources>
 
-	<color name="primary">#ff455ede</color> <!-- blue 700 -->
-	<color name="primary_dark">#ff3b50ce</color> <!-- blue 800 -->
+	<color name="primary">#ff3f51b5</color> <!-- indigo 500 -->
+	<color name="primary_dark">#ff303f9f</color> <!-- indigo 700 -->
+	<color name="primary_green">#ff4caf50</color> <!-- green 500 -->
+	<color name="primary_green_dark">#ff388e3c</color> <!-- green 700 -->
+	<color name="primary_red">#fff44336</color> <!-- red 500 -->
+	<color name="primary_red_dark">#ffd32f2f</color> <!-- red 700 -->
 	<color name="accent">#ff00bfa5</color> <!-- teal A700 -->
-	<color name="accent_alt">#ff1de9b6</color> <!-- teal A400 -->
-	<color name="standout">#ffc107</color> <!-- amber 500 -->
-	<color name="background">#ff303030</color>
-    <color name="cardBackground">#ff424242</color>
-	<color name="pressed">#1affffff</color>
-	<color name="focused">#77ffffff</color>
-	<color name="divider">#ff888888</color>
-	<color name="red">#e51c23</color> <!-- red 500 -->
-	<color name="green">#259b24</color> <!-- green 500 -->
-	<color name="blue">#5677fc</color> <!-- blue 500 -->
+	<color name="standout">#ffffc107</color> <!-- amber 500 -->
+	<color name="red">#f44336</color> <!-- red 500 -->
+	<color name="green">#4caf50</color> <!-- green 500 -->
+	<color name="blue">#2196f3</color> <!-- blue 500 -->
 	<color name="yellow">#ffc107</color> <!-- amber 500 -->
 
 </resources>

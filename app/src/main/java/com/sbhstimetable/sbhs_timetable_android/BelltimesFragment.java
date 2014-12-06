@@ -45,6 +45,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 
@@ -95,9 +96,30 @@ public class BelltimesFragment extends Fragment {
 		// Inflate the layout for this fragment
 		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
 		this.layout = v;
+
+		final Context c = this.getActivity();
+		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				refreshing = true;
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
+			}
+		});
+		if (ThemeHelper.isBackgroundDark()) {
+			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
+		v.setColorSchemeColors(getResources().getColor(R.color.blue),
+			getResources().getColor(R.color.green),
+			getResources().getColor(R.color.yellow),
+			getResources().getColor(R.color.red));
+
 		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
 
-		lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+		/*lv.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView absListView, int i) {
 			}
@@ -110,21 +132,7 @@ public class BelltimesFragment extends Fragment {
 				Log.i("belltimesFragment", "scroll? COMPUTER SAYS " + topRowVerticalPosition);
 				v.setEnabled(topRowVerticalPosition >= -100);
 			}
-		});
-		final Context c = this.getActivity();
-		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				ApiAccessor.getBelltimes(c, false);
-				ApiAccessor.getNotices(c, false);
-				ApiAccessor.getToday(c, false);
-			}
-		});
-		Resources r = this.getResources();
-		v.setColorSchemeColors(r.getColor(R.color.blue),
-			r.getColor(R.color.green),
-			r.getColor(R.color.yellow),
-			r.getColor(R.color.red));
+		});*/
 		this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
 		lv.setAdapter(this.adapter);
 		return v;

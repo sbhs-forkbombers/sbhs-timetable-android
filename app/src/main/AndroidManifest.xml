@@ -17,7 +17,7 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+  -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.sbhstimetable.sbhs_timetable_android">
 
@@ -42,7 +42,7 @@
 		<activity android:name=".LoginActivity"
 			android:label="@string/title_activity_login"
 			android:parentActivityName="com.sbhstimetable.sbhs_timetable_android.TimetableActivity"
-			android:theme="@style/LoginTheme">
+			android:theme="@style/AppTheme">
 		</activity>
 
 		<activity android:name=".SettingsActivity"
@@ -58,7 +58,8 @@
 		</activity>
 
 		<activity android:name=".debug.DebugActivity"
-		          android:label="@string/title_activity_debug" >
+			android:label="@string/title_activity_debug"
+			android:theme="@style/AppTheme">
 		</activity>
 
 		<!-- Services -->

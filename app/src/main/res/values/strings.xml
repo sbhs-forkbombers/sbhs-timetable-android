@@ -17,8 +17,9 @@
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
--->
+  -->
 <resources>
+
 	<!-- titles -->
 	<string name="app_name">SBHS Timetable</string>
 	<string name="title_countdown">Countdown</string>

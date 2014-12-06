@@ -20,20 +20,31 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.MenuItem;
 
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+
 public class SettingsActivity extends ActionBarActivity {
+	public Toolbar mToolbar;
+	public TypedValue mTypedValue;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		ThemeHelper.setTheme(this);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		mTypedValue = new TypedValue();
+		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+		int colorPrimary = mTypedValue.data;
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
+		mToolbar.setBackgroundColor(colorPrimary);
+		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 

@@ -26,15 +26,10 @@
 	android:layout_height="match_parent"
 	tools:context="com.sbhstimetable.sbhs_timetable_android.NoticesFragment">
 
-	<FrameLayout android:layout_width="match_parent"
-		android:layout_height="match_parent">
-
-		<ListView android:id="@+id/notices_listview"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="start|top"
-			android:divider="@null"/>
-
-	</FrameLayout>
+	<ListView android:id="@+id/notices_listview"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start|top"
+		android:divider="@null" />
 
 </android.support.v4.widget.SwipeRefreshLayout>

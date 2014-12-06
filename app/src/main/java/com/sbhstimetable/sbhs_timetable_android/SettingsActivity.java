@@ -20,6 +20,7 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;

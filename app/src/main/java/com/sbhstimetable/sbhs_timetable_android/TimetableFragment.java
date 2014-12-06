@@ -46,6 +46,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentI
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
@@ -121,6 +122,11 @@ public class TimetableFragment extends Fragment {
 				ApiAccessor.getToday(c, false);
 			}
 		});
+		if (ThemeHelper.isBackgroundDark()) {
+			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
 		v.setColorSchemeColors(getResources().getColor(R.color.blue),
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),

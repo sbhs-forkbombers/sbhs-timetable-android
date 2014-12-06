@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -33,27 +32,27 @@ import java.lang.reflect.Field;
 public class ThemeHelper {
 	private static boolean isDark = true;
 	private static Resources.Theme curAppTheme = null;
+
 	public static void setTheme(Activity a) {
 		if (curAppTheme != null) {
 			a.getTheme().setTo(curAppTheme);
 		}
-		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "dark");
-		String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "AppTheme.Blue");
+		String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "AppTheme");
+		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "Dark");
 		Resources.Theme toChange = a.getTheme();
 
 		if (!colour.startsWith("AppTheme")) {
-			colour = "AppTheme." + colour.substring(0, 1).toUpperCase() + colour.substring(1);
+			colour = "AppTheme_" + colour.substring(0, 1).toUpperCase() + colour.substring(1);
 		}
-		if (theme.equals("light")) {
-			colour += ".Light";
+		if (theme.equals("Light")) {
+			colour += "_Light";
 			isDark = false;
 		}
 		else {
 			isDark = true;
 		}
 		Log.i("ThemeHelper", "Setting colour to " + colour);
-		if (!colour.equals("AppTheme.Blue")) {
-			colour = colour.replace('.', '_');
+		if (!colour.equals("AppTheme")) {
 
 			try {
 				Field f = R.style.class.getField(colour);

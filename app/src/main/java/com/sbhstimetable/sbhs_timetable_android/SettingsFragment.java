@@ -98,8 +98,7 @@ public class SettingsFragment extends PreferenceFragment {
 					i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 					i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
 					preference.getContext().sendBroadcast(i);
-				}
-				else if (preference.getKey().startsWith("app_")) {
+				} else if (preference.getKey().startsWith("app_")) {
 					Intent i = new Intent();
 					i.setAction(ApiAccessor.ACTION_THEME_CHANGED);
 					ThemeHelper.invalidateTheme();

@@ -25,8 +25,8 @@
 		<item>Light</item>
 	</string-array>
 	<string-array name="themes_internal">
-		<item>dark</item>
-		<item>light</item>
+		<item>Dark</item>
+		<item>Light</item>
 	</string-array>
 
 	<string-array name="colours">
@@ -36,8 +36,8 @@
 	</string-array>
 
 	<string-array name="colours_internal"> <!-- should match theme names in themes.xml -->
-		<item>AppTheme.Blue</item>
-		<item>AppTheme.Green</item>
-		<item>AppTheme.Red</item>
+		<item>AppTheme</item>
+		<item>AppTheme_Green</item>
+		<item>AppTheme_Red</item>
 	</string-array>
 </resources>

@@ -45,6 +45,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 
@@ -106,6 +107,11 @@ public class BelltimesFragment extends Fragment {
 				ApiAccessor.getToday(c, false);
 			}
 		});
+		if (ThemeHelper.isBackgroundDark()) {
+			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
 		v.setColorSchemeColors(getResources().getColor(R.color.blue),
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),
@@ -113,7 +119,7 @@ public class BelltimesFragment extends Fragment {
 
 		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
 
-		lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+		/*lv.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScrollStateChanged(AbsListView absListView, int i) {
 			}
@@ -126,7 +132,7 @@ public class BelltimesFragment extends Fragment {
 				Log.i("belltimesFragment", "scroll? COMPUTER SAYS " + topRowVerticalPosition);
 				v.setEnabled(topRowVerticalPosition >= -100);
 			}
-		});
+		});*/
 		this.adapter = new BelltimesAdapter(BelltimesJson.getInstance());
 		lv.setAdapter(this.adapter);
 		return v;

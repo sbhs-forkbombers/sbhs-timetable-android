@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
@@ -97,6 +98,11 @@ public class CountdownFragment extends Fragment {
 				}
 			}
 		});
+		if (ThemeHelper.isBackgroundDark()) {
+			f.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			f.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
 		f.setColorSchemeColors(getResources().getColor(R.color.blue),
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),

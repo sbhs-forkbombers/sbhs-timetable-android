@@ -48,6 +48,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentI
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
@@ -123,13 +124,17 @@ public class NoticesFragment extends Fragment {
 		res.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-			refreshing = true;
-			ApiAccessor.getBelltimes(c, false);
-			ApiAccessor.getNotices(c, false);
-			ApiAccessor.getToday(c, false);
-
+				refreshing = true;
+				ApiAccessor.getBelltimes(c, false);
+				ApiAccessor.getNotices(c, false);
+				ApiAccessor.getToday(c, false);
 			}
 		});
+		if (ThemeHelper.isBackgroundDark()) {
+			res.setProgressBackgroundColor(R.color.background_floating_material_dark);
+		} else {
+			res.setProgressBackgroundColor(R.color.background_floating_material_light);
+		}
 		res.setColorSchemeColors(getResources().getColor(R.color.blue),
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),

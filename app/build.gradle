@@ -34,6 +34,13 @@ android {
 		}
 	}
 	productFlavors {
+        full {
+        }
+        demo {
+            applicationId 'com.sbhstimetable.sbhs_timetable_android_demo'
+            versionCode 1
+            versionName '1'
+        }
 	}
 }
 

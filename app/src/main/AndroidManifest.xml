@@ -51,12 +51,6 @@
 			android:theme="@style/AppTheme">
 		</activity>
 
-		<activity android:name=".ClassInfoActivity"
-			android:label="@string/title_activity_class_info"
-			android:parentActivityName="com.sbhstimetable.sbhs_timetable_android.TimetableActivity"
-			android:theme="@style/AppTheme">
-		</activity>
-
 		<activity android:name=".debug.DebugActivity"
 			android:label="@string/title_activity_debug"
 			android:theme="@style/AppTheme">

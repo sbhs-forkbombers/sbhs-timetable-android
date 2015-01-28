@@ -45,10 +45,15 @@
 			android:layout_height="48dp"
 			android:layout_below="@id/load_timetablejson"
 			android:text="Start Notification Service" />
+	<Button android:id="@+id/stop_service"
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:layout_below="@id/start_service"
+			android:text="Stop Notification Service" />
 
 	<ScrollView android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@+id/start_service">
+		android:layout_below="@id/stop_service">
 
 		<RelativeLayout android:layout_width="match_parent"
 			android:layout_height="wrap_content"

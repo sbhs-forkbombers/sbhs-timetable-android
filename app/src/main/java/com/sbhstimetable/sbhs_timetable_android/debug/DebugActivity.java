@@ -100,6 +100,15 @@ public class DebugActivity extends ActionBarActivity {
 				((TextView)findViewById(R.id.status)).setText(name);
 			}
 		});
+
+		this.findViewById(R.id.stop_service).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(v.getContext(), NotificationService.class);
+				boolean b = v.getContext().stopService(i);
+				((TextView)findViewById(R.id.status)).setText(""+b);
+			}
+		});
     }
 
 	@Override

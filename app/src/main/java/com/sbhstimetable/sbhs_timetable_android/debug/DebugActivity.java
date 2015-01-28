@@ -21,6 +21,7 @@
 package com.sbhstimetable.sbhs_timetable_android.debug;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -39,6 +40,7 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 
 public class DebugActivity extends ActionBarActivity {
 	public Toolbar mToolbar;
@@ -80,7 +82,22 @@ public class DebugActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View view) {
 				JsonObject j = StorageCache.getTimetable(view.getContext());
-				((TextView)findViewById(R.id.status)).setText(j.toString());
+				String res;
+				if (j != null) res = j.toString();
+				else res = "(null)";
+
+				((TextView)findViewById(R.id.status)).setText(res);
+
+			}
+		});
+
+		this.findViewById(R.id.start_service).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(v.getContext(), NotificationService.class);
+				ComponentName c = v.getContext().startService(i);
+				String name = (c != null ? c.flattenToString() : "(failed to start service)");
+				((TextView)findViewById(R.id.status)).setText(name);
 			}
 		});
     }

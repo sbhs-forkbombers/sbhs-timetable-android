@@ -40,18 +40,30 @@
 		android:layout_below="@id/get_timetablejson"
 		android:text="Load timetable.json from cache" />
 
+	<Button android:id="@+id/start_service"
+			android:layout_width="match_parent"
+			android:layout_height="48dp"
+			android:layout_below="@id/load_timetablejson"
+			android:text="Start Notification Service" />
+
 	<ScrollView android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/load_timetablejson">
+		android:layout_below="@+id/start_service">
 
 		<RelativeLayout android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/load_timetablejson"
+			android:layout_alignParentLeft="true"
+			android:layout_alignParentStart="true">
 
 			<TextView android:id="@+id/sikui"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:gravity="center_horizontal"
-				android:text="@string/sikui" />
+				android:text="@string/sikui"
+				android:layout_alignParentTop="true"
+				android:layout_alignParentLeft="true"
+				android:layout_alignParentStart="true"/>
 
 			<TextView android:id="@+id/status"
 				android:layout_width="wrap_content"
@@ -61,7 +73,6 @@
 				android:layout_marginRight="16dp"/>
 
 		</RelativeLayout>
-
 	</ScrollView>
 
 </RelativeLayout>

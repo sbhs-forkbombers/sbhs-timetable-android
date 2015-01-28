@@ -31,9 +31,8 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -278,6 +277,11 @@ public class ApiAccessor {
 			JsonObject o;
 			try {
 				o = new JsonParser().parse(result).getAsJsonObject();
+				if (o.has("status") && o.get("status").getAsString().equals("401")) {
+					// need to log in
+					this.sendFailure(lbm, R.string.err_auth);
+					return;
+				}
 				if (o.has("error") || (o.has("status") && !o.get("status").getAsString().equals("OK"))) {
 					Log.e("downloadfiletask", "something's wrong with the json we got, ignoring...");
 					return;
@@ -289,11 +293,7 @@ public class ApiAccessor {
 				this.sendFailure(lbm, R.string.err_badjson);
 				return;
 			}
-			if (o.has("status") && o.get("status").getAsString().equals("401")) {
-				// need to log in
-				this.sendFailure(lbm, R.string.err_auth);
-				return;
-			}
+
 			SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(c);
 			SharedPreferences.Editor ed = p.edit();
 

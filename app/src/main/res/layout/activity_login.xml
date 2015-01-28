@@ -24,7 +24,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="com.sbhstimetable.sbhs_timetable_android.LoginActivity" >
+	tools:context="com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity" >
 
 	<include layout="@layout/layout_toolbar" />
 

@@ -108,9 +108,9 @@ public class BelltimesFragment extends Fragment {
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
-			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+			v.setProgressBackgroundColor(getResources().getColor(R.color.background_floating_material_dark));
 		} else {
-			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+			v.setProgressBackgroundColor(getResources().getColor(R.color.background_floating_material_light));
 		}
 		v.setColorSchemeColors(getResources().getColor(R.color.blue),
 			getResources().getColor(R.color.green),

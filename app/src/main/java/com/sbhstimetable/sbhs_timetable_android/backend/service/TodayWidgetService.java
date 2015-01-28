@@ -32,7 +32,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;

@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -40,6 +41,7 @@ import android.view.Window;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
@@ -58,6 +60,7 @@ public class TimetableActivity extends ActionBarActivity
 	public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
 	public static final String TODAY_AVAILABLE = "todayIsPresent";
 	public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
+	public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
@@ -93,11 +96,18 @@ public class TimetableActivity extends ActionBarActivity
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
 
 		ApiAccessor.load(this);
+		if (ApiAccessor.getSessionID() == null) {
+			Intent toLaunch = new Intent(this, TokenExpiredActivity.class);
+			toLaunch.putExtra("firstTime", true);
+			this.startActivity(toLaunch);
+			finish();
+		}
 		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
 		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
 		interesting.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
 		interesting.addAction(ApiAccessor.ACTION_THEME_CHANGED);
+		interesting.addAction(ApiAccessor.ACTION_TODAY_FAILED); // you must log in.
 		LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
 		// Set up the drawer.
 		// Grab belltimes.json
@@ -121,7 +131,7 @@ public class TimetableActivity extends ActionBarActivity
 			DialogFragment f = new FeedbackDialogFragment();
 			f.show(this.getFragmentManager(), "dialog");
 		}
-		NotificationService.startUpdatingNotification(this);
+		//NotificationService.startUpdatingNotification(this);
 		this.mNavigationDrawerFragment.updateList();
 		this.isActive = true;
 	}
@@ -268,6 +278,14 @@ public class TimetableActivity extends ActionBarActivity
 			else if (intent.getAction().equals(ApiAccessor.ACTION_THEME_CHANGED)) {
 				if (this.activity != null) {
 					activity.needToRecreate = true;
+				}
+			} else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_FAILED)) {
+				int reason = intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, 0);
+				Log.i("TimetableActivity", "Failed to get today.json. Reason => " + reason + " (wanted => " + R.string.err_auth + "), activity => " + this.activity);
+				if (reason == R.string.err_auth && this.activity != null) {
+					if (PreferenceManager.getDefaultSharedPreferences(this.activity).getBoolean(PREF_LOGGED_IN_ONCE, false)) {
+						this.activity.startActivity(new Intent(context, TokenExpiredActivity.class));
+					}
 				}
 			}
 			this.activity.updateCachedStatus(this.activity.menu);

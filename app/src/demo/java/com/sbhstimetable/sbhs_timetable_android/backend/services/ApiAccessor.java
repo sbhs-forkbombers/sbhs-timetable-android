@@ -31,7 +31,7 @@ import android.util.Log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sbhstimetable.sbhs_timetable_android.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;

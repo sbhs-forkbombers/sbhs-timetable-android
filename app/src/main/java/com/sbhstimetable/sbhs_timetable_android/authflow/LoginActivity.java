@@ -18,12 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sbhstimetable.sbhs_timetable_android;
+package com.sbhstimetable.sbhs_timetable_android.authflow;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
@@ -33,6 +35,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
@@ -83,8 +87,9 @@ public class LoginActivity extends ActionBarActivity {
 						if (i.contains("SESSID")) {
 							String sessionID = i.split("=")[1];
 							ApiAccessor.finishedLogin(me, sessionID);
-							view.clearCache(true);
-							finish();
+
+							PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(TimetableActivity.PREF_LOGGED_IN_ONCE, true).apply();
+							me.onBackPressed();
 						}
 					}
 				}
@@ -103,8 +108,14 @@ public class LoginActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+
 	@Override
 	public void onBackPressed() {
+		Intent i = new Intent(this, TimetableActivity.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+		startActivity(i);
 		finish();
+		return;
 	}
+
 }

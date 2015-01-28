@@ -1,0 +1,57 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				tools:context="com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity">
+
+	<include layout="@layout/layout_toolbar" />
+
+	<RelativeLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:layout_marginTop="?attr/actionBarSize"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:layout_marginBottom="16dp">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/title_token_expired"
+			android:id="@+id/title"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:textSize="30sp"
+			android:fontFamily="sans-serif-light"
+			android:textAlignment="center"
+			android:gravity="center_horizontal"
+			android:paddingBottom="10dp"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/token_expired_reason"
+			android:id="@+id/explanation"
+			android:layout_below="@id/title"
+			android:layout_centerHorizontal="true"
+			android:gravity="center_horizontal"/>
+
+		<ImageView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/notameme"
+			android:layout_below="@id/explanation"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="8dp"
+			/>
+
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/button_login"
+			android:id="@+id/button_login"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"/>
+	</RelativeLayout>
+
+</FrameLayout>

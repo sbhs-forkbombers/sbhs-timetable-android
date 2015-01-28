@@ -26,8 +26,8 @@ android {
 		applicationId 'com.sbhstimetable.sbhs_timetable_android'
 		minSdkVersion 15
 		targetSdkVersion 21
-		versionCode 12
-		versionName '0.10.0-beta2'
+		versionCode 13
+		versionName '0.90.0-beta'
 	}
 	buildTypes {
 		release {
@@ -39,7 +39,7 @@ android {
         demo {
             applicationId 'com.sbhstimetable.sbhs_timetable_android_demo'
             versionCode 1
-            versionName '1'
+            versionName '( ͡ಠ ͜ʖ ͡ಠ) '// solid unicode support android studio
         }
 	}
 }

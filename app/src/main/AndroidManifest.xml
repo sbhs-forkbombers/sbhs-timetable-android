@@ -117,7 +117,7 @@
                 android:resource="@xml/today_app_widget_info" />
         </receiver>
 
-        <activity
+		<activity
             android:name=".authflow.TokenExpiredActivity"
             android:label="@string/title_activity_token_expired"
             android:parentActivityName=".TimetableActivity" >
@@ -125,6 +125,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sbhstimetable.sbhs_timetable_android.TimetableActivity" />
         </activity>
+
+
     </application>
 
 </manifest>

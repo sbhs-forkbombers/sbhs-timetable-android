@@ -21,12 +21,12 @@ public class NotificationService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(TAG, "Received start id " + startId + ": " + intent);
 
-		return START_STICKY;
+		return START_NOT_STICKY;
 	}
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this.getApplicationContext(), "Hi there!", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this.getApplicationContext(), "Hi there!", Toast.LENGTH_SHORT).show();
 		Log.w(TAG, "Created!");
 	}
 }

@@ -29,7 +29,8 @@
 	<CheckBoxPreference
 		android:key="notifications_enable"
 		android:title="@string/pref_title_allow_notifications"
-		android:summary="@string/pref_desc_allow_notifications"
-		android:defaultValue="true" />
+		android:summary="These will be back soon!"
+		android:defaultValue="false"
+		android:enabled="false" />
 
 </PreferenceScreen>

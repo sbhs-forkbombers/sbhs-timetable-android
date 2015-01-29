@@ -25,16 +25,19 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -63,7 +66,7 @@ public class SettingsFragment extends PreferenceFragment {
 			prefs = new String[] {
 					PrefUtil.WIDGET_TRANSPARENCY_HS,
 					PrefUtil.THEME,
-					PrefUtil.COLOUR
+					PrefUtil.COLOUR,
 			};
 
 		}
@@ -74,6 +77,11 @@ public class SettingsFragment extends PreferenceFragment {
 			String defaultVal = ((ListPreference) thePref).getValue();
 			thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
 		}
+
+		CheckBoxPreference p = (CheckBoxPreference)this.findPreference(PrefUtil.NOTIFICATIONS_ENABLED);
+		p.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+		p.getOnPreferenceChangeListener().onPreferenceChange(p, p.getSharedPreferences().getBoolean(p.getKey(), false));
+
 	}
 
 	/**
@@ -84,7 +92,7 @@ public class SettingsFragment extends PreferenceFragment {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object value) {
 			String stringValue = value.toString();
-
+			Log.i("Settings", "Preference change: " + preference);
 			if (preference instanceof ListPreference) {
 				// For list preferences, look up the correct display value in
 				// the preference's 'entries' list.
@@ -104,6 +112,19 @@ public class SettingsFragment extends PreferenceFragment {
 					ThemeHelper.invalidateTheme();
 					LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(preference.getContext());
 					lbm.sendBroadcast(i);
+				}
+			} else if (preference instanceof CheckBoxPreference) {
+				Log.i("Settings", "Found a CheckBoxPreference with key " + preference.getKey());
+				if (preference.getKey().equals(PrefUtil.NOTIFICATIONS_ENABLED)) {
+					Intent i = new Intent(preference.getContext(), NotificationService.class);
+					if ((boolean)value) {
+						i.setAction(NotificationService.ACTION_INITIALISE);
+						preference.getContext().startService(i);
+						preference.setSummary("Showing notifications for next class.");
+					} else {
+						preference.getContext().stopService(i);
+						preference.setSummary("Not showing notifications for next class.");
+					}
 				}
 			}
 			return true;

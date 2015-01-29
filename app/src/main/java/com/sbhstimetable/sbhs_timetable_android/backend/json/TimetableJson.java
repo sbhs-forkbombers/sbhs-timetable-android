@@ -120,7 +120,6 @@ public class TimetableJson {
 			JsonObject q = o.get("periods").getAsJsonObject();
 			for (int i = 1; i < 6; i++) {
 				if (!q.has(i+"")) {
-					Log.i("timetable", "!o.has(" + i + "+'') :(");
 					JsonObject j = new JsonObject();
 					j.addProperty("title", "Free");
 					j.addProperty("teacher", "Nobody");
@@ -129,7 +128,6 @@ public class TimetableJson {
 
 				} else {
 					JsonObject p = q.get(i+"").getAsJsonObject();
-					Log.i("timetable", p.get("year").getAsString() + p.get("title").getAsString());
 					periods[i - 1] = new Period(p, i, parent.getInfoForSubject(p.get("year").getAsString(), p.get("title").getAsString()));
 				}
 			}

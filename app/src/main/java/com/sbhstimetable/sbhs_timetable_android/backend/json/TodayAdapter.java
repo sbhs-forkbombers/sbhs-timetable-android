@@ -62,10 +62,8 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 
 		JsonObject timt = StorageCache.getTimetable(c);
 		if (timt != null) {
-			Log.i("todayAdapter", "loading timetable.json!");
 			this.timetable = new TimetableJson(timt);
 			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName()) -  1;
-			Log.i("todayAdapter", "TJI => " +this.todayJsonIndex);
 			this.curDayIndex = this.todayJsonIndex % 5;
 			//this.curDayIndex++;
 			this.curWeekIndex = (int)Math.floor(this.todayJsonIndex / 5);
@@ -235,16 +233,12 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 		// XXX using view *will* cause NPEs.
-		Log.i("today", "called onItemSelected with int i => " + i + " curWeekIndex => " + this.curWeekIndex + " curDayIndex => " + this.curDayIndex);
 		if (adapterView.getId() == R.id.spinner_week) {
 			this.curWeekIndex = i;
-			Log.i("today", "set week to " + weeks[i]);
 			this.setDay((i * 5) + this.curDayIndex + 1);
 		}
 		else if (adapterView.getId() == R.id.spinner_day) {
-			Log.i("today", "set day to " + days[i]);
 			this.curDayIndex = i;
-			Log.i("today", "in cycle that's day #" + ((this.curWeekIndex * 5) + i));
 			this.setDay((this.curWeekIndex * 5) + i + 1);
 		}
 	}

@@ -25,4 +25,5 @@ public class PrefUtil {
     public static final String WIDGET_TRANSPARENCY_LS = "widget_transparency_lockscreen";
 	public static final String THEME = "app_theme";
 	public static final String COLOUR = "app_colour";
+	public static final String NOTIFICATIONS_ENABLED = "notifications_enable";
 }

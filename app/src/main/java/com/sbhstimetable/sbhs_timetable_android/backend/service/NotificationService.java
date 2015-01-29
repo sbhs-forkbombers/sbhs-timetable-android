@@ -31,7 +31,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.TimetableJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 // TODO retry later if no internet connection
 // TODO respect sync on/off setting
-// TODO special notification icon
 public class NotificationService extends Service {
 	public static final String ACTION_INITIALISE = "com.sbhstimetable.action.NotificationService.init";
 	public static final String ACTION_BELLTIMES = "com.sbhstimetable.action.NotificationService.belltimes";
@@ -50,6 +49,7 @@ public class NotificationService extends Service {
 	private TodayJson today;
 	private BelltimesJson belltimes;
 	private TimetableJson timetable;
+	private IntentReceiver intentReceiver;
 	@Override
 	public IBinder onBind(Intent intent) {
 		// nope
@@ -83,7 +83,7 @@ public class NotificationService extends Service {
 			this.today = new TodayJson(new JsonParser().parse(intent.getStringExtra(EXTRA_DATA)).getAsJsonObject());
 			showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_UPDATE)) {
-			if (belltimes == null) {
+			if (belltimes == null || DateTimeHelper.getDateString(null) == null) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 				return START_STICKY;
@@ -106,7 +106,7 @@ public class NotificationService extends Service {
 		if (alarm != null) am.cancel(alarm);
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
-		Log.i(TAG, "Will wake up in " + DateTimeHelper.milliSecondsUntilNextEvent() / 360 + " seconds to update notification.");
+		Log.i(TAG, "Will wake up in " + DateTimeHelper.milliSecondsUntilNextEvent() / 1000 + " seconds to update notification.");
 		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + DateTimeHelper.milliSecondsUntilNextEvent(), soon);
 		return START_STICKY;
 	}
@@ -117,7 +117,8 @@ public class NotificationService extends Service {
 		IntentFilter filter = new IntentFilter(ApiAccessor.ACTION_TIMETABLE_JSON);
 		filter.addAction(ApiAccessor.ACTION_TODAY_JSON);
 		filter.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		LocalBroadcastManager.getInstance(this).registerReceiver(new IntentReceiver(), filter);
+		this.intentReceiver = new IntentReceiver();
+		LocalBroadcastManager.getInstance(this).registerReceiver(this.intentReceiver, filter);
 
 
 	}
@@ -203,11 +204,14 @@ public class NotificationService extends Service {
 
 	@Override
 	public void onDestroy() {
+		Log.i(TAG, "Destroyed.");
 		mNM.cancel(NOTIFICATION);
 		if (alarm != null) {
 			((AlarmManager)this.getSystemService(Context.ALARM_SERVICE)).cancel(alarm);
 			alarm = null;
 		}
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(this.intentReceiver);
+		this.intentReceiver = null;
 	}
 
 	/**

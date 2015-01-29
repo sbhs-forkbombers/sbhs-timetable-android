@@ -51,7 +51,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 
 
 public class TimetableActivity extends ActionBarActivity

@@ -103,6 +103,22 @@ public class BelltimesJson {
 		return null;
 	}
 
+	public String getDateString() {
+		return this.bells.get("date").getAsString();
+	}
+
+	public String getDayName() {
+		return this.bells.get("day").getAsString();
+	}
+
+	public String getWeekLetter() {
+		return this.bells.get("weekType").getAsString();
+	}
+
+	public String getWeekInTerm() {
+		return this.bells.get("week").getAsString();
+	}
+
 	public static boolean isValid(JsonObject res) {
 		return res.has("bells");
 	}

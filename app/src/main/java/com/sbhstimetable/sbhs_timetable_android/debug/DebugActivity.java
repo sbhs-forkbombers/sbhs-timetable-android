@@ -95,6 +95,7 @@ public class DebugActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(v.getContext(), NotificationService.class);
+				i.setAction(NotificationService.ACTION_INITIALISE);
 				ComponentName c = v.getContext().startService(i);
 				String name = (c != null ? c.flattenToString() : "(failed to start service)");
 				((TextView)findViewById(R.id.status)).setText(name);

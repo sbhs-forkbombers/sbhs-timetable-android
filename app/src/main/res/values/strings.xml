@@ -89,4 +89,8 @@
 	<string name="title_first_login">Welcome to SBHS Timetable!</string>
 	<string name="first_login_explain">You\'ll need to log in with SBHS (using your ID number) before you can use this app. Logging in lets you see room changes, teacher substitutions, daily notices and more! Doge approves, see?</string>
 
+	<!-- Notifications -->
+	<string name="loading_data">Loading bell and timetable information&#8230;</string>
+	<string name="not_all_data">Still waiting for timetable information&#8230;</string>
+
 </resources>

@@ -49,7 +49,7 @@ public class DateTimeHelper {
 	}
 
 	public static String getGuessedDateString() {
-		return getYear() + "-" + (getMonth() + 1) + "-" + (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0));
+		return String.format("%4d-%2d-%2d", new Integer[] {getYear(), (getMonth() + 1), (getDate() + getDateOffset() + (needsMidnightCountdown() ? 1 : 0))});
 	}
 
 	/**

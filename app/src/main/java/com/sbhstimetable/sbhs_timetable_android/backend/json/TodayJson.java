@@ -59,6 +59,7 @@ public class TodayJson implements IDayType {
 						b.addProperty("changed", false);
 						b.addProperty("year", "");
 						b.addProperty("title", "");
+						b.addProperty("free", true);
 						periods[i] = new Period(b, false);
 					}
 				}
@@ -115,9 +116,13 @@ public class TodayJson implements IDayType {
 	public static class Period implements IDayType.IPeriod {
 		private final JsonObject period;
 		private boolean finalised = true;
+		private boolean free = false;
 		public Period(JsonObject obj, boolean finalised) {
 			this.finalised = finalised;
 			this.period = obj;
+			if (obj.has("free") && obj.get("free").getAsBoolean()) {
+				free = true;
+			}
 		}
 
 		public boolean showVariations() {
@@ -163,6 +168,10 @@ public class TodayJson implements IDayType {
 
 		public String name() {
 			return period.get("fullName").getAsString();
+		}
+
+		public boolean isFree() {
+			return free;
 		}
 
 		@Override

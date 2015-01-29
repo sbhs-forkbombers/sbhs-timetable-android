@@ -26,6 +26,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * Receives the Boot finished intent and also the application upgraded intent
+ */
 public class BootFinishedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {

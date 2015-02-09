@@ -31,15 +31,14 @@ import java.lang.reflect.Field;
 
 public class ThemeHelper {
 	private static boolean isDark = true;
-	private static Resources.Theme curAppTheme = null;
+	private static Integer curAppTheme = null;
 
 	public static void setTheme(Activity a) {
 		if (curAppTheme != null) {
-			a.getTheme().setTo(curAppTheme);
+			a.setTheme(curAppTheme);
 		}
 		String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "AppTheme");
 		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "Dark");
-		Resources.Theme toChange = a.getTheme();
 
 		if (!colour.startsWith("AppTheme")) {
 			colour = "AppTheme_" + colour.substring(0, 1).toUpperCase() + colour.substring(1);
@@ -52,12 +51,13 @@ public class ThemeHelper {
 			isDark = true;
 		}
 		Log.i("ThemeHelper", "Setting colour to " + colour);
+		int colourRes = R.style.AppTheme;
 		if (!colour.equals("AppTheme")) {
 
 			try {
 				Field f = R.style.class.getField(colour);
-				int colourRes = f.getInt(null);
-				toChange.applyStyle(colourRes, true);
+				colourRes = f.getInt(null);
+				a.setTheme(colourRes);
 			} catch (Exception e) {
 				Log.w("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
 			}
@@ -72,7 +72,7 @@ public class ThemeHelper {
 			toChange.applyStyle(R.style.AppTheme_Light, false);
 		}*/
 
-		curAppTheme = toChange;
+		curAppTheme = colourRes;
 		//a.getTheme().setTo(curAppTheme);
 
 	}

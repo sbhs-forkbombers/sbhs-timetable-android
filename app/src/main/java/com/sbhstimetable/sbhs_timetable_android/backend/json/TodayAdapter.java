@@ -64,7 +64,7 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 		JsonObject timt = StorageCache.getTimetable(c);
 		if (timt != null) {
 			this.timetable = new TimetableJson(timt);
-			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName()) -  1;
+			this.todayJsonIndex = this.timetable.getNumForDay(this.todayJson.getDayName()) - 1;
 			this.curDayIndex = this.todayJsonIndex % 5;
 			//this.curDayIndex++;
 			this.curWeekIndex = (int)Math.floor(this.todayJsonIndex / 5);
@@ -86,7 +86,7 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 	}
 
 	public void setDay(int dayIndex) {
-		if (dayIndex == todayJsonIndex || this.timetable == null) {
+		if (dayIndex+1 == todayJsonIndex || this.timetable == null) {
 			this.today = this.todayJson;
 		}
 		else {

@@ -31,16 +31,20 @@ import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.IDayType;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.TimetableJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 public class DashclockService extends DashClockExtension {
     private TodayJson mine;
     private BelltimesJson bells;
+	private TimetableJson timetable;
     @Override
     protected void onInitialize(boolean isReconnect) {
         super.onInitialize(isReconnect);
@@ -55,6 +59,14 @@ public class DashclockService extends DashClockExtension {
             }
             ApiAccessor.getToday(this);
         }
+		if (timetable == null) {
+			Log.i("dashclock", "timetable");
+			JsonObject temp = StorageCache.getTimetable(this);
+			if (temp != null) {
+				timetable = new TimetableJson(temp);
+			}
+			ApiAccessor.getTimetable(this, true);
+		}
         if (bells == null) {
             Log.i("dashclock", "bells");
             JsonObject temp = StorageCache.getBelltimes(this);
@@ -65,6 +77,7 @@ public class DashclockService extends DashClockExtension {
         }
         IntentFilter wanted = new IntentFilter();
         wanted.addAction(ApiAccessor.ACTION_TODAY_JSON);
+		wanted.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
         final DashclockService that = this;
         LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
             @Override
@@ -73,7 +86,9 @@ public class DashclockService extends DashClockExtension {
                     mine = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
                 } else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
                     bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                }
+                } else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
+					timetable = new TimetableJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
+				}
                 that.onUpdateData(DashClockExtension.UPDATE_REASON_MANUAL);
 
             }
@@ -102,19 +117,27 @@ public class DashclockService extends DashClockExtension {
             publishUpdate(new ExtensionData().visible(false));
             return;
         }
-        if (mine != null && !summary) {
-            publishUpdate(new ExtensionData()
-                            .icon(R.mipmap.ic_launcher)
-                            .status(mine.getPeriod(num).getShortName() + " - " + mine.getPeriod(num).room())
-                            .expandedTitle(mine.getPeriod(num).name())
-                            .expandedBody("in " + mine.getPeriod(num).room() + " with " + mine.getPeriod(num).teacher())
+		IDayType t;
+		if (mine != null && mine.isStillValid()) {
+			t = mine;
+			Log.i("dashclock", "using today.json");
+		} else {
+			ApiAccessor.getToday(this);
+			t = timetable.getDayByName(bells.getDayName());
+			Log.i("dashclock", "using timetable.json");
+		}
+		ExtensionData res = new ExtensionData().icon(R.mipmap.ic_notification_icon).clickIntent(new Intent(this, TimetableActivity.class));
+        if (t != null && !summary) {
+            publishUpdate(res.status(t.getPeriod(num).getShortName() + " - " + t.getPeriod(num).room())
+                            .expandedTitle(t.getPeriod(num).name())
+                            .expandedBody("in " + t.getPeriod(num).room() + " with " + t.getPeriod(num).teacher())
                             .visible(true)
             );
         }
-        else if (summary && mine != null) {
+        else if (summary && t != null) {
             String subjects = "";
             for (int i : new int[] { 1, 2, 3, 4, 5}) {
-                TodayJson.Period p = mine.getPeriod(i);
+                IDayType.IPeriod p = t.getPeriod(i);
                 if (i == 5) {
                     if (p != null) {
                         subjects += "and " + p.name().replace(" Period", "");
@@ -143,13 +166,11 @@ public class DashclockService extends DashClockExtension {
             else {
                 shortTitle = "TMR";
             }
-            publishUpdate(new ExtensionData()
-                .icon(R.mipmap.ic_launcher)
-                .status(shortTitle)
-                .expandedTitle(mine.getDayName())
-                .expandedBody(subjects)
-                .visible(true)
-            );
+            publishUpdate(res.status(shortTitle)
+							.expandedTitle(t.getDayName())
+							.expandedBody(subjects)
+							.visible(true)
+			);
         }
     }
 }

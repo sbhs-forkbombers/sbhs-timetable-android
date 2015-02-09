@@ -28,6 +28,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class TodayJson implements IDayType {
 	private final JsonObject today;
 	private Period periods[] = new Period[5];
@@ -102,6 +108,22 @@ public class TodayJson implements IDayType {
 
 	public boolean finalised() {
 		return this.today.get("variationsFinalised").getAsBoolean();
+	}
+
+	public boolean isStillValid() {
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date me = fmt.parse(this.getDate());
+			Calendar c = new GregorianCalendar();
+			c.setTime(me);
+			c.set(Calendar.HOUR, 15);
+			c.set(Calendar.MINUTE, 15);
+			c.set(Calendar.SECOND, 0);
+			Calendar now = GregorianCalendar.getInstance();
+			return now.before(c);
+		} catch (ParseException e) {
+			return false;
+		}
 	}
 
 	@Override

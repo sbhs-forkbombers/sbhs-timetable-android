@@ -122,6 +122,7 @@ public class TimetableFragment extends Fragment {
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
+			// ignore these errors
 			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
 		} else {
 			v.setProgressBackgroundColor(R.color.background_floating_material_light);

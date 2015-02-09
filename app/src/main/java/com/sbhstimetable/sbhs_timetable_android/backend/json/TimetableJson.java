@@ -153,6 +153,7 @@ public class TimetableJson {
 			this.myInfo = si;
 		}
 
+		@Override
 		public String name() {
 			if (myInfo != null) {
 				return myInfo.getTitle();
@@ -161,22 +162,27 @@ public class TimetableJson {
 			}
 		}
 
+		@Override
 		public boolean teacherChanged() {
 			return false;
 		}
 
+		@Override
 		public boolean roomChanged() {
 			return false;
 		}
 
+		@Override
 		public boolean changed() {
 			return false;
 		}
 
+		@Override
 		public String getShortName() {
 			return json.get("title").getAsString();
 		}
 
+		@Override
 		public String teacher() {
 			if (myInfo != null) {
 				return this.myInfo.getTeacher();
@@ -184,10 +190,18 @@ public class TimetableJson {
 				return "Mr X";
 			}
 		}
+
+		@Override
 		public String getShortTeacher() {
 			return json.get("teacher").getAsString();
 		}
 
+		@Override
+		public boolean cancelled() {
+			return false;
+		}
+
+		@Override
 		public String room() {
 			return json.get("room").getAsString();
 		}
@@ -196,6 +210,7 @@ public class TimetableJson {
 			return num;
 		}
 
+		@Override
 		public boolean showVariations() {
 			return false;
 		}

@@ -136,6 +136,8 @@ public class TodayJson implements IDayType {
 		public String teacher() {
 			if (this.changed() && period.get("hasCasual") != null && period.get("hasCasual").getAsBoolean() && this.finalised) {
 				return period.get("casualDisplay").getAsString().trim();
+			} else if (this.changed() && period.get("hasCasual") != null && !period.get("hasCasual").getAsBoolean()) {
+				return "N/A";
 			}
 			return period.get("fullTeacher").getAsString();
 		}
@@ -149,6 +151,10 @@ public class TodayJson implements IDayType {
 
 		public String getShortName() {
 			return period.get("year").getAsString() + period.get("title").getAsString();
+		}
+
+		public boolean cancelled() {
+			return this.changed() && period.get("hasCasual") != null && !period.get("hasCasual").getAsBoolean() && this.finalised;
 		}
 
 		public boolean teacherChanged() {

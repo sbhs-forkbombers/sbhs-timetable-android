@@ -36,6 +36,7 @@ public interface IDayType {
 		public String teacher();
 		public boolean teacherChanged();
 		public String getShortTeacher();
+		public boolean cancelled();
 
 		public String name();
 		public String getShortName();

@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -139,6 +140,11 @@ public class TimetableActivity extends ActionBarActivity
 	public void onNavigationDrawerItemSelected(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
+		SwipeRefreshLayout v = (SwipeRefreshLayout)this.findViewById(R.id.swrl);
+		if (v != null) {
+			v.setRefreshing(false);
+			v.clearAnimation();
+		}
 		switch (position) { // USE THE BREAK, LUKE!
 			case 0:
 				fragmentManager.beginTransaction()

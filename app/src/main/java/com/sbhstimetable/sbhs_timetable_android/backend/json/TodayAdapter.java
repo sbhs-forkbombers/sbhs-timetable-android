@@ -22,6 +22,7 @@ package com.sbhstimetable.sbhs_timetable_android.backend.json;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -188,11 +189,20 @@ public class TodayAdapter implements ListAdapter,AdapterView.OnItemSelectedListe
 		if (b.changed()) {
 			// variations!
 			changed.setVisibility(View.VISIBLE);
-			if (b.roomChanged()) {
+			if (b.roomChanged() || b.cancelled()) {
 				roomText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
 			}
-			if (b.teacherChanged()) {
+			if (b.teacherChanged() || b.cancelled()) {
 				teacherText.setTextColor(viewGroup.getResources().getColor(R.color.standout));
+			}
+			if (b.cancelled()) {
+				header.setTextColor(viewGroup.getResources().getColor(R.color.standout));
+				roomText.setEnabled(false);
+				header.setEnabled(false);
+				teacherText.setEnabled(false);
+				roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+				header.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+				teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 			}
 		} else {
 			changed.setVisibility(View.INVISIBLE);

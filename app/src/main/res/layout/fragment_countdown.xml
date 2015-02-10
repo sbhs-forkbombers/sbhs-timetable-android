@@ -32,10 +32,10 @@
 		tools:context="com.sbhstimetable.sbhs_timetable_android.CountdownFragment" >
 		<ScrollView android:layout_height="fill_parent"
 					android:layout_width="match_parent">
-		<FrameLayout android:layout_height="wrap_content"
+		<RelativeLayout android:layout_height="wrap_content"
 					 android:layout_width="match_parent" >
 		<include layout="@layout/layout_countdown" />
-			</FrameLayout>
+			</RelativeLayout>
 		</ScrollView>
 
 		<include layout="@layout/layout_countdown_moreinfo" />

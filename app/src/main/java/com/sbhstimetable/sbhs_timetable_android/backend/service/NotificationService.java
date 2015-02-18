@@ -178,6 +178,7 @@ public class NotificationService extends Service {
 		if (this.belltimes == null) return;
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
+		//topLine = this.today.getDayName() + " Week " + this.today.get
 		topLine = this.belltimes.getDayName() + " Week " + this.belltimes.getWeekInTerm() + this.belltimes.getWeekLetter();
 		bottomLine = "";
 		if (this.today != null) {

@@ -82,6 +82,7 @@ public class ApiAccessor {
 	public static boolean timetableLoaded = false;
 
 
+
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here
 		Log.i("ApiAccessor", "loading...");

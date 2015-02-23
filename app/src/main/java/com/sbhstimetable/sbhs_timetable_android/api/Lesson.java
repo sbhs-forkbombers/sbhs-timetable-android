@@ -32,13 +32,12 @@ public interface Lesson {
 
 	public boolean cancelled();
 
-	public String getName();
 
 	public static interface WithBelltime extends Lesson {
 		public DateTime getStart();
 		public DateTime getEnd();
 		public String getNext();
-
+		public String getName();
 	}
 
 }

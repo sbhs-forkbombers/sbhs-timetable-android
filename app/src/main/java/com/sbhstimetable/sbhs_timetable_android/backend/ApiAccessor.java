@@ -33,6 +33,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.squareup.okhttp.OkHttpClient;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -81,7 +82,7 @@ public class ApiAccessor {
 	public static boolean noticesLoaded = false;
 	public static boolean timetableLoaded = false;
 
-
+	private static final OkHttpClient httpClient = new OkHttpClient();
 
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here

@@ -53,6 +53,8 @@ import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
+import org.joda.time.DateTimeZone;
+
 
 public class TimetableActivity extends ActionBarActivity
 		implements NavigationDrawerFragment.NavigationDrawerCallbacks, CommonFragmentInterface {
@@ -61,6 +63,7 @@ public class TimetableActivity extends ActionBarActivity
 	public static final String TODAY_AVAILABLE = "todayIsPresent";
 	public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
 	public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
+
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */

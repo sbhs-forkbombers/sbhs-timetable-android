@@ -43,6 +43,7 @@ import java.net.URL;
 /**
  * Access remote API calls and stuff
  */
+@Deprecated
 public class ApiAccessor {
 	public static final String baseURL = "http://sbhstimetable.tk".toLowerCase(); // ALWAYS LOWER CASE!
 	public static final String PREFS_NAME = "timetablePrefs";
@@ -238,7 +239,7 @@ public class ApiAccessor {
 
 		@Override
 		protected String doInBackground(URL... urls) {
-			for (URL i : urls) {
+			/*for (URL i : urls) {
 				try {
 					HttpURLConnection con = (HttpURLConnection) i.openConnection();
 					con.setRequestMethod("GET");
@@ -256,6 +257,7 @@ public class ApiAccessor {
 					sendFailure(LocalBroadcastManager.getInstance(c), R.string.err_nointernet);
 				}
 			}
+			return null;*/
 			return null;
 		}
 
@@ -268,7 +270,7 @@ public class ApiAccessor {
 
 		@Override
 		protected void onPostExecute(String result) {
-			LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this.c);
+			/*LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(this.c);
 			if (result == null) {
 				this.sendFailure(lbm, R.string.err_idek);
 				Log.e("downloadfiletask", "failed to download a result for " + this.intentType);
@@ -318,7 +320,7 @@ public class ApiAccessor {
 			i.putExtra(EXTRA_JSON_DATA, result);
 			i.putExtra(EXTRA_CACHED, false);
 			Log.i("downloadfiletask", "got " + this.intentType);
-			lbm.sendBroadcast(i);
+			lbm.sendBroadcast(i);*/
 		}
 	}
 }

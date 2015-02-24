@@ -39,14 +39,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
+import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.TimetableAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 
 
@@ -65,7 +66,7 @@ public class TimetableFragment extends Fragment {
 	private CommonFragmentInterface mListener;
 	private TodayJson today;
 	private SwipeRefreshLayout layout;
-	private TodayAdapter adapter;
+	private TimetableAdapter adapter;
 	private BroadcastListener listener;
 	private boolean refreshing = false;
 
@@ -96,7 +97,8 @@ public class TimetableFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		if (!ApiAccessor.isLoggedIn()) {
+		if (!ApiWrapper.isLoggedIn()) {
+
 			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
 			TextView t = (TextView)v.findViewById(R.id.textview);
 			t.setOnClickListener(new View.OnClickListener() {
@@ -133,24 +135,18 @@ public class TimetableFragment extends Fragment {
 			getResources().getColor(R.color.red));
 
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-		if (z != null) {
-			ApiAccessor.getToday(this.getActivity());
-		}
+		//if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return v;
+
 		return v;
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		if (TodayJson.getInstance() != null && TodayJson.getInstance().getPeriod(1) != null) {
-			doTimetable(TodayJson.getInstance());
-		}
-		else {
-			JsonObject res = StorageCache.getTodayJson(this.getActivity(), DateTimeHelper.getDateString(getActivity()));
-			if (res != null && res.has("timetable")) {
-				this.doTimetable(new TodayJson(res));
-			}
-		}
+		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
+		this.adapter = new TimetableAdapter(this.getActivity());
+		z.setAdapter(this.adapter);
+
 	}
 
 
@@ -164,14 +160,9 @@ public class TimetableFragment extends Fragment {
 	public void doTimetable(TodayJson o) {
 		this.today = o;
 		if (this.adapter == null) {
-			if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return;
-			this.adapter = new TodayAdapter(this.today, this.getActivity());
-			ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-			z.setAdapter(this.adapter);
+
 		}
-		else {
-			this.adapter.updateDataSet(this.today);
-		}
+
 
 	}
 

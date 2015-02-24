@@ -55,6 +55,14 @@ public class Today implements Day {
 		return weekType;
 	}
 
+	public boolean isStillCurrent() {
+		DateTime d = DateTimeHelper.getYYYYMMDDFormatter().parseDateTime(date).withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
+		if (d.isBeforeNow()) {
+			return false;
+		}
+		return true;
+	}
+
 	@Override
 	public Lesson getPeriod(int number) {
 		return this.timetable.get(((Integer)number).toString());

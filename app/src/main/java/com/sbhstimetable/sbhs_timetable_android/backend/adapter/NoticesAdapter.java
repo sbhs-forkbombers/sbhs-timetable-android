@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sbhstimetable.sbhs_timetable_android.backend.json;
+package com.sbhstimetable.sbhs_timetable_android.backend.adapter;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -38,6 +38,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 
 import java.util.ArrayList;
 import java.util.List;

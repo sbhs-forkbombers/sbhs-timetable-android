@@ -43,7 +43,7 @@ public class StorageCache {
 	private DateTimeHelper dateTimeHelper;
 	public StorageCache(Context c) {
 		this.c = c;
-		this.dateTimeHelper = new DateTimeHelper(c);
+		this.dateTimeHelper = new DateTimeHelper(c, false);
 	}
 
 	private void cache(String desc, String json) {

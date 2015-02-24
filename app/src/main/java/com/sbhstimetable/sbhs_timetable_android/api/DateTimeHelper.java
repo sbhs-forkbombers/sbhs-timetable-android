@@ -48,26 +48,32 @@ public class DateTimeHelper {
 		return t.getHourOfDay() > 15 || (t.getHourOfDay() == 15 && t.getMinuteOfHour() >= 15);
 	}
 
-	public DateTimeHelper(Belltimes b, Today t, Context c) {
+	public DateTimeHelper(Belltimes b, Today t, Context c, boolean createCache) {
 		this.bells = b;
 		this.today = t;
 		if (c == null) {
 			throw new IllegalArgumentException("Need a context!");
 		}
 		this.context = c;
-		this.cache = new StorageCache(c);
+		if (createCache) {
+			this.cache = new StorageCache(c);
+		}
 	}
 
 	public DateTimeHelper(Belltimes b, Context c) {
-		this(b, null, c);
+		this(b, null, c, true);
 	}
 
 	public DateTimeHelper(Context c) {
-		this(null, null, c);
+		this(null, null, c, true);
+	}
+
+	public DateTimeHelper(Context c, boolean createCache) {
+		this(null, null, c, createCache);
 	}
 
 	public DateTime getNextSchoolDay() {
-		if (this.cache.hasCachedDate()) {
+		if (this.cache != null && this.cache.hasCachedDate()) {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
 		}
 		int offset = 0;

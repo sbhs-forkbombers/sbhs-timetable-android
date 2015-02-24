@@ -28,18 +28,19 @@ import retrofit.Callback;
 import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import retrofit.http.Query;
 
 public interface SbhsTimetableService {
-	@GET("/api/today.json?SESSID={session}")
-	void getTodayJson(@Path("session") String sessID, Callback<Today> r);
+	@GET("/api/today.json")
+	void getTodayJson(@Query("SESSID") String sessID, Callback<Today> r);
 
-	@GET("/api/belltimes?date={date}")
-	void getBelltimes(@Path("date") String date, Callback<Belltimes> r);
+	@GET("/api/belltimes")
+	void getBelltimes(@Query("date") String date, Callback<Belltimes> r);
 
-	@GET("/api/notices.json?SESSID={session}")
-	void getNotices(@Path("session") String sessID, Callback<Notices> r);
+	@GET("/api/notices.json")
+	void getNotices(@Query("SESSID") String sessID, Callback<Notices> r);
 
-	@GET("/api/bettertimetable.json?SESSID={session}")
-	void getTimetable(@Path("session") String sessID, Callback<Timetable> r);
+	@GET("/api/bettertimetable.json")
+	void getTimetable(@Query("SESSID") String sessID, Callback<Timetable> r);
 
 }

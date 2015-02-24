@@ -46,11 +46,37 @@ public class ApiWrapper {
 	private static final EventBus EVENT_BUS = new EventBus();
 	private static boolean initialised = false;
 	private static String sessID;
+
+	private static boolean loadingBells = false;
+	private static boolean loadingToday = false;
+	private static boolean loadingTimetable = false;
+	private static boolean loadingNotices = false;
+
+	public static boolean isLoadingBells() {
+		return loadingBells;
+	}
+
+	public static boolean isLoadingToday() {
+		return loadingToday;
+	}
+
+	public static boolean isLoadingTimetable() {
+		return loadingTimetable;
+	}
+
+	public static boolean isLoadingNotices() {
+		return loadingNotices;
+	}
+
+	public static boolean isLoadingSomething() {
+		return loadingBells || loadingToday || loadingTimetable || loadingNotices;
+	}
+
 	static {
 		adapter = new RestAdapter.Builder()
 				.setEndpoint("https://sbhstimetable.tk")
 				.setLog(new AndroidLog("http"))
-				.setLogLevel(RestAdapter.LogLevel.BASIC)
+				.setLogLevel(RestAdapter.LogLevel.FULL)
 				.build();
 
 		api = adapter.create(SbhsTimetableService.class);
@@ -86,7 +112,8 @@ public class ApiWrapper {
 	}
 
 	public static void requestToday(Context c) {
-		if (errIfNotReady()) return;
+		if (errIfNotReady() || loadingToday) return;
+		loadingToday = true;
 		api.getTodayJson(sessID, new Callback<Today>() {
 			@Override
 			public void success(Today today, Response response) {
@@ -97,18 +124,21 @@ public class ApiWrapper {
 					t = new TodayEvent(true);
 				}
 				getEventBus().post(t);
+				loadingToday = false;
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				TodayEvent t = new TodayEvent(error);
 				getEventBus().post(t);
+				loadingToday = false;
 			}
 		});
 	}
 
 	public static void requestBells(Context c) {
-		if (errIfNotReady()) return;
+		if (errIfNotReady() || loadingBells) return;
+		loadingBells = true;
 		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay().toInstant());
 		api.getBelltimes(s, new Callback<Belltimes>() {
 			@Override
@@ -119,18 +149,21 @@ public class ApiWrapper {
 				} else {
 					b = new BellsEvent(true);
 				}
+				loadingBells = false;
 				getEventBus().post(b);
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
+				loadingBells = false;
 				getEventBus().post(new BellsEvent(error));
 			}
 		});
 	}
 
 	public static void requestNotices(Context c) {
-		if (errIfNotReady()) return;
+		if (errIfNotReady() || loadingNotices) return;
+		loadingNotices = true;
 		api.getNotices(sessID, new Callback<Notices>() {
 			@Override
 			public void success(Notices notices, Response response) {
@@ -141,12 +174,14 @@ public class ApiWrapper {
 					t = new NoticesEvent(true);
 				}
 				getEventBus().post(t);
+				loadingNotices = false;
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				NoticesEvent t = new NoticesEvent(error);
 				getEventBus().post(t);
+				loadingNotices = false;
 			}
 		});
 	}

@@ -19,6 +19,8 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
@@ -44,6 +46,7 @@ public class Timetable {
 	public TimetableDay getDayNumber(int num) {
 		TimetableDay res = days.get(((Integer)num).toString());
 		res.setDayNumber(num);
+		res._subjInfo = subjInfo;
 		return res;
 	}
 
@@ -52,6 +55,7 @@ public class Timetable {
 		private String dayName;
 		private HashMap<String, FixedLesson> periods;
 		private int dayNumber;
+		private HashMap<String, SubjectInfo> _subjInfo;
 
 		protected void setDayNumber(int num) {
 			dayNumber = num;
@@ -74,7 +78,10 @@ public class Timetable {
 
 		@Override
 		public Lesson getPeriod(int number) {
-			return this.periods.get(((Integer)number).toString());
+
+			FixedLesson l = this.periods.get(((Integer)number).toString());
+			l.subjInfo = this._subjInfo.get(l.year + l.title);
+			return l;
 		}
 
 		@Override
@@ -87,9 +94,11 @@ public class Timetable {
 			private String teacher;
 			private String room;
 			private String year;
+			public SubjectInfo subjInfo;
 			@Override
 			public String getSubject() {
-				return subjInfo.get(year + title).getSubjectName();
+				return subjInfo.getSubjectName();
+				//return subjInfo.get(year + title).getSubjectName();
 			}
 
 			@Override
@@ -104,7 +113,22 @@ public class Timetable {
 
 			@Override
 			public String getTeacher() {
-				return teacher;
+				String[] parts = subjInfo.getNormalTeacher().split(" ");
+				String teacherLastName = "";
+				for (int i = 2; i < parts.length; i++) {
+					teacherLastName += parts[i];
+				}
+				String ltemp = teacherLastName.toLowerCase();
+				String stemp = teacher.toLowerCase();
+				int prevIndex = 0;
+				for (char i : stemp.toCharArray()) {
+					if (ltemp.indexOf(i, prevIndex) != -1) {
+						prevIndex = ltemp.indexOf(i, prevIndex);
+					} else {
+						return teacher;
+					}
+				}
+				return parts[0] + " " + teacherLastName;
 			}
 
 			@Override

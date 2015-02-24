@@ -120,7 +120,9 @@ public class TimetableActivity extends ActionBarActivity
 			f.show(this.getFragmentManager(), "dialog");
 		}
 		if (this.cache.shouldReloadBells()) ApiWrapper.requestBells(this);
-		if (this.cache.shouldReloadNotices()) ApiWrapper.requestToday(this);
+		if (this.cache.shouldReloadNotices()) ApiWrapper.requestNotices(this);
+		if (this.cache.shouldReloadToday()) ApiWrapper.requestToday(this);
+		if (this.cache.shouldReloadTimetable()) ApiWrapper.requestTimetable(this);
 		ApiWrapper.getEventBus().register(this.receiver);
 		//NotificationService.startUpdatingNotification(this);
 		this.mNavigationDrawerFragment.updateList();

@@ -17,29 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.sbhstimetable.sbhs_timetable_android.api;
+package com.sbhstimetable.sbhs_timetable_android.event;
 
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
-import retrofit.Callback;
-import retrofit.client.Response;
-import retrofit.http.GET;
-import retrofit.http.Path;
+import retrofit.RetrofitError;
 
-public interface SbhsTimetableService {
-	@GET("/api/today.json?SESSID={session}")
-	void getTodayJson(@Path("session") String sessID, Callback<Today> r);
+public class NoticesEvent extends RequestReceivedEvent<Notices> {
+	public NoticesEvent(Notices response) {
+		super(response);
+	}
 
-	@GET("/api/belltimes?date={date}")
-	void getBelltimes(@Path("date") String date, Callback<Belltimes> r);
+	public NoticesEvent(RetrofitError r) {
+		super(r);
+	}
 
-	@GET("/api/notices.json?SESSID={session}")
-	void getNotices(@Path("session") String sessID, Callback<Notices> r);
-
-	@GET("/api/bettertimetable.json?SESSID={session}")
-	void getTimetable(@Path("session") String sessID, Callback<Timetable> r);
-
+	public NoticesEvent(boolean invalid) {
+		super(invalid);
+	}
 }

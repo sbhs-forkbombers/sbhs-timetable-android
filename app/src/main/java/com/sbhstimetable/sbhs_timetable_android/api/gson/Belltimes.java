@@ -69,6 +69,10 @@ public class Belltimes {
 		return bells[i];
 	}
 
+	public boolean valid() {
+		return !status.equalsIgnoreCase("error");
+	}
+
 	// TODO getNextBell(), IPeriod should implement getPeriodNumber() and have better getName(). hasPeriodNext() maybe?
 
 	public class Bell implements Belltime {

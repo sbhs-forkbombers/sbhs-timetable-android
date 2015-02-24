@@ -36,6 +36,7 @@ public class Today implements Day {
 
 	private String weekType;
 	private String today;
+	private String status;
 	@SuppressWarnings("all")
 	private HashMap<String,ClassEntry> timetable;
 
@@ -62,6 +63,14 @@ public class Today implements Day {
 	@Override
 	public boolean varies() {
 		return false;
+	}
+
+	public boolean valid() {
+		return status == null;
+	}
+
+	public String getStringDate() {
+		return date;
 	}
 
 	public class ClassEntry implements Lesson.WithBelltime {

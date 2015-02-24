@@ -82,8 +82,6 @@ public class ApiAccessor {
 	public static boolean noticesLoaded = false;
 	public static boolean timetableLoaded = false;
 
-	private static final OkHttpClient httpClient = new OkHttpClient();
-
 	public static void load(Context c) {
 		// load stored sessionID and whatnot here
 		Log.i("ApiAccessor", "loading...");

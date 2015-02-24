@@ -19,33 +19,71 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api;
 
+import android.content.Context;
+
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import org.joda.time.format.DateTimeParser;
+import static org.joda.time.DateTimeConstants.*;
 
 public class DateTimeHelper {
 	private Belltimes bells;
 	private Today today;
-
+	private Context context;
+	private StorageCache cache;
 	// useful things
 	public static DateTimeFormatter getHHMMFormatter() {
 		return new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfDay(2).toFormatter();
 	}
 
 	public static DateTimeFormatter getYYYYMMDDFormatter() {
-		return new DateTimeFormatterBuilder().appendYear(4,4).appendLiteral('-').appendMonthOfYear(1).appendLiteral('-').appendDayOfMonth(1).toFormatter();
+		return new DateTimeFormatterBuilder().appendYear(4,4).appendLiteral('-').appendMonthOfYear(2).appendLiteral('-').appendDayOfMonth(2).toFormatter();
 	}
 
-	public DateTimeHelper(Belltimes b, Today t) {
+	private static boolean after315(DateTime t) {
+		return t.getHourOfDay() > 15 || (t.getHourOfDay() == 15 && t.getMinuteOfHour() >= 15);
+	}
+
+	public DateTimeHelper(Belltimes b, Today t, Context c) {
 		this.bells = b;
 		this.today = t;
+		if (c == null) {
+			throw new IllegalArgumentException("Need a context!");
+		}
+		this.context = c;
+		this.cache = new StorageCache(c);
 	}
 
-	public DateTimeHelper(Belltimes b) {
-		this(b, null);
+	public DateTimeHelper(Belltimes b, Context c) {
+		this(b, null, c);
+	}
+
+	public DateTimeHelper(Context c) {
+		this(null, null, c);
+	}
+
+	public DateTime getNextSchoolDay() {
+		if (this.cache.hasCachedDate()) {
+			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
+		}
+		int offset = 0;
+		boolean goToMidnight = false;
+		DateTime now = DateTime.now();
+		if (now.getDayOfWeek() == SATURDAY) {
+			offset = 1;
+			goToMidnight = true;
+		} else if (now.getDayOfWeek() == FRIDAY && after315(now)) {
+			goToMidnight = true;
+			offset = 2;
+		} else if (after315(now)) {
+			goToMidnight = true;
+		}
+		now.plusDays(offset + (goToMidnight ? 1 : 0));
+		return now.withTimeAtStartOfDay();
 	}
 
 }

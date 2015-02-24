@@ -29,6 +29,11 @@ import java.util.HashMap;
 public class Timetable {
 	private HashMap<String, TimetableDay> days;
 	private HashMap<String, SubjectInfo> subjInfo;
+	private String status;
+
+	public boolean valid() {
+		return status == null;
+	}
 
 	public TimetableDay getDayNumber(String num) {
 		TimetableDay res = days.get(num);

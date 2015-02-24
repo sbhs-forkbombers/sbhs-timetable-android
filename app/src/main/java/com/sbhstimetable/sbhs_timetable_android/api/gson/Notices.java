@@ -35,10 +35,15 @@ public class Notices {
 	private String date;
 	private String term;
 	private String week;
+	private String status;
 	private HashMap<String, Notice[]> notices;
 
 	public Notice[] getNoticesForWeight(int weight) {
 		return notices.get(((Integer)weight).toString());
+	}
+
+	public boolean valid() {
+		return status == null;
 	}
 
 	public Set<String> getWeights() {

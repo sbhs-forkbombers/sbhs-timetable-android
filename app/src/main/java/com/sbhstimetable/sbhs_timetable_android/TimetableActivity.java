@@ -22,38 +22,24 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
-import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
-
-import org.joda.time.DateTimeZone;
+import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 
 public class TimetableActivity extends ActionBarActivity
@@ -75,6 +61,8 @@ public class TimetableActivity extends ActionBarActivity
 	public boolean isActive = false;
 	private boolean needToRecreate = false;
 	private int onMaster = 1;
+	private ActivityEventReceiver receiver;
+	private StorageCache cache;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -98,33 +86,30 @@ public class TimetableActivity extends ActionBarActivity
 		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
 
-		ApiAccessor.load(this);
-		if (ApiAccessor.getSessionID() == null) {
+		//ApiAccessor.load(this);
+		ApiWrapper.initialise(this);
+		if (!ApiWrapper.isLoggedIn()) {
 			Intent toLaunch = new Intent(this, TokenExpiredActivity.class);
 			toLaunch.putExtra("firstTime", true);
 			this.startActivity(toLaunch);
 			finish();
 		}
-		IntentFilter interesting = new IntentFilter(ApiAccessor.ACTION_TODAY_JSON);
-		interesting.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		interesting.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-		interesting.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
-		interesting.addAction(ApiAccessor.ACTION_THEME_CHANGED);
-		interesting.addAction(ApiAccessor.ACTION_TODAY_FAILED); // you must log in.
-		LocalBroadcastManager.getInstance(this).registerReceiver(new ReceiveBroadcast(this), interesting);
-		// Set up the drawer.
+
+		if (this.receiver == null) {
+			this.receiver = new ActivityEventReceiver(this);
+
+		}
+
+
 		// Grab belltimes.json
-		ApiAccessor.getBelltimes(this);
+		/*ApiAccessor.getBelltimes(this);
 		ApiAccessor.getToday(this);
 		ApiAccessor.getNotices(this);
-		ApiAccessor.getTimetable(this, true);
+		ApiAccessor.getTimetable(this, true);*/
+		if (this.cache == null) {
+			this.cache = new StorageCache(this);
+		}
 
-		Thread t = new Thread(new Runnable() {
-			public void run() {
-				StorageCache.cleanCache(getApplicationContext());
-			}
-		});
-		t.start();
 	}
 
 	@Override
@@ -134,6 +119,9 @@ public class TimetableActivity extends ActionBarActivity
 			DialogFragment f = new FeedbackDialogFragment();
 			f.show(this.getFragmentManager(), "dialog");
 		}
+		if (this.cache.shouldReloadBells()) ApiWrapper.requestBells(this);
+		if (this.cache.shouldReloadNotices()) ApiWrapper.requestToday(this);
+		ApiWrapper.getEventBus().register(this.receiver);
 		//NotificationService.startUpdatingNotification(this);
 		this.mNavigationDrawerFragment.updateList();
 		this.isActive = true;
@@ -175,21 +163,21 @@ public class TimetableActivity extends ActionBarActivity
 				break;
 			case 4:
 				if (!isActive) break; // don't do weirdness
-				Log.i("timetableactivity", "isActive = false (launching SettingsActivity)");
+				//Log.i("timetableactivity", "isActive = false (launching SettingsActivity)");
 				Intent settings = new Intent(this, SettingsActivity.class);
 				isActive = false;
 				this.startActivity(settings);
 				break;
 			case 5:
-				if (ApiAccessor.isLoggedIn()) {
+				/*if (ApiAccessor.isLoggedIn()) {
 					ApiAccessor.logout(this);
 					this.mNavigationDrawerFragment.updateList();
 					Toast.makeText(this, "Logged out! (You may need to restart the app to remove all your data)", Toast.LENGTH_SHORT).show();
-					StorageCache.deleteAllCacheFiles(this);
+					//StorageCache.deleteAllCacheFiles(this);
 					fragmentManager.beginTransaction().commit();
 				} else {
 					ApiAccessor.login(this);
-				}
+				}*/
 				break; // HAVE YOU GOT A PLAN BREAK?®
 		}
 	}
@@ -228,75 +216,35 @@ public class TimetableActivity extends ActionBarActivity
 			this.needToRecreate = false;
 			this.recreate();
 		}
-		Log.i("timetableactivity", "isActive = true");
 		this.isActive = true;
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		ApiWrapper.getEventBus().unregister(this.receiver);
 	}
 
 	public void updateCachedStatus(Menu m) {
 
 	}
 
-	private class ReceiveBroadcast extends BroadcastReceiver {
+	@SuppressWarnings("unused")
+	private class ActivityEventReceiver {
 		private TimetableActivity activity;
 
-		public ReceiveBroadcast(TimetableActivity a) {
+		public ActivityEventReceiver(TimetableActivity a) {
 			this.activity = a;
 		}
 
-		@Override
-		public void onReceive(Context context, Intent intent) {
+		public void onEvent(TodayEvent t) {
+			if (t.successful()) {
+				// TODO
+			} else {
 
-			if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-				ApiAccessor.todayLoaded = true;
-
-				if (this.activity.hasWindowFocus() && this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG) instanceof TimetableFragment) {
-					TimetableFragment frag = ((TimetableFragment) this.activity.getFragmentManager().findFragmentByTag(COUNTDOWN_FRAGMENT_TAG));
-					if (frag != null) {
-						frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-					}
-				} else {
-					JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-					if (o.has("error")) {
-						// reject it silently/
-						return;
-					}
-					StorageCache.cacheTodayJson(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-
-					TodayJson j = new TodayJson(o); // set INSTANCE
-					StorageCache.writeCachedDate(context, j.getDate());
-				}
-				LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.TODAY_AVAILABLE));
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				//activity.setProgressBarIndeterminateVisibility(false);
-				ApiAccessor.bellsLoaded = true;
-				StorageCache.cacheBelltimes(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				DateTimeHelper.bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-				LocalBroadcastManager.getInstance(this.activity).sendBroadcast(new Intent(TimetableActivity.BELLTIMES_AVAILABLE));
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				ApiAccessor.noticesLoaded = true;
-				StorageCache.cacheNotices(this.activity, DateTimeHelper.getDateString(context), intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				JsonObject nj = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				if (nj != null && NoticesJson.isValid(nj)) {
-					new NoticesJson(nj);
-				}
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
-				ApiAccessor.timetableLoaded = true;
-				StorageCache.cacheTimetable(this.activity, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
 			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_THEME_CHANGED)) {
-				if (this.activity != null) {
-					activity.needToRecreate = true;
-				}
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_FAILED)) {
-				int reason = intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, 0);
-				Log.i("TimetableActivity", "Failed to get today.json. Reason => " + reason + " (wanted => " + R.string.err_auth + "), activity => " + this.activity);
-				if (reason == R.string.err_auth && this.activity != null) {
-					if (PreferenceManager.getDefaultSharedPreferences(this.activity).getBoolean(PREF_LOGGED_IN_ONCE, false)) {
-						this.activity.startActivity(new Intent(context, TokenExpiredActivity.class));
-					}
-				}
-			}
-			this.activity.updateCachedStatus(this.activity.menu);
 		}
+
+
 	}
 }

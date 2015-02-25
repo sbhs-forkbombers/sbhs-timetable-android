@@ -21,6 +21,8 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.graphics.Paint;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +59,10 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		ApiWrapper.requestTimetable(c);
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
+		int tmp = currentIndex - 1;
+		Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
+		curDayIndex = (tmp % 5);
+		curWeekIndex = (int)Math.floor(tmp / 5);
 	}
 
 	@Override
@@ -152,13 +158,32 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
 		roomText = (TextView)view.findViewById(R.id.timetable_class_room);
 		teacherText = (TextView)view.findViewById(R.id.timetable_class_teacher);
-		//changed = (ImageView)view.findViewById(R.id.timetable_class_changed);
+		changed = (ImageView)view.findViewById(R.id.timetable_class_changed);
 
 		final Lesson l = this.cycle.getDayNumber(currentIndex).getPeriod(i);
 
 		header.setText(l.getSubject());
 		roomText.setText(l.getRoom());
 		teacherText.setText(l.getTeacher());
+		if (!l.roomChanged() && !l.teacherChanged() && !l.cancelled()) {
+			changed.setVisibility(View.INVISIBLE);
+		} else {
+			changed.setVisibility(View.VISIBLE);
+		}
+		int colour = roomText.getContext().getResources().getColor(R.color.standout);
+		if (l.cancelled()) {
+			roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+			teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+
+		}
+
+		if (l.teacherChanged() || l.cancelled()) {
+			teacherText.setTextColor(colour);
+		}
+
+		if (l.roomChanged() || l.cancelled()) {
+			roomText.setTextColor(colour);
+		}
 		return view;
 	}
 
@@ -179,7 +204,18 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+		if (parent.getId() == R.id.spinner_week) {
+			if (position == this.curWeekIndex) return;
+			this.curWeekIndex = position;
+			this.currentIndex = (5*position) + this.curDayIndex;
+		} else if (parent.getId() == R.id.spinner_day) {
+			position++;
+			if (position == this.curDayIndex) return;
+			this.curDayIndex = position;
+			this.currentIndex = (5 * this.curWeekIndex) + position;
+		}
+		Log.i("TimetableAdapter", "new position wk " + this.curWeekIndex + " day " + this.curDayIndex + " => " + this.currentIndex);
+		this.notifyDSOs();
 	}
 
 	@Override

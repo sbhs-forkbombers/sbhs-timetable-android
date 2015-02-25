@@ -20,14 +20,13 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,19 +35,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.TimetableAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 
 /**
@@ -67,8 +64,9 @@ public class TimetableFragment extends Fragment {
 	private TodayJson today;
 	private SwipeRefreshLayout layout;
 	private TimetableAdapter adapter;
-	private BroadcastListener listener;
+	private DateTimeHelper dateTimeHelper;
 	private boolean refreshing = false;
+	private EventListener listener;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -80,6 +78,7 @@ public class TimetableFragment extends Fragment {
 	}
 	public TimetableFragment() {
 		// Required empty public constructor
+		this.listener = new EventListener(this);
 	}
 
 	@Override
@@ -95,6 +94,7 @@ public class TimetableFragment extends Fragment {
 	}
 
 	@Override
+	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		if (!ApiWrapper.isLoggedIn()) {
@@ -118,11 +118,17 @@ public class TimetableFragment extends Fragment {
 			@Override
 			public void onRefresh() {
 				refreshing = true;
-				ApiAccessor.getBelltimes(c, false);
+				/*ApiAccessor.getBelltimes(c, false);
 				ApiAccessor.getNotices(c, false);
-				ApiAccessor.getToday(c, false);
+				ApiAccessor.getToday(c, false);*/
+				ApiWrapper.requestBells(c);
+				ApiWrapper.requestNotices(c);
+				ApiWrapper.requestToday(c);
 			}
 		});
+		if (ApiWrapper.isLoadingSomething()) {
+			v.setRefreshing(true);
+		}
 		if (ThemeHelper.isBackgroundDark()) {
 			// ignore these errors
 			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
@@ -149,35 +155,14 @@ public class TimetableFragment extends Fragment {
 
 	}
 
-
-	public void doTimetable(String b) {
-		JsonObject obj = JsonUtil.safelyParseJson(b);
-		if (obj.has("timetable")) {
-			doTimetable(new TodayJson(obj));
-		}
-	}
-
-	public void doTimetable(TodayJson o) {
-		this.today = o;
-		if (this.adapter == null) {
-
-		}
-
-
-	}
-
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		IntentFilter i = new IntentFilter();
-		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-		if (this.listener == null) {
+		ApiWrapper.getEventBus().register(this.listener);
+		/*if (this.listener == null) {
 			this.listener = new BroadcastListener(this);
 		}
-		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
+		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);*/
 		try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {
@@ -193,7 +178,7 @@ public class TimetableFragment extends Fragment {
 	@Override
 	public void onPause() {
 		super.onPause();
-		LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
+		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
 		if (this.today != null) {
 			StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
 		}
@@ -202,10 +187,23 @@ public class TimetableFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		ApiWrapper.getEventBus().unregister(this.listener);
+		this.dateTimeHelper = null;
 		mListener = null;
 	}
 
-	private class BroadcastListener extends BroadcastReceiver {
+	private class EventListener {
+		private TimetableFragment t;
+		public EventListener(TimetableFragment t) {
+			this.t = t;
+		}
+		public void onEvent(RequestReceivedEvent<?> ev) {
+			t.layout.setRefreshing(false);
+			t.layout.clearAnimation();
+		}
+	}
+
+	/*private class BroadcastListener extends BroadcastReceiver {
 		private SwipeRefreshLayout f;
 		private TimetableFragment frag;
 		BroadcastListener(TimetableFragment f) {
@@ -240,5 +238,5 @@ public class TimetableFragment extends Fragment {
 				this.frag.layout.setRefreshing(false);
 			}
 		}
-	}
+	}*/
 }

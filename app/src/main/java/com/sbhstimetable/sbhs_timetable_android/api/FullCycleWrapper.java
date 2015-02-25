@@ -26,6 +26,7 @@ import android.util.Log;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,11 @@ public class FullCycleWrapper {
 		this.notifyDSOs();
 	}
 
+	private void updateToday(Today t) {
+		this.variationData = t;
+		this.notifyDSOs();
+	}
+
 	private class EventListener {
 
 		public void onEvent(TimetableEvent e) {
@@ -106,6 +112,15 @@ public class FullCycleWrapper {
 				updateTimetable(e.getResponse());
 			} else {
 				Log.e("EventListener", "Timetable failed - " + e.getErrorMessage());
+			}
+		}
+
+		public void onEvent(TodayEvent e) {
+			Log.i("EventListener", "got TodayEvent");
+			if (e.successful()) {
+				updateToday(e.getResponse());
+			} else {
+				Log.e("EventListener", "Today failed - " + e.getErrorMessage());
 			}
 		}
 		// TODO

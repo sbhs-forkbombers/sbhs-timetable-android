@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FreePeriod;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 
 import java.util.HashMap;
@@ -78,8 +79,11 @@ public class Timetable {
 
 		@Override
 		public Lesson getPeriod(int number) {
-
-			FixedLesson l = this.periods.get(((Integer)number).toString());
+			String key = ((Integer)number).toString();
+			if (!this.periods.containsKey(key)) {
+				return new FreePeriod();
+			}
+			FixedLesson l = this.periods.get(key);
 			l.subjInfo = this._subjInfo.get(l.year + l.title);
 			return l;
 		}

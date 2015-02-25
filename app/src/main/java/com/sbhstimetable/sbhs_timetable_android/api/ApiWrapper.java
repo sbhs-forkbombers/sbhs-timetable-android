@@ -82,6 +82,10 @@ public class ApiWrapper {
 		api = adapter.create(SbhsTimetableService.class);
 	}
 
+	private static StorageCache cache(Context c) {
+		return new StorageCache(c);
+	}
+
 	public static SbhsTimetableService getApi() {
 		return api;
 	}
@@ -91,10 +95,15 @@ public class ApiWrapper {
 		if (p.contains("sessionID")) {
 			sessID = p.getString("sessionID", "");
 		} else {
-			p.edit().putString("sessionID", c.getSharedPreferences("timetablePrefs", 0).getString("sessionID", "")).commit();
+			p.edit().putString("sessionID", c.getSharedPreferences("timetablePrefs", 0).getString("sessionID", "")).apply();
 			sessID = p.getString("sessionID", "");
 		}
 		initialised = true;
+	}
+
+	public static void finishedLogin(Context c, String s) {
+		sessID = s;
+		PreferenceManager.getDefaultSharedPreferences(c).edit().putString("sessionID", s).commit();
 	}
 
 	// only used on functions which need sessID.
@@ -111,7 +120,7 @@ public class ApiWrapper {
 		return sessID != null && !sessID.equals("");
 	}
 
-	public static void requestToday(Context c) {
+	public static void requestToday(final Context c) {
 		if (errIfNotReady() || loadingToday) return;
 		loadingToday = true;
 		api.getTodayJson(sessID, new Callback<Today>() {
@@ -120,6 +129,7 @@ public class ApiWrapper {
 				TodayEvent t;
 				if (today.valid()) {
 					t = new TodayEvent(today);
+					cache(c).cacheToday(today);
 				} else {
 					t = new TodayEvent(true);
 				}
@@ -129,6 +139,7 @@ public class ApiWrapper {
 
 			@Override
 			public void failure(RetrofitError error) {
+				Log.e("ApiWrapper", "Failed to load /api/today.json", error);
 				TodayEvent t = new TodayEvent(error);
 				getEventBus().post(t);
 				loadingToday = false;
@@ -136,7 +147,7 @@ public class ApiWrapper {
 		});
 	}
 
-	public static void requestBells(Context c) {
+	public static void requestBells(final Context c) {
 		if (errIfNotReady() || loadingBells) return;
 		loadingBells = true;
 		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay().toInstant());
@@ -146,6 +157,8 @@ public class ApiWrapper {
 				BellsEvent b;
 				if (belltimes.valid()) {
 					b = new BellsEvent(belltimes);
+					cache(c).cacheBells(belltimes);
+
 				} else {
 					b = new BellsEvent(true);
 				}
@@ -161,7 +174,7 @@ public class ApiWrapper {
 		});
 	}
 
-	public static void requestNotices(Context c) {
+	public static void requestNotices(final Context c) {
 		if (errIfNotReady() || loadingNotices) return;
 		loadingNotices = true;
 		api.getNotices(sessID, new Callback<Notices>() {
@@ -170,6 +183,7 @@ public class ApiWrapper {
 				NoticesEvent t;
 				if (notices.valid()) {
 					t = new NoticesEvent(notices);
+					cache(c).cacheNotices(notices);
 				} else {
 					t = new NoticesEvent(true);
 				}
@@ -186,7 +200,7 @@ public class ApiWrapper {
 		});
 	}
 
-	public static void requestTimetable(Context c) {
+	public static void requestTimetable(final Context c) {
 		if (errIfNotReady()) return;
 		api.getTimetable(sessID, new Callback<Timetable>() {
 			@Override
@@ -194,6 +208,7 @@ public class ApiWrapper {
 				TimetableEvent t;
 				if (timetable.valid()) {
 					t = new TimetableEvent(timetable);
+					cache(c).cacheTimetable(timetable);
 				} else {
 					t = new TimetableEvent(true);
 				}

@@ -28,8 +28,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.Window;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -37,6 +39,7 @@ import android.webkit.WebViewClient;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
@@ -51,8 +54,9 @@ public class LoginActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		ThemeHelper.setTheme(this);
 		super.onCreate(savedInstanceState);
+		supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.activity_login);
-
+		setSupportProgressBarVisibility(true);
 		mTypedValue = new TypedValue();
 		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
 		int colorPrimary = mTypedValue.data;
@@ -68,25 +72,31 @@ public class LoginActivity extends ActionBarActivity {
 		}
 
 		mWebView = (WebView) findViewById(R.id.loginview);
-		mWebView.setBackgroundColor(Color.parseColor("#000000"));
+		mWebView.setBackgroundColor(Color.parseColor("#ffffff"));
 		mWebView.getSettings().setSaveFormData(true);
 		final Activity me = this;
 		mWebView.setWebChromeClient(new WebChromeClient() {
 			@Override
 			public void onProgressChanged(WebView view, int newProgress) {
-			super.onProgressChanged(view, newProgress);
-			me.setProgress(newProgress * 1000);
+				super.onProgressChanged(view, newProgress);
+				if (newProgress == 100) {
+					setSupportProgressBarVisibility(false);
+				} else {
+					setSupportProgressBarVisibility(true);
+				}
+				setSupportProgress(newProgress*100);
 			}
 		});
 		mWebView.setWebViewClient(new WebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				if (url.startsWith(baseURL) && ((url.endsWith("/") || url.contains("mobile_loading")))) {
+				Log.e("LoginActivity", "navigate to " + url);
+				if (url.startsWith(baseURL) && ((url.endsWith("/") || url.endsWith("loggedIn=true") || url.contains("mobile_loading")))) {
 					// this would be our website!
 					String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
 					for (String i : cookies) {
 						if (i.contains("SESSID")) {
 							String sessionID = i.split("=")[1];
-							ApiAccessor.finishedLogin(me, sessionID);
+							ApiWrapper.finishedLogin(me, sessionID);
 
 							PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(TimetableActivity.PREF_LOGGED_IN_ONCE, true).apply();
 							me.onBackPressed();

@@ -38,16 +38,16 @@
 			android:layout_height="match_parent">
 
 			<Spinner
-				android:layout_width="48dp"
+				android:layout_width="70dp"
 				android:layout_height="match_parent"
 				android:id="@+id/spinner_week"
 				android:layout_alignParentRight="true"
 				android:layout_alignParentEnd="true" />
 			<Spinner android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:layout_marginRight="48dp"
+				android:layout_marginRight="80dp"
 				android:id="@+id/spinner_day"
-				android:layout_alignParentLeft="true"
+				android:layout_alignParentRight="true"
 				android:layout_alignBaseline="@id/spinner_week"/>
 
 		</RelativeLayout>

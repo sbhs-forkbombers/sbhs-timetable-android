@@ -21,6 +21,7 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FreePeriod;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 
 import org.joda.time.DateTime;
@@ -65,7 +66,11 @@ public class Today implements Day {
 
 	@Override
 	public Lesson getPeriod(int number) {
-		return this.timetable.get(((Integer)number).toString());
+		String key = ((Integer)number).toString();
+		if (!this.timetable.containsKey(key)) {
+			return new FreePeriod();
+		}
+		return this.timetable.get(key);
 	}
 
 	@Override

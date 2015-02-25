@@ -51,8 +51,9 @@ public class StorageCache {
 		cache(desc, json, ymd.print(dateTimeHelper.getNextSchoolDay()));
 	}
 
-	private void cache(String desc, String json,  String date) {
+	private void cache(String desc, String json, String date) {
 		String file = date + desc + ".json";
+		Log.i("StorageCache", "Cache " + desc + " for " + date + " - " + json);
 		File toWrite = new File(c.getCacheDir(), file);
 		try {
 			FileWriter f = new FileWriter(toWrite);
@@ -164,7 +165,9 @@ public class StorageCache {
 
 	private String load(String desc, String date) {
 		File toRead = new File(c.getCacheDir(), date + desc + ".json");
+		Log.v("StorageCache", "Grab " + desc + " for " + date);
 		if (toRead.exists()) {
+			Log.v("StorageCache", "Exists!");
 			try {
 				BufferedReader b = new BufferedReader(new FileReader(toRead));
 				String result = "";
@@ -172,11 +175,13 @@ public class StorageCache {
 				while ((last = b.readLine()) != null) {
 					result += "\n" + last;
 				}
+				Log.v("StorageCache", "Result: " + result);
 				return result;
 			} catch (IOException e) {
 				Log.e("StorageCache", "Error happened while reading file " + toRead.getAbsolutePath() + "!", e);
 			}
 		}
+		Log.v("StorageCache", "doesn't exist.");
 		return null;
 	}
 

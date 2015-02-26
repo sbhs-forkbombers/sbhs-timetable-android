@@ -70,7 +70,7 @@ public class Today implements Day {
 		if (!this.timetable.containsKey(key)) {
 			return new FreePeriod();
 		}
-		return this.timetable.get(key);
+		return this.timetable.get(key).setVariationsReady(this.variationsFinalised);
 	}
 
 	@Override
@@ -86,6 +86,10 @@ public class Today implements Day {
 		return date;
 	}
 
+	public DateTime getFetchTime() {
+		return new DateTime(_fetchTime*1000);
+	}
+
 	public class ClassEntry implements Lesson.WithBelltime {
 		private String fullName;
 		private String fullTeacher;
@@ -97,6 +101,12 @@ public class Today implements Day {
 		private String casualDisplay;
 		private boolean hasCasual; // this needs to be nullable
 		private boolean varies;
+		private boolean variationsReady;
+
+		public ClassEntry setVariationsReady(boolean r) {
+			this.variationsReady = r;
+			return this;
+		}
 
 		@SuppressWarnings("all")
 		private HashMap<String,String> bell;
@@ -113,7 +123,7 @@ public class Today implements Day {
 
 		@Override
 		public boolean roomChanged() {
-			return roomTo != null && variationsFinalised;
+			return roomTo != null && variationsReady;
 		}
 
 		@Override
@@ -136,12 +146,12 @@ public class Today implements Day {
 
 		@Override
 		public boolean teacherChanged() {
-			return varies && variationsFinalised;
+			return varies && variationsReady;
 		}
 
 		@Override
 		public boolean cancelled() {
-			return cancelled && variationsFinalised;
+			return cancelled && variationsReady;
 		}
 
 		@Override

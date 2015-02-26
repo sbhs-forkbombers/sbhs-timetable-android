@@ -165,9 +165,9 @@ public class StorageCache {
 
 	private String load(String desc, String date) {
 		File toRead = new File(c.getCacheDir(), date + desc + ".json");
-		Log.v("StorageCache", "Grab " + desc + " for " + date);
+		//Log.v("StorageCache", "Grab " + desc + " for " + date);
 		if (toRead.exists()) {
-			Log.v("StorageCache", "Exists!");
+			//Log.v("StorageCache", "Exists!");
 			try {
 				BufferedReader b = new BufferedReader(new FileReader(toRead));
 				String result = "";
@@ -175,13 +175,13 @@ public class StorageCache {
 				while ((last = b.readLine()) != null) {
 					result += "\n" + last;
 				}
-				Log.v("StorageCache", "Result: " + result);
+				//Log.v("StorageCache", "Result: " + result);
 				return result;
 			} catch (IOException e) {
 				Log.e("StorageCache", "Error happened while reading file " + toRead.getAbsolutePath() + "!", e);
 			}
 		}
-		Log.v("StorageCache", "doesn't exist.");
+		//Log.v("StorageCache", "doesn't exist.");
 		return null;
 	}
 

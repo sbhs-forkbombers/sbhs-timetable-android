@@ -28,6 +28,8 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +52,26 @@ public class FullCycleWrapper {
 		if (variationData != null) {
 			currentDayInCycle = variationData.getDayNumber();
 		}
+		if (variationData == null) {
+			ApiWrapper.requestToday(c);
+		}
+		if (cycle == null) {
+			ApiWrapper.requestTimetable(c);
+		}
 		this.l = new EventListener();
 		ApiWrapper.getEventBus().register(l);
+	}
+
+	public DateTime getFetchTime(int index) {
+		if (index == currentDayInCycle) {
+			return variationData.getFetchTime();
+		} else {
+			return cycle.getFetchTime();
+		}
+	}
+
+	public Today getVariationData() {
+		return variationData;
 	}
 
 	public boolean hasFullTimetable() {
@@ -78,6 +98,10 @@ public class FullCycleWrapper {
 			return currentDayInCycle;
 		else
 			return 1; // TODO FIXME
+	}
+
+	public Day getToday() {
+		return getDayNumber(currentDayInCycle);
 	}
 
 	public void addDataSetObserver(DataSetObserver dso) {
@@ -107,20 +131,20 @@ public class FullCycleWrapper {
 	private class EventListener {
 
 		public void onEvent(TimetableEvent e) {
-			Log.i("EventListener", "got TimetableEvent");
+			Log.i("FCW$EventListener", "got TimetableEvent");
 			if (e.successful()) {
 				updateTimetable(e.getResponse());
 			} else {
-				Log.e("EventListener", "Timetable failed - " + e.getErrorMessage());
+				Log.e("FCW$EventListener", "Timetable failed - " + e.getErrorMessage());
 			}
 		}
 
 		public void onEvent(TodayEvent e) {
-			Log.i("EventListener", "got TodayEvent");
+			Log.i("FCW$EventListener", "got TodayEvent");
 			if (e.successful()) {
 				updateToday(e.getResponse());
 			} else {
-				Log.e("EventListener", "Today failed - " + e.getErrorMessage());
+				Log.e("FCW$EventListener", "Today failed - " + e.getErrorMessage());
 			}
 		}
 		// TODO

@@ -2,7 +2,7 @@
 
 <!--
   SBHS-Timetable-Android: Countdown and timetable all at once (Android app).
-  Copyright (C) 2014 Simon Shields, James Ye
+  Copyright (C) 2015 Simon Shields, James Ye
 
   This file is part of SBHS-Timetable-Android.
 
@@ -21,39 +21,37 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+			 android:layout_width="match_parent"
+			 android:layout_height="match_parent">
 
 	<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:layout_marginLeft="8dp"
-		android:layout_marginRight="8dp"
-		card_view:cardUseCompatPadding="true"
-		card_view:contentPadding="8dp"
-		card_view:contentPaddingLeft="0dp"
-		card_view:cardBackgroundColor="?attr/cardBackgroundColor">
+										android:layout_height="match_parent"
+										android:layout_width="match_parent"
+										android:layout_marginLeft="8dp"
+										android:layout_marginRight="8dp"
+										card_view:cardUseCompatPadding="true"
+										card_view:contentPadding="8dp"
+										card_view:contentPaddingLeft="0dp"
+										card_view:cardBackgroundColor="?attr/cardBackgroundColor">
 
 		<RelativeLayout android:layout_width="match_parent"
-			android:layout_height="match_parent">
+						android:layout_height="match_parent"
+			android:paddingLeft="8dp"
+			android:paddingRight="8dp">
 
-
-			<Spinner
+			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="match_parent"
-				android:id="@+id/spinner_week"
-				android:layout_alignParentRight="true"
-				android:layout_alignParentEnd="true"
-				android:paddingLeft="10dp"
-				android:paddingRight="10dp"
-				android:popupBackground="?attr/cardBackgroundColor"/>
-			<Spinner android:layout_width="match_parent"
+				android:id="@+id/label_last_updated"
+				android:text="Last updated: "/>
+			<TextView
+				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:id="@+id/spinner_day"
-				android:popupBackground="?attr/cardBackgroundColor"
-				android:layout_marginRight="10dp"
-				android:layout_toLeftOf="@id/spinner_week"
-				android:layout_alignParentLeft="true" />
+				android:id="@+id/last_updated"
+				android:layout_below="@id/label_last_updated"
+				android:textStyle="bold|italic"
+				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+				android:text="Hello, World!"/>
 
 
 		</RelativeLayout>

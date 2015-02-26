@@ -20,12 +20,14 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 import static org.joda.time.DateTimeConstants.*;
@@ -37,7 +39,7 @@ public class DateTimeHelper {
 	private StorageCache cache;
 	// useful things
 	public static DateTimeFormatter getHHMMFormatter() {
-		return new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfDay(2).toFormatter();
+		return new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).toFormatter();
 	}
 
 	public static DateTimeFormatter getYYYYMMDDFormatter() {
@@ -45,7 +47,11 @@ public class DateTimeHelper {
 	}
 
 	private static boolean after315(DateTime t) {
-		return t.getHourOfDay() > 15 || (t.getHourOfDay() == 15 && t.getMinuteOfHour() >= 15);
+		return after(t, 15, 15);
+	}
+
+	private static boolean after(DateTime t, int hrs, int minutes) {
+		return t.getHourOfDay() > hrs || (t.getHourOfDay() == hrs && t.getMinuteOfHour() >= minutes);
 	}
 
 	public DateTimeHelper(Belltimes b, Today t, Context c, boolean createCache) {
@@ -72,10 +78,10 @@ public class DateTimeHelper {
 		this(null, null, c, createCache);
 	}
 
-	public DateTime getNextSchoolDay() {
-		if (this.cache != null && this.cache.hasCachedDate()) {
+	public LocalDateTime getNextSchoolDay() {
+		/*if (this.cache != null && this.cache.hasCachedDate()) {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
-		}
+		}*/
 		int offset = 0;
 		boolean goToMidnight = false;
 		DateTime now = DateTime.now();
@@ -88,8 +94,70 @@ public class DateTimeHelper {
 		} else if (after315(now)) {
 			goToMidnight = true;
 		}
-		now.plusDays(offset + (goToMidnight ? 1 : 0));
-		return now.withTimeAtStartOfDay();
+		now = now.plusDays(offset + (goToMidnight ? 1 : 0));
+		return now.withTimeAtStartOfDay().plusMinutes(1).toLocalDateTime();
+	}
+
+	public void setBells(Belltimes b) {
+		Log.i("dth", "set bells to " + b);
+		this.bells = b;
+	}
+
+	public void setToday(Today t) {
+		this.today = t;
+	}
+
+	public Belltimes.Bell getNextLesson() {
+		if (bells == null) {
+			return null;
+		}
+		int len = bells.getLength();
+		for (int i = 0; i < len; i++) {
+			DateTime t = bells.getBellIndex(i).getBellTime();
+			t = t.withDate(DateTime.now().toLocalDate());
+			//Log.i("dth", ""+t);
+			if (t.isAfterNow()) {
+				return bells.getBellIndex(i);
+			}
+		}
+		return null;
+	}
+
+	public boolean hasBells() {
+		return this.bells != null;// && this.bells.current();
+	}
+
+	public boolean hasToday() {
+		return this.today != null && this.today.isStillCurrent();
+	}
+
+	public Today getToday() {
+		return this.today;
+	}
+
+	public LocalDateTime getNextEvent() {
+		//Log.i("dth", "bells => " + this.bells);
+		Belltimes.Bell next = getNextLesson();
+		if (next == null) {
+			DateTime day = getNextSchoolDay().toDateTime();
+			if (after(DateTime.now(), 9, 5) && day.equals(DateTime.now().withTimeAtStartOfDay())) {
+				day = day.plusDays(1);
+				if (day.getDayOfWeek() == SATURDAY) day = day.plusDays(2);
+				if (day.getDayOfWeek() == SUNDAY) day = day.plusDays(1);
+				if (day.getDayOfWeek() != FRIDAY) {
+					return day.plusHours(9).toLocalDateTime();
+				} else {
+					return day.plusHours(9).plusMinutes(25).toLocalDateTime();
+				}
+			} else {
+				if (day.getDayOfWeek() != FRIDAY) {
+					return day.plusHours(9).toLocalDateTime();
+				} else {
+					return day.plusHours(9).plusMinutes(25).toLocalDateTime();
+				}
+			}
+		}
+		return next.getBellTime().withDate(DateTime.now().toLocalDate()).toLocalDateTime();
 	}
 
 }

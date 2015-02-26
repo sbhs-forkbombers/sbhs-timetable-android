@@ -20,18 +20,21 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,23 +44,36 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
+import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 public class CountdownFragment extends Fragment {
 
 	private CommonFragmentInterface mListener;
-	private static CountDownTimer timeLeft;
-	private static boolean cancelling = false;
+
 	private SwipeRefreshLayout mainView;
-	private BroadcastListener listener;
+	//private BroadcastListener listener;
 	private int tapCount = 0;
 	private boolean refreshing = false;
+	private DateTimeHelper dth;
+	private StorageCache cache;
+	private FullCycleWrapper cycle;
+	private CountDownTimer mTimer;
+	private DataWatcher evListener;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -73,16 +89,18 @@ public class CountdownFragment extends Fragment {
 
 	public CountdownFragment() {
 		// Required empty public constructor
+
+
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setHasOptionsMenu(true);
 	}
 
 	@Override
+	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		final CountdownFragment me = this;
@@ -111,9 +129,7 @@ public class CountdownFragment extends Fragment {
 			@Override
 			public void onRefresh() {
 				refreshing = true;
-				ApiAccessor.getNotices(me.getActivity(), false);
-				ApiAccessor.getToday(me.getActivity(), false);
-				ApiAccessor.getBelltimes(me.getActivity(), false);
+
 			}
 		});
 		this.mainView = f;
@@ -134,25 +150,26 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (timeLeft != null) {
+		/*if (timeLeft != null) {
 			cancelling = true;
 			timeLeft.cancel();
 			cancelling = false;
-		}
+		}*/
 		this.updateTimer();
 	}
 
 	public void updateTimer() {
 		final View f = this.getView();
 		if (f == null) {
+			Log.wtf("CountdownFragment", "getView() == NULL!");
 			return;
 		}
 
-		if (timeLeft != null) {
+		/*if (timeLeft != null) {
 			cancelling = true;
 			timeLeft.cancel();
 			cancelling = false;
-		}
+		}*/
 
 		RelativeLayout extraData = (RelativeLayout)f.findViewById(R.id.countdown_extraData);
 		TextView teacher = (TextView)extraData.findViewById(R.id.countdown_extraData_teacher);
@@ -163,55 +180,63 @@ public class CountdownFragment extends Fragment {
 		subject.setText("…");
 		String label = "Something";
 		String connector = "happens in";
-		TodayJson.Period p = null;
-		if (DateTimeHelper.bells != null) {
-			BelltimesJson.Bell next = DateTimeHelper.bells.getNextBell();
+		Lesson p = null;
+		if (!dth.hasBells()) {
+			Belltimes bells = cache.loadBells();
+			dth.setBells(bells);
+			if (bells == null) {
+				//ApiWrapper.requestBells(this.getActivity());
+			}
+		}
+		if (dth.hasBells()) {
+			Belltimes.Bell next = dth.getNextLesson();
 			if (next != null) {
-				BelltimesJson.Bell now = DateTimeHelper.bells.getIndex(next.getIndex() - 1);
-				if (now.isPeriod() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
+				Belltimes.Bell now = next.getPreviousBellTime();
+				if (now.isPeriodStart() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
 					connector = "ends in";
-					if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-						p = TodayJson.getInstance().getPeriod(now.getPeriodNumber());
-						label = p.name();
-						teacher.setText(p.teacher());
-						room.setText(p.room());
-						subject.setText(p.name());
+					if (ApiWrapper.isLoggedIn() && cycle.ready()) {
+						p = cycle.getToday().getPeriod(now.getPeriodNumber());
+						label = p.getSubject();
+						teacher.setText(p.getTeacher());
+						room.setText(p.getRoom());
+						subject.setText(p.getSubject());
 						extraData.setVisibility(View.VISIBLE);
 					} else {
-						label = now.getLabel();
+						label = now.getBellName();
 						extraData.setVisibility(View.INVISIBLE);
 					}
-				} else if (now.isPeriod() && now.getPeriodNumber() == 5) { // last period
+				} else if (now.isPeriodStart() && now.getPeriodNumber() == 5) { // last period
 					connector = "in";
 					label = "School ends";
                     extraData.setVisibility(View.INVISIBLE);
-				} else if (now.getIndex() + 1 < DateTimeHelper.bells.getMaxIndex() && DateTimeHelper.bells.getIndex(now.getIndex() + 1).isPeriod()) { // in a break followed by a period - Lunch 2, Recess, Transition.
+				} else if (!now.isPeriodStart() && next.isPeriodStart()) { // in a break followed by a period - Lunch 2, Recess, Transition.
 					connector = "starts in";
-					if (ApiAccessor.isLoggedIn() && TodayJson.getInstance() != null) {
-						p = TodayJson.getInstance().getPeriod(DateTimeHelper.bells.getIndex(now.getIndex() + 1).getPeriodNumber());
-						label = p.name();
-						teacher.setText(p.teacher());
-						room.setText(p.room());
-						subject.setText(p.name());
+					if (ApiWrapper.isLoggedIn() && cycle.ready()) {
+						p = cycle.getToday().getPeriod(next.getPeriodNumber());
+						label = p.getSubject();
+						teacher.setText(p.getTeacher());
+						room.setText(p.getRoom());
+						subject.setText(p.getSubject());
 						extraData.setVisibility(View.VISIBLE);
 					} else {
-						label = DateTimeHelper.bells.getIndex(now.getIndex() + 1).getLabel();
-						extraData.setVisibility(View.VISIBLE);
+						label = next.getBellName();
+						extraData.setVisibility(View.INVISIBLE);
 					}
 				} else { // There's consecutive non-periods - i.e lunch 1 -> lunch 2
-					label = now.getLabel();
+					label = next.getBellName();
 					connector = "starts in";
+					extraData.setVisibility(View.INVISIBLE);
 				}
 			} else {
 				// end of day
 				label = "School starts";
 				connector = "in";
-				if (TodayJson.getInstance() != null && TodayJson.getInstance().getPeriod(1) != null) {
+				if (cycle.hasFullTimetable()) {
 					extraData.setVisibility(View.VISIBLE);
-					p = TodayJson.getInstance().getPeriod(1);
-					teacher.setText(p.teacher());
-					room.setText(p.room());
-					subject.setText(p.name());
+					p = cycle.getDayNumber(cycle.getCurrentDayInCycle()+1 % 15).getPeriod(1);
+					teacher.setText(p.getTeacher());
+					room.setText(p.getRoom());
+					subject.setText(p.getSubject());
 				} else {
 					extraData.setVisibility(View.INVISIBLE);
 				}
@@ -231,55 +256,52 @@ public class CountdownFragment extends Fragment {
 			}
 		}
 
-		final String innerLabel = label;
+
 		((TextView)f.findViewById(R.id.countdown_name)).setText(label);
 		((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
 		final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
-		final CountdownFragment frag = this;
-		CountDownTimer timer = new CountDownTimer(DateTimeHelper.milliSecondsUntilNextEvent(), 1000) {
-			long lastTime = 10000;
-			boolean isLast = innerLabel.equals("School ends");
+		final TextView j = (TextView)f.findViewById(R.id.countdown_name);
+		if (mTimer != null) {
+			Log.i("countdown", "ditch mTimer");
+			return;
+		}
+		CountDownTimer timer = new CountDownTimer(dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis(), 1000) {
 			@Override
-			public void onTick(long l) {
-				lastTime = l;
-				t.setText(DateTimeHelper.formatToCountdown(l));
+			public void onTick(long millisUntilFinished) {
+				//t.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
+				int secondsLeft = (int) Math.floor((dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis()) / 1000);
+				int seconds = secondsLeft % 60;
+				secondsLeft -= seconds;
+				secondsLeft /= 60;
+				int minutes = secondsLeft % 60;
+				secondsLeft -= minutes;
+				secondsLeft /= 60;
+				t.setText(String.format("%02dh %02dm %02ds", new Object[] {secondsLeft, minutes, seconds}));
 			}
 
 			@Override
 			public void onFinish() {
-				if (this.lastTime <= 1000 && !cancelling) {
-					if (this.isLast) {
-						ApiAccessor.getToday(frag.getActivity());
-						ApiAccessor.getBelltimes(frag.getActivity());
-					}
-					final Handler h = new Handler();
-					h.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							updateTimer();
-						}
-					}, 1000);
-				}
+				j.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
+				mTimer = null;
+//				updateTimer();
+
 			}
 		};
+		Log.i("countdown", "ditch mTimer");
+		mTimer = timer;
 		timer.start();
-		timeLeft = timer;
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		IntentFilter i = new IntentFilter(TimetableActivity.BELLTIMES_AVAILABLE);
-		i.addAction(TimetableActivity.TODAY_AVAILABLE);
-		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		i.addAction(ApiAccessor.ACTION_TODAY_FAILED);
-		if (this.listener == null) {
-			this.listener = new BroadcastListener();
-		}
-		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
-		ApiAccessor.getBelltimes(activity, true);
-		ApiAccessor.getToday(activity, true);
+		this.dth = new DateTimeHelper(activity);
+		this.cache = new StorageCache(activity);
+		this.cycle = new FullCycleWrapper(activity);
+		this.evListener = new DataWatcher();
+		this.cycle.addDataSetObserver(this.evListener);
+		ApiWrapper.getEventBus().register(this.evListener);
+		ApiWrapper.requestBells(activity);
 		try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {
@@ -290,29 +312,28 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
+		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
 		mListener = null;
 	}
 
-	private class BroadcastListener extends BroadcastReceiver {
+	private class DataWatcher extends DataSetObserver {
 		@Override
-		public void onReceive(Context context, Intent intent) {
+		public void onChanged() {
+			super.onChanged();
+			Log.i("CountdownFrag$DWatcher", "DSO changed! Updating labels");
 			updateTimer();
-			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				if (mainView != null)
-					mainView.setRefreshing(false);
-				if (refreshing)
-					Toast.makeText(getActivity(), R.string.refresh_success, Toast.LENGTH_SHORT).show();
-				refreshing = false;
-			}
-			if (intent.getAction().equals(TimetableActivity.TODAY_AVAILABLE) && BelltimesJson.getInstance() != null) {
-				ApiAccessor.getBelltimes(context);
+		}
 
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_FAILED)) {
-				if (refreshing)
-					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
-				refreshing = false;
+		@Override
+		public void onInvalidated() {
+			//super.onInvalidated();
+			onChanged();
+		}
+
+		public void onEvent(BellsEvent b) {
+			Log.i("CountdownFrag$DWatcher", "Got bellsevent. Error: " + b.getErrorMessage());
+			if (b.successful()) {
+				updateTimer();
 			}
 		}
 	}

@@ -66,7 +66,19 @@ public class Belltimes {
 		if (i >= bells.length) {
 			return null;
 		}
-		return bells[i];
+		return bells[i].setParent(this);
+	}
+
+	public int getLength() {
+		return bells.length;
+	}
+
+	public boolean current() {
+		DateTime expires = getSchoolDay().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
+		if (expires.isAfterNow()) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean valid() {
@@ -79,7 +91,15 @@ public class Belltimes {
 		private String name;
 		private String time;
 		private int index;
+		private Belltimes parent;
+
 		public Bell() {}
+
+		public Bell setParent(Belltimes p) {
+			this.parent = p;
+			return this;
+		}
+
 		@Override
 		public String getBellName() {
 			if (this.isPeriodStart()) {
@@ -95,27 +115,34 @@ public class Belltimes {
 
 		@Override
 		public boolean isPeriodStart() {
-			return Integer.getInteger(this.name, -1) != -1;
+			return getPeriodNumber() != 9001;
 		}
 
 		@Override
 		public int getPeriodNumber() {
-			return Integer.getInteger(this.name, -1);
+			return Integer.getInteger(this.name, 9001);
 		}
 
-		public Belltime getNextBellTime() {
-			if (index < bells.length-1) {
-				return bells[index+1];
+		public Bell getNextBellTime() {
+			if (index < parent.bells.length-1) {
+				return parent.bells[index+1];
 			}
 			return null;
 		}
 
+		public Bell getPreviousBellTime() {
+			if (index == 0) {
+				return null;
+			}
+			return parent.bells[index-1];
+		}
+
 		@Override
 		public boolean isNextBellPeriod() {
-			if (index >= bells.length-2) {
+			if (index >= parent.bells.length-2) {
 				return false;
 			} else {
-				if (bells[index + 1].isPeriodStart()) {
+				if (parent.bells[index + 1].isPeriodStart()) {
 					return true;
 				}
 			}

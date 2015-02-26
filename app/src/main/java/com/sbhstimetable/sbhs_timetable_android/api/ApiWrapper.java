@@ -150,7 +150,8 @@ public class ApiWrapper {
 	public static void requestBells(final Context c) {
 		if (errIfNotReady() || loadingBells) return;
 		loadingBells = true;
-		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay().toInstant());
+		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
+		Log.i("apiwrapper", "Get bells for " + s);
 		api.getBelltimes(s, new Callback<Belltimes>() {
 			@Override
 			public void success(Belltimes belltimes, Response response) {

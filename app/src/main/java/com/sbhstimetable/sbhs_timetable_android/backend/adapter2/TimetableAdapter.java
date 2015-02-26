@@ -36,8 +36,12 @@ import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.Day;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,13 +97,15 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public int getCount() {
-		return (cycle.hasFullTimetable() ? 6 : 1);
+		return (cycle.hasFullTimetable() ? 7 : 1);
 	}
 
 	@Override
 	public Object getItem(int index) {
 		if (index == 0 && !cycle.hasFullTimetable()) {
 			return "Loading view";
+		} else if (index == 7) {
+			return "Last updated view";
 		} else if (index == 0) {
 			return "AdapterView";
 		}
@@ -120,6 +126,15 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	public View getView(int i, View convertView, ViewGroup parent) {
 		if (i == 0 && !cycle.hasFullTimetable()) {
 			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
+		}
+		if (i == 6) {
+			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
+			TextView t = (TextView)v.findViewById(R.id.last_updated);
+			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
+					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
+					.appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
+			t.setText(f.print(this.cycle.getFetchTime(this.cycle.getCurrentDayInCycle()).toLocalDateTime()));
+			return v;
 		}
 		if (i == 0) {
 			if (this.theFilterSelector != null) {

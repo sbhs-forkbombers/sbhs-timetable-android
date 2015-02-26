@@ -147,6 +147,10 @@ public class CountdownFragment extends Fragment {
 		super.onStart();
 	}
 
+	private void debug(String s) {
+		Log.d("CountdownFrag", s);
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -188,14 +192,18 @@ public class CountdownFragment extends Fragment {
 				//ApiWrapper.requestBells(this.getActivity());
 			}
 		}
+		debug("has bells - " + dth.hasBells());
 		if (dth.hasBells()) {
 			Belltimes.Bell next = dth.getNextLesson();
+			debug("next - " + next);
 			if (next != null) {
 				Belltimes.Bell now = next.getPreviousBellTime();
+				debug("period start - period => " + now.getBellName() + "(" + now.getPeriodNumber() + ") is ps? " + now.isPeriodStart());
 				if (now.isPeriodStart() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
 					connector = "ends in";
 					if (ApiWrapper.isLoggedIn() && cycle.ready()) {
 						p = cycle.getToday().getPeriod(now.getPeriodNumber());
+						debug("has today - " + p);
 						label = p.getSubject();
 						teacher.setText(p.getTeacher());
 						room.setText(p.getRoom());
@@ -260,7 +268,7 @@ public class CountdownFragment extends Fragment {
 		((TextView)f.findViewById(R.id.countdown_name)).setText(label);
 		((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
 		final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
-		final TextView j = (TextView)f.findViewById(R.id.countdown_name);
+		//final TextView j = (TextView)f.findViewById(R.id.countdown_name);
 		if (mTimer != null) {
 			Log.i("countdown", "ditch mTimer");
 			return;
@@ -276,12 +284,16 @@ public class CountdownFragment extends Fragment {
 				int minutes = secondsLeft % 60;
 				secondsLeft -= minutes;
 				secondsLeft /= 60;
-				t.setText(String.format("%02dh %02dm %02ds", new Object[] {secondsLeft, minutes, seconds}));
+				if (secondsLeft == 0) {
+					t.setText(String.format("%02dm %02ds", new Object[] {minutes, seconds}));
+				} else {
+					t.setText(String.format("%02dh %02dm %02ds", new Object[]{secondsLeft, minutes, seconds}));
+				}
 			}
 
 			@Override
 			public void onFinish() {
-				j.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
+				//j.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
 				mTimer = null;
 //				updateTimer();
 

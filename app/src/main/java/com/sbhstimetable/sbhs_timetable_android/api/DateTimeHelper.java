@@ -138,7 +138,7 @@ public class DateTimeHelper {
 	public LocalDateTime getNextEvent() {
 		//Log.i("dth", "bells => " + this.bells);
 		Belltimes.Bell next = getNextLesson();
-		if (next == null) {
+		if (next == null) { // count to start of next school day. TODO show a notification or something
 			DateTime day = getNextSchoolDay().toDateTime();
 			if (after(DateTime.now(), 9, 5) && day.equals(DateTime.now().withTimeAtStartOfDay())) {
 				day = day.plusDays(1);

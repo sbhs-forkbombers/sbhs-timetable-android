@@ -88,9 +88,10 @@ public class Belltimes {
 	// TODO getNextBell(), IPeriod should implement getPeriodNumber() and have better getName(). hasPeriodNext() maybe?
 
 	public class Bell implements Belltime {
-		private String name;
+		private String bell;
 		private String time;
 		private int index;
+		private Integer periodNumber;
 		private Belltimes parent;
 
 		public Bell() {}
@@ -103,9 +104,9 @@ public class Belltimes {
 		@Override
 		public String getBellName() {
 			if (this.isPeriodStart()) {
-				return "Period " + name;
+				return "Period " + bell;
 			}
-			return this.name;
+			return this.bell;
 		}
 
 		@Override
@@ -120,7 +121,15 @@ public class Belltimes {
 
 		@Override
 		public int getPeriodNumber() {
-			return Integer.getInteger(this.name, 9001);
+			if (this.periodNumber != null) {
+				return this.periodNumber;
+			}
+			try {
+				this.periodNumber = Integer.parseInt(this.bell);
+				return this.periodNumber;
+			} catch (NumberFormatException e) {
+				return 9001;
+			}
 		}
 
 		public Bell getNextBellTime() {

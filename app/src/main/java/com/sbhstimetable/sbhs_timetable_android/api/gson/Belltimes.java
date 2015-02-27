@@ -19,12 +19,17 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
+import android.util.Log;
+
 import com.sbhstimetable.sbhs_timetable_android.api.Belltime;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class Belltimes {
@@ -44,6 +49,9 @@ public class Belltimes {
 	private String week;
 	private String weekType;
 	private long _fetchTime;
+
+	private transient final List<String> days = Arrays.asList("Monday","Tuesday","Wednesday","Thursday","Friday");
+	private transient final List<String> weeks = Arrays.asList("A", "B", "C");
 
 	private Bell[] bells;
 
@@ -67,6 +75,15 @@ public class Belltimes {
 			return null;
 		}
 		return bells[i].setParent(this);
+	}
+
+	public String getDayName() {
+		return day;
+	}
+
+	public int getDayNumber() {
+		Log.i("Belltimes", day + " " + week + " => " + days.indexOf(day) + " " + weeks.indexOf(week));
+		return days.indexOf(day) + 5*weeks.indexOf(week);
 	}
 
 	public int getLength() {
@@ -99,6 +116,10 @@ public class Belltimes {
 		public Bell setParent(Belltimes p) {
 			this.parent = p;
 			return this;
+		}
+
+		public String getBellDisplay() {
+			return time;
 		}
 
 		@Override

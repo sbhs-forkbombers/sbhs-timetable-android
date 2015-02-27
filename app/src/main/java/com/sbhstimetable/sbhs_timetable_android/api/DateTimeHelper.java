@@ -47,10 +47,10 @@ public class DateTimeHelper {
 	}
 
 	private static boolean after315(DateTime t) {
-		return after(t, 15, 15);
+		return after(t.toLocalDateTime(), 15, 15);
 	}
 
-	private static boolean after(DateTime t, int hrs, int minutes) {
+	public static boolean after(LocalDateTime t, int hrs, int minutes) {
 		return t.getHourOfDay() > hrs || (t.getHourOfDay() == hrs && t.getMinuteOfHour() >= minutes);
 	}
 
@@ -83,19 +83,16 @@ public class DateTimeHelper {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
 		}*/
 		int offset = 0;
-		boolean goToMidnight = false;
 		DateTime now = DateTime.now();
 		if (now.getDayOfWeek() == SATURDAY) {
-			offset = 1;
-			goToMidnight = true;
-		} else if (now.getDayOfWeek() == FRIDAY && after315(now)) {
-			goToMidnight = true;
 			offset = 2;
+		} else if (now.getDayOfWeek() == FRIDAY && after315(now)) {
+			offset = 3;
 		} else if (after315(now)) {
-			goToMidnight = true;
+			offset = 1;
 		}
-		now = now.plusDays(offset + (goToMidnight ? 1 : 0));
-		return now.withTimeAtStartOfDay().plusMinutes(1).toLocalDateTime();
+		now = now.plusDays(offset);
+		return now.withTimeAtStartOfDay().toLocalDateTime();
 	}
 
 	public void setBells(Belltimes b) {
@@ -123,8 +120,21 @@ public class DateTimeHelper {
 		return null;
 	}
 
+	public Belltimes.Bell getNextPeriod() {
+		if (bells == null) {
+			return null;
+		}
+		int len = bells.getLength();
+		for (int i = 0; i < len; i++) {
+			if (bells.getBellIndex(i).isPeriodStart() && bells.getBellIndex(i).getBellTime().withDate(DateTime.now().toLocalDate()).isAfterNow()) {
+				return bells.getBellIndex(i);
+			}
+		}
+		return null;
+	}
+
 	public boolean hasBells() {
-		return this.bells != null;// && this.bells.current();
+		return this.bells != null && this.bells.current();
 	}
 
 	public boolean hasToday() {
@@ -135,12 +145,16 @@ public class DateTimeHelper {
 		return this.today;
 	}
 
+	public Belltimes getBells() {
+		return this.bells;
+	}
+
 	public LocalDateTime getNextEvent() {
 		//Log.i("dth", "bells => " + this.bells);
 		Belltimes.Bell next = getNextLesson();
 		if (next == null) { // count to start of next school day. TODO show a notification or something
 			DateTime day = getNextSchoolDay().toDateTime();
-			if (after(DateTime.now(), 9, 5) && day.equals(DateTime.now().withTimeAtStartOfDay())) {
+			if (after(DateTime.now().toLocalDateTime(), 9, 5) && day.equals(DateTime.now().withTimeAtStartOfDay())) {
 				day = day.plusDays(1);
 				if (day.getDayOfWeek() == SATURDAY) day = day.plusDays(2);
 				if (day.getDayOfWeek() == SUNDAY) day = day.plusDays(1);

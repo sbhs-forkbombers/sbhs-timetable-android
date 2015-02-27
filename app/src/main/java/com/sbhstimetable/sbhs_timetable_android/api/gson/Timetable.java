@@ -153,6 +153,11 @@ public class Timetable {
 				return false;
 			}
 
+			@Override
+			public boolean isTimetabledFree() {
+				return false;
+			}
+
 		}
 	}
 

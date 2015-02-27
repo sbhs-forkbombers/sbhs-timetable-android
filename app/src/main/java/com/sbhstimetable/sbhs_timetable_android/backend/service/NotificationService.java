@@ -24,11 +24,19 @@ import android.widget.Toast;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TimetableJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
+import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
+
+import org.joda.time.LocalDateTime;
+
 // TODO retry later if no internet connection
 // TODO respect sync on/off setting
 public class NotificationService extends Service {
@@ -46,10 +54,10 @@ public class NotificationService extends Service {
 	private NotificationManager mNM;
 	private PendingIntent alarm;
 	private int NOTIFICATION = R.string.app_name; // it's unique, amirite?
-	private TodayJson today;
-	private BelltimesJson belltimes;
-	private TimetableJson timetable;
-	private IntentReceiver intentReceiver;
+	private FullCycleWrapper cycle;
+	private StorageCache cache;
+	private DateTimeHelper dth;
+	private EventListener eventListener;
 	@Override
 	public IBinder onBind(Intent intent) {
 		// nope
@@ -57,9 +65,8 @@ public class NotificationService extends Service {
 	}
 
 	private void updateAllTheThings() {
-		ApiAccessor.getToday(this);
-		ApiAccessor.getBelltimes(this);
-		ApiAccessor.getTimetable(this, true);
+		ApiWrapper.requestBells(this);
+		ApiWrapper.requestToday(this);
 	}
 
 	@Override
@@ -73,23 +80,21 @@ public class NotificationService extends Service {
 			this.showLoadingNotification();
 			this.updateAllTheThings();
 		} else if (intent.getAction().equals(ACTION_BELLTIMES)) {
-			this.belltimes = new BelltimesJson(new JsonParser().parse(intent.getStringExtra(EXTRA_DATA)).getAsJsonObject());
-			DateTimeHelper.bells = this.belltimes;
-			showAppropriateNotification();
-		} else if (intent.getAction().equals(ACTION_TIMETABLE)) {
-			this.timetable = new TimetableJson(new JsonParser().parse(intent.getStringExtra(EXTRA_DATA)).getAsJsonObject());
-			showAppropriateNotification();
-		} else if (intent.getAction().equals(ACTION_TODAY)) {
-			this.today = new TodayJson(new JsonParser().parse(intent.getStringExtra(EXTRA_DATA)).getAsJsonObject());
+			dth.setBells(cache.loadBells());
 			showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_UPDATE)) {
-			if (belltimes == null || DateTimeHelper.getDateString(null) == null) {
+			if (!dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 				return START_STICKY;
 			}
-			int nextPeriod = belltimes.getNextPeriod().getPeriodNumber();
-			if (nextPeriod == 1 && !DateTimeHelper.getDateString(null).equals(belltimes.getDateString())) {
+			if (dth.getNextLesson().isPeriodStart()) {
+				showNextPeriodNotification();
+			} else {
+
+			}
+			int nextPeriod = (dth.getNextLesson() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
+			if (nextPeriod == 1 && !dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 			} else {
@@ -106,26 +111,24 @@ public class NotificationService extends Service {
 		if (alarm != null) am.cancel(alarm);
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
-		Log.i(TAG, "Will wake up in " + DateTimeHelper.milliSecondsUntilNextEvent() / 1000 + " seconds to update notification.");
-		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + DateTimeHelper.milliSecondsUntilNextEvent(), soon);
+		Log.i(TAG, "Will wake up in " + dth.getNextEvent().toDateTime().getMillis() / 1000 + " seconds to update notification.");
+		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + dth.getNextEvent().toDateTime().getMillis(), soon);
 		return START_STICKY;
 	}
 
 	@Override
 	public void onCreate() {
 		mNM = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
-		IntentFilter filter = new IntentFilter(ApiAccessor.ACTION_TIMETABLE_JSON);
-		filter.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		filter.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		this.intentReceiver = new IntentReceiver();
-		LocalBroadcastManager.getInstance(this).registerReceiver(this.intentReceiver, filter);
-
-
+		this.cycle = new FullCycleWrapper(this);
+		this.cache = new StorageCache(this);
+		this.dth = new DateTimeHelper(this);
+		this.eventListener = new EventListener(this);
+		ApiWrapper.getEventBus().register(this.eventListener);
 	}
 
 	private void showAppropriateNotification() {
-		if (belltimes == null) return;
-		if (belltimes.getNextPeriod().getPeriodNumber() == 1) {
+		if (!dth.hasBells()) return;
+		if (dth.getNextPeriod() == null || dth.getNextPeriod().getPeriodNumber() == 1 && (!DateTimeHelper.after(LocalDateTime.now(), 9, 5) || DateTimeHelper.after(LocalDateTime.now(), 15, 15))) {
 			showTomorrowNotification();
 		} else {
 			showNextPeriodNotification();
@@ -149,21 +152,25 @@ public class NotificationService extends Service {
 		b.setContentTitle(getResources().getString(R.string.app_name));
 		b.setContentText(getResources().getString(R.string.loading_data));
 		b.setContentInfo("¯\\_(ツ)_/¯");
+		b.setPriority(NotificationCompat.PRIORITY_MIN);
 		mNM.notify(NOTIFICATION, b.build());
 	}
 
 	private void showNextPeriodNotification() {
-		if (this.belltimes == null) return; // belltimes are always needed to show a notification.
+		if (!this.dth.hasBells()) return; // belltimes are always needed to show a notification.
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
-		BelltimesJson.Bell nextPeriod = belltimes.getNextPeriod();
-		if (this.today != null) {
-			TodayJson.Period next = this.today.getPeriod(nextPeriod.getPeriodNumber());
-			topLine = next.name() + " in room " + next.room();
-			bottomLine = next.teacher() + " at " + String.format("%02d:%02d", nextPeriod.getBell());
-			sideLine = nextPeriod.getLabel();
+		Belltimes.Bell nextPeriod = this.dth.getNextLesson();
+		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
+			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());
+			topLine = next.getSubject() + " in room " + next.getRoom();
+			bottomLine = next.getTeacher() + " at " + nextPeriod.getBellDisplay();
+			sideLine = nextPeriod.getBellName();
+		} else if (!nextPeriod.isPeriodStart()) {
+			topLine = nextPeriod.getBellName();
+			bottomLine = nextPeriod.getBellDisplay();
 		} else {
-			topLine = nextPeriod.getLabel() + " at " + String.format("%02d:%02d", nextPeriod.getBell());
+			topLine = nextPeriod.getBellName() + " at " + nextPeriod.getBellDisplay();
 			bottomLine = getResources().getString(R.string.not_all_data);
 		}
 
@@ -175,17 +182,18 @@ public class NotificationService extends Service {
 	}
 
 	private void showTomorrowNotification() {
-		if (this.belltimes == null) return;
+		if (!this.dth.hasBells()) return;
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
 		//topLine = this.today.getDayName() + " Week " + this.today.get
-		topLine = this.belltimes.getDayName() + " Week " + this.belltimes.getWeekInTerm() + this.belltimes.getWeekLetter();
+		topLine = this.dth.getBells().getDayName() + " Week " + this.dth.getBells().getWeek();
 		bottomLine = "";
-		if (this.today != null) {
+		if (this.cycle.getToday() != null) {
+			Day today = this.cycle.getToday();
 			for (int i = 1; i < 6; i++) {
-				 if (!today.getPeriod(i).isFree()) {
-					 TodayJson.Period p = today.getPeriod(i);
-					 bottomLine += p.name();
+				 if (!today.getPeriod(i).isTimetabledFree()) {
+					 Lesson p = today.getPeriod(i);
+					 bottomLine += p.getSubject();
 				 } else {
 					 bottomLine += "Free";
 				 }
@@ -211,29 +219,23 @@ public class NotificationService extends Service {
 			((AlarmManager)this.getSystemService(Context.ALARM_SERVICE)).cancel(alarm);
 			alarm = null;
 		}
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(this.intentReceiver);
-		this.intentReceiver = null;
+		ApiWrapper.getEventBus().unregister(this.eventListener);
+
 	}
 
-	/**
-	 * This class receives intents when belltimes, today and timetable are available and tells the NotificationService to update itself accordingly
-	 */
-	public class IntentReceiver extends BroadcastReceiver {
-		private void startService(String action, String data, Context c) {
+	public class EventListener {
+		private Context con;
+		public EventListener(Context c) {
+			this.con = c;
+		}
+		private void startService(String action, Context c) {
 			Intent i = new Intent(c, NotificationService.class);
 			i.setAction(action);
-			i.putExtra(EXTRA_DATA, data);
 			c.startService(i);
 		}
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Log.i("Intentreceiver", "Got intent " + intent);
-			if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-				startService(ACTION_TODAY, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA), context);
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				startService(ACTION_BELLTIMES, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA), context);
-			} else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
-				startService(ACTION_TIMETABLE, intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA), context);
+		public void onEvent(BellsEvent b) {
+			if (b.successful()) {
+				this.startService(ACTION_BELLTIMES, con);
 			}
 		}
 	}

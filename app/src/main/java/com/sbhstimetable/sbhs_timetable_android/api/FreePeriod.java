@@ -31,6 +31,11 @@ public class FreePeriod implements Lesson {
 	}
 
 	@Override
+	public boolean isTimetabledFree() {
+		return true;
+	}
+
+	@Override
 	public boolean roomChanged() {
 		return false;
 	}

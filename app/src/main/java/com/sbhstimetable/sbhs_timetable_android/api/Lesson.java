@@ -32,6 +32,7 @@ public interface Lesson {
 
 	public boolean cancelled();
 
+	public boolean isTimetabledFree();
 
 	public static interface WithBelltime extends Lesson {
 		public DateTime getStart();

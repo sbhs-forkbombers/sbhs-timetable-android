@@ -100,6 +100,12 @@ public class Today implements Day {
 		private String casual;
 		private String casualDisplay;
 		private boolean hasCasual; // this needs to be nullable
+
+		@Override
+		public boolean isTimetabledFree() {
+			return false;
+		}
+
 		private boolean varies;
 		private boolean variationsReady;
 

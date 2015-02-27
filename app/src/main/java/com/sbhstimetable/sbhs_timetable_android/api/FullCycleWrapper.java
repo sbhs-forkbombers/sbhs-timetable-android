@@ -23,8 +23,10 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.Log;
 
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
+import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
@@ -39,6 +41,7 @@ import java.util.List;
 public class FullCycleWrapper {
 	private Timetable cycle;
 	private Today variationData;
+	private Belltimes todayBells;
 	private int currentDayInCycle = -1;
 
 	private EventListener l;
@@ -49,14 +52,20 @@ public class FullCycleWrapper {
 		StorageCache cache = new StorageCache(c);
 		cycle = cache.loadTimetable();
 		variationData = cache.loadToday();
-		if (variationData != null) {
+		todayBells = cache.loadBells();
+		if (variationData != null && variationData.isStillCurrent()) {
 			currentDayInCycle = variationData.getDayNumber();
+		} else if (todayBells != null && todayBells.current()) {
+			currentDayInCycle = todayBells.getDayNumber();
 		}
 		if (variationData == null) {
 			ApiWrapper.requestToday(c);
 		}
 		if (cycle == null) {
 			ApiWrapper.requestTimetable(c);
+		}
+		if (todayBells == null) {
+			ApiWrapper.requestBells(c);
 		}
 		this.l = new EventListener();
 		ApiWrapper.getEventBus().register(l);
@@ -125,6 +134,13 @@ public class FullCycleWrapper {
 
 	private void updateToday(Today t) {
 		this.variationData = t;
+		currentDayInCycle = variationData.getDayNumber();
+		this.notifyDSOs();
+	}
+
+	private void updateBells(Belltimes b) {
+		currentDayInCycle = b.getDayNumber();
+		this.todayBells = b;
 		this.notifyDSOs();
 	}
 
@@ -147,7 +163,15 @@ public class FullCycleWrapper {
 				Log.e("FCW$EventListener", "Today failed - " + e.getErrorMessage());
 			}
 		}
-		// TODO
+
+		public void onEvent(BellsEvent e) {
+			Log.i("FCW$EventListener", "got BellsEvent");
+			if (e.successful()) {
+				updateBells(e.getResponse());
+			} else {
+				Log.e("FCW$EventListener", "Bells failed - " + e.getErrorMessage());
+			}
+		}
 	}
 
 }

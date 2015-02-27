@@ -36,6 +36,11 @@ android {
 	productFlavors {
         full {
         }
+        dev {
+            applicationId 'com.sbhstimetable.sbhs_timetable_android_dev'
+            versionCode 1
+            versionName '¯\\\\_(ツ)_/¯'
+        }
         demo {
             applicationId 'com.sbhstimetable.sbhs_timetable_android_demo'
             versionCode 1

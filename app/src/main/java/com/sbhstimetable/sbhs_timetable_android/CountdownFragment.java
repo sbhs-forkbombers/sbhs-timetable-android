@@ -196,7 +196,7 @@ public class CountdownFragment extends Fragment {
 		if (dth.hasBells()) {
 			Belltimes.Bell next = dth.getNextLesson();
 			debug("next - " + next);
-			if (next != null) {
+			if (next != null && next.getPreviousBellTime() != null) {
 				Belltimes.Bell now = next.getPreviousBellTime();
 				debug("period start - period => " + now.getBellName() + "(" + now.getPeriodNumber() + ") is ps? " + now.isPeriodStart());
 				if (now.isPeriodStart() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
@@ -241,7 +241,7 @@ public class CountdownFragment extends Fragment {
 				connector = "in";
 				if (cycle.hasFullTimetable()) {
 					extraData.setVisibility(View.VISIBLE);
-					p = cycle.getDayNumber(cycle.getCurrentDayInCycle()+1 % 15).getPeriod(1);
+					p = cycle.getDayNumber(cycle.getCurrentDayInCycle()).getPeriod(1);
 					teacher.setText(p.getTeacher());
 					room.setText(p.getRoom());
 					subject.setText(p.getSubject());

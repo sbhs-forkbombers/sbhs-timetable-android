@@ -82,8 +82,8 @@ public class Belltimes {
 	}
 
 	public int getDayNumber() {
-		Log.i("Belltimes", day + " " + week + " => " + days.indexOf(day) + " " + weeks.indexOf(week));
-		return days.indexOf(day) + 5*weeks.indexOf(week);
+		Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
+		return (days.indexOf(day)+1) + 5*weeks.indexOf(weekType);
 	}
 
 	public int getLength() {

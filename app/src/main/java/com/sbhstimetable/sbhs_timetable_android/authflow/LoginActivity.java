@@ -40,10 +40,9 @@ import android.webkit.WebViewClient;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
-import static com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor.baseURL;
+import static com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper.baseURL;
 
 public class LoginActivity extends ActionBarActivity {
 	public Toolbar mToolbar;

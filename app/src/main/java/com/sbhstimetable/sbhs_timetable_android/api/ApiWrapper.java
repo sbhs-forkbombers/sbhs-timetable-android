@@ -55,6 +55,8 @@ public class ApiWrapper {
 	private static boolean loadingTimetable = false;
 	private static boolean loadingNotices = false;
 
+	public static final String baseURL = "https://sbhstimetable.tk";
+
 	public static boolean isLoadingBells() {
 		return loadingBells;
 	}

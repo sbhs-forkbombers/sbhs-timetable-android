@@ -99,8 +99,6 @@ public class NavigationDrawerFragment extends Fragment {
     private TextView noticesStatus;
     private TextView bellsStatus;
 
-	private CacheStatusUpdater csu;
-
 
 	private final ArrayList<String> elements = new ArrayList<String>();
 	private final ArrayList<NavBarFancyAdapter.DrawerEntry> botElements = new ArrayList<NavBarFancyAdapter.DrawerEntry>();
@@ -169,7 +167,7 @@ public class NavigationDrawerFragment extends Fragment {
 				android.R.layout.simple_list_item_1,
 				this.botElements
 		));
-		long temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0);
+		/*long temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0);
         this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
 		this.bellsStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
         this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
@@ -177,7 +175,7 @@ public class NavigationDrawerFragment extends Fragment {
 		this.todayStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
         this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
 		temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0);
-		this.noticesStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
+		this.noticesStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");*/
 		return l;
 	}
 
@@ -292,12 +290,7 @@ public class NavigationDrawerFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		this.csu = new CacheStatusUpdater(this);
-		IntentFilter i = new IntentFilter();
-		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(csu, i);
+
 		try {
 			mCallbacks = (NavigationDrawerCallbacks) activity;
 		} catch (ClassCastException e) {
@@ -307,7 +300,6 @@ public class NavigationDrawerFragment extends Fragment {
 
 	@Override
 	public void onDetach() {
-		LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(this.csu);
 		super.onDetach();
 		mCallbacks = null;
 
@@ -356,23 +348,5 @@ public class NavigationDrawerFragment extends Fragment {
 		void onNavigationDrawerItemSelected(int position);
 	}
 
-	public static class CacheStatusUpdater extends BroadcastReceiver {
-		private NavigationDrawerFragment ndf;
-		public CacheStatusUpdater(NavigationDrawerFragment f) {
-			this.ndf = f;
-		}
-		@Override
-		public void onReceive(Context context, Intent intent) {
 
-			if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-				this.ndf.bellsStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0))));
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				this.ndf.noticesStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0))));
-			}
-			else if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-				this.ndf.todayStatus.setText(new SimpleDateFormat(FMT).format(new Date(PreferenceManager.getDefaultSharedPreferences(ndf.getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0))));
-			}
-		}
-	}
 }

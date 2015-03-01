@@ -32,115 +32,69 @@ import com.google.android.apps.dashclock.api.ExtensionData;
 import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.IDayType;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TimetableJson;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 
 public class DashclockService extends DashClockExtension {
-    private TodayJson mine;
-    private BelltimesJson bells;
-	private TimetableJson timetable;
+    private FullCycleWrapper cycle;
+	private DateTimeHelper dth;
+	private StorageCache cache;
     @Override
     protected void onInitialize(boolean isReconnect) {
         super.onInitialize(isReconnect);
         setUpdateWhenScreenOn(true);
-        mine = TodayJson.getInstance();
-        bells = BelltimesJson.getInstance();
-        if (mine == null) {
-            Log.i("dashclock", "today");
-            JsonObject temp = StorageCache.getTodayJson(this);
-            if (temp != null) {
-                mine = new TodayJson(temp);
-            }
-            ApiAccessor.getToday(this);
-        }
-		if (timetable == null) {
-			Log.i("dashclock", "timetable");
-			JsonObject temp = StorageCache.getTimetable(this);
-			if (temp != null) {
-				timetable = new TimetableJson(temp);
-			}
-			ApiAccessor.getTimetable(this, true);
-		}
-        if (bells == null) {
-            Log.i("dashclock", "bells");
-            JsonObject temp = StorageCache.getBelltimes(this);
-            if (temp != null) {
-                bells = new BelltimesJson(temp);
-            }
-            ApiAccessor.getBelltimes(this);
-        }
-        IntentFilter wanted = new IntentFilter();
-        wanted.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		wanted.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
-        final DashclockService that = this;
-        LocalBroadcastManager.getInstance(this).registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(ApiAccessor.ACTION_TODAY_JSON)) {
-                    mine = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                } else if (intent.getAction().equals(ApiAccessor.ACTION_BELLTIMES_JSON)) {
-                    bells = new BelltimesJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                } else if (intent.getAction().equals(ApiAccessor.ACTION_TIMETABLE_JSON)) {
-					timetable = new TimetableJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-				}
-                that.onUpdateData(DashClockExtension.UPDATE_REASON_MANUAL);
+        cycle = new FullCycleWrapper(this);
+        dth = new DateTimeHelper(this);
+		cache = new StorageCache(this);
 
-            }
-        }, wanted);
+		dth.setBells(cache.loadBells());
+		if (!dth.hasBells()) {
+			ApiWrapper.requestBells(this);
+		}
+
     }
 
     @Override
     protected void onUpdateData(int reason) {
         int num;
         boolean summary = false;
-        if (bells != null && bells.valid()) {
-            BelltimesJson.Bell b = bells.getNextPeriod();
-            if (b == null) {
-                // what
-                num = 5;
-            }
-            else {
-                num = b.getPeriodNumber();
-            }
+        if (dth.hasBells()) {
 
-            if (DateTimeHelper.getDateOffset() > 0 || DateTimeHelper.getHour() < 9 || DateTimeHelper.needsMidnightCountdown()) {
-                summary = true;
-            }
-        }
+		}
         else {
             publishUpdate(new ExtensionData().visible(false));
             return;
         }
-		IDayType t;
-		if (mine != null && mine.isStillValid()) {
-			t = mine;
-			Log.i("dashclock", "using today.json");
-		} else {
-			ApiAccessor.getToday(this);
-			t = timetable.getDayByName(bells.getDayName());
-			Log.i("dashclock", "using timetable.json");
+		Day t = null;
+		if (cycle.ready()) {
+			t = cycle.getToday();
 		}
+		if (!cycle.hasRealTimeInfo()) {
+			ApiWrapper.requestToday(this);
+		}
+		if (this.dth.getNextPeriod() == null) summary = true;
 		ExtensionData res = new ExtensionData().icon(R.mipmap.ic_notification_icon).clickIntent(new Intent(this, TimetableActivity.class));
         if (t != null && !summary) {
-            publishUpdate(res.status(t.getPeriod(num).getShortName() + " - " + t.getPeriod(num).room())
-                            .expandedTitle(t.getPeriod(num).name())
-                            .expandedBody("in " + t.getPeriod(num).room() + " with " + t.getPeriod(num).teacher())
+			Belltimes.Bell next = dth.getNextPeriod();
+			num = next.getPeriodNumber();
+            publishUpdate(res.status(t.getPeriod(num).getShortName() + " - " + t.getPeriod(num).getRoom())
+                            .expandedTitle(t.getPeriod(num).getSubject())
+                            .expandedBody("in " + t.getPeriod(num).getRoom() + " with " + t.getPeriod(num).getTeacher())
                             .visible(true)
             );
         }
         else if (summary && t != null) {
             String subjects = "";
             for (int i : new int[] { 1, 2, 3, 4, 5}) {
-                IDayType.IPeriod p = t.getPeriod(i);
+                Lesson p = t.getPeriod(i);
                 if (i == 5) {
                     if (p != null) {
-                        subjects += "and " + p.name().replace(" Period", "");
+                        subjects += "and " + p.getSubject().replace(" Period", "");
                     }
                     else {
                         subjects += "and free!";
@@ -148,20 +102,21 @@ public class DashclockService extends DashClockExtension {
                     continue;
                 }
                 if (p != null) {
-                    subjects += p.name().replace(" Period", "") + ", ";
+                    subjects += p.getSubject().replace(" Period", "") + ", ";
                 }
                 else {
                     subjects += "Free, ";
                 }
             }
-            if (!mine.valid()) {
+            if (!cycle.ready()) {
                 subjects = "I need to reload!";
-                ApiAccessor.getToday(this);
+                ApiWrapper.requestToday(this);
+				ApiWrapper.requestTimetable(this);
             }
             String shortTitle;
-            if (mine.getDayName().length() > 3) {
-                shortTitle = mine.getDayName().substring(0, 3);
-                shortTitle += " " + mine.getDayName().split(" ")[1];
+            if (cycle.getToday().getDayName().length() > 3) {
+                shortTitle = cycle.getToday().getDayName().substring(0, 3);
+                shortTitle += " " + cycle.getToday().getWeek();
             }
             else {
                 shortTitle = "TMR";

@@ -114,6 +114,11 @@ public class Timetable {
 			}
 
 			@Override
+			public String getShortName() {
+				return title;
+			}
+
+			@Override
 			public String getRoom() {
 				return room;
 			}

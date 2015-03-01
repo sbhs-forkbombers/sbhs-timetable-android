@@ -19,15 +19,24 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
+import android.support.annotation.NonNull;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")
@@ -36,10 +45,88 @@ public class Notices {
 	private String term;
 	private String week;
 	private String status;
+	private long _fetchTime;
 	private HashMap<String, Notice[]> notices;
+	private transient HashMap<String, Notice[]> noticeFiltered;
 
 	public Notice[] getNoticesForWeight(int weight) {
-		return notices.get(((Integer)weight).toString());
+		return getNoticesForWeight(((Integer)weight).toString());
+	}
+
+	public Notice[] getNoticesForWeight(String weight) {
+		if (noticeFiltered == null) {
+			return notices.get(weight);
+		}
+		return noticeFiltered.get(weight);
+	}
+
+	public int getNumberOfNotices() {
+		int total = 0;
+		for (String i : getWeights()) {
+			total += getNoticesForWeight(i).length;
+		}
+		return total;
+	}
+
+	public void filterToYear(String year) {
+		if (year == null) {
+			noticeFiltered = null;
+			return;
+		}
+		HashMap<String,Notice[]> map = new HashMap<>();
+		for (Map.Entry<String,Notice[]> i : notices.entrySet()) {
+			List<Notice> res = new ArrayList<>();
+			for (Notice j : i.getValue()) {
+				if (j.isYearApplicable(year)) {
+					res.add(j);
+				}
+			}
+			map.put(i.getKey(), res.toArray(new Notice[0]));
+		}
+		this.noticeFiltered = map;
+	}
+
+	public DateTime getFetchTime() {
+		return new DateTime(this._fetchTime*1000);
+	}
+
+	public Notice getNoticeAtIndex(int idx) {
+		int total = 0;
+		int iters = 0;
+		Comparator<String> comp = new Comparator<String>() {
+			@Override
+			public int compare(String lhs, String rhs) {
+				try {
+					int l = Integer.parseInt(lhs);
+					int r = Integer.parseInt(rhs);
+					if (l < r) {
+						return -1;
+					} else if (l > r) {
+						return 1;
+					}
+					return 0;
+				} catch (NumberFormatException e) {
+					throw new ClassCastException("Not an integer");
+				}
+			}
+		};
+
+		List<String> weights = Arrays.asList(getWeights().toArray(new String[0]));
+		Collections.sort(weights, comp);
+		Collections.reverse(weights);
+		String last = null;
+		for (String s : weights) {
+			int oldTotal = total;
+			total += getNoticesForWeight(s).length;
+			if (idx < total) {
+				last = s;
+				idx -= oldTotal; // now it's the index within the list
+				if (idx < 0) idx = 0;
+				break;
+			}
+		}
+		if (last == null) return null;
+		return getNoticesForWeight(last)[idx];
 	}
 
 	public boolean valid() {
@@ -57,6 +144,7 @@ public class Notices {
 		private String title;
 		private String text;
 		private String author;
+		private String id;
 		private int weight;
 
 		private transient List<String> yearList;
@@ -74,6 +162,10 @@ public class Notices {
 			if (yearList == null) {
 				yearList = Arrays.asList(years);
 			}
+		}
+
+		public long getID() {
+			return Long.parseLong(this.id);
 		}
 
 		public String getTitle() {
@@ -97,8 +189,12 @@ public class Notices {
 			return this.yearList.contains(year);
 		}
 
+		public Spanned getTextViewNoticeContents() {
+			return Html.fromHtml(this.text.replace("<p>", "").replace("</p>", "<br />"));
+		}
+
 		@Override
-		public int compareTo(Notice another) {
+		public int compareTo(@NonNull Notice another) {
 			return this.weight - another.weight;
 		}
 

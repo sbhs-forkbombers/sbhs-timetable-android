@@ -88,7 +88,7 @@ public class DateTimeHelper {
 			offset = 2;
 		} else if (now.getDayOfWeek() == FRIDAY && after315(now)) {
 			offset = 3;
-		} else if (after315(now)) {
+		} else if (after315(now) || now.getDayOfWeek() == SUNDAY) {
 			offset = 1;
 		}
 		now = now.plusDays(offset);
@@ -105,7 +105,7 @@ public class DateTimeHelper {
 	}
 
 	public Belltimes.Bell getNextLesson() {
-		if (bells == null) {
+		if (bells == null || getNextSchoolDay().isAfter(DateTime.now().withTimeAtStartOfDay().toLocalDateTime())) {
 			return null;
 		}
 		int len = bells.getLength();

@@ -20,6 +20,7 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -30,6 +31,7 @@ import android.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,24 +43,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.JsonUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.adapter.NoticesAdapter;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
+import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.NoticesAdapter;
+import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 public class NoticesFragment extends Fragment {
 
 	private CommonFragmentInterface mListener;
 	private Menu menu;
-	private NoticesAdapter adapter;
 	private SwipeRefreshLayout layout;
-	private BroadcastListener listener;
-	private boolean refreshing = false;
+	private EventListener eventListener;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -73,6 +72,7 @@ public class NoticesFragment extends Fragment {
 	}
 	public NoticesFragment() {
 		// Required empty public constructor
+		this.eventListener = new EventListener();
 	}
 
 	@Override
@@ -89,9 +89,10 @@ public class NoticesFragment extends Fragment {
 	}
 
 	@Override
+	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		if (!ApiAccessor.isLoggedIn()) {
+		if (!ApiWrapper.isLoggedIn()) {
 			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
 			TextView t = (TextView)v.findViewById(R.id.textview);
 			t.setOnClickListener(new View.OnClickListener() {
@@ -123,10 +124,9 @@ public class NoticesFragment extends Fragment {
 		res.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				refreshing = true;
-				ApiAccessor.getBelltimes(c, false);
-				ApiAccessor.getNotices(c, false);
-				ApiAccessor.getToday(c, false);
+				ApiWrapper.requestBells(c);
+				ApiWrapper.requestNotices(c);
+				ApiWrapper.requestToday(c);
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
@@ -138,18 +138,12 @@ public class NoticesFragment extends Fragment {
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),
 			getResources().getColor(R.color.red));
-		JsonObject o = StorageCache.getNotices(getActivity(), DateTimeHelper.getDateString(getActivity()));
-		NoticesJson n = NoticesJson.getInstance();
-		if (o != null) {
-			n = new NoticesJson(o);
-		}
 
-		if (n != null) {
-			NoticesAdapter a = new NoticesAdapter(n);
-			this.adapter = a;
-			v.setAdapter(a);
+		NoticesAdapter a = new NoticesAdapter(this.getActivity());
+		v.setAdapter(a);
+		if (ApiWrapper.isLoadingSomething()) {
+			res.setRefreshing(true);
 		}
-
 		return res;
 	}
 
@@ -162,14 +156,7 @@ public class NoticesFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		IntentFilter i = new IntentFilter();
-		i.addAction(ApiAccessor.ACTION_NOTICES_JSON);
-		i.addAction(ApiAccessor.ACTION_BELLTIMES_JSON);
-		i.addAction(ApiAccessor.ACTION_TODAY_JSON);
-		if (this.listener == null) {
-			this.listener = new BroadcastListener(this);
-		}
-		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);
+		ApiWrapper.getEventBus().register(this.eventListener);
 		try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {
@@ -180,43 +167,15 @@ public class NoticesFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
+		ApiWrapper.getEventBus().unregister(this.eventListener);
+		this.layout = null;
 		mListener = null;
 	}
 
-	private class BroadcastListener extends BroadcastReceiver {
-		private SwipeRefreshLayout f;
-		private NoticesFragment frag;
-		BroadcastListener(NoticesFragment f) {
-			this.f = f.layout;
-			this.frag = f;
-		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String act = intent.getAction();
-			if (act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				if (this.frag.layout != null) {
-					this.frag.layout.setRefreshing(false);
-				} else {
-					this.frag.onCreate(new Bundle());
-				}
-                if (refreshing)// show once per refresh cycle
-				Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
-				refreshing = false;
-				JsonObject o = JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				if (o.has("notices")) {
-					NoticesJson nj = new NoticesJson(o);
-					if (this.frag.adapter == null) return;
-					this.frag.adapter.update(nj);
-				}
-			} else if (act.equals(ApiAccessor.ACTION_NOTICES_FAILED)) {
-				if (refreshing)
-					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
-				refreshing = false;
-				if (this.frag == null) return;
-				this.frag.layout.setRefreshing(false);
-			}
+	private class EventListener {
+		public void onEvent(RequestReceivedEvent<?> e) {
+			if (!ApiWrapper.isLoadingSomething())
+				layout.setRefreshing(false);
 		}
 	}
 }

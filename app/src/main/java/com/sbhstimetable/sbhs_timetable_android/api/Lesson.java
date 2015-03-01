@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 
 public interface Lesson {
 	public String getSubject();
+	public String getShortName();
 
 	public String getRoom();
 	public boolean roomChanged();

@@ -93,6 +93,7 @@ public class Today implements Day {
 	public class ClassEntry implements Lesson.WithBelltime {
 		private String fullName;
 		private String fullTeacher;
+		private String title;
 		private String teacher;
 		private String room;
 		private String roomTo;
@@ -120,6 +121,11 @@ public class Today implements Day {
 		@Override
 		public String getSubject() {
 			return this.fullName;
+		}
+
+		@Override
+		public String getShortName() {
+			return title;
 		}
 
 		@Override

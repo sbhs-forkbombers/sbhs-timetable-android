@@ -58,6 +58,8 @@ public class RequestReceivedEvent<T> {
 		if (err.getKind() == RetrofitError.Kind.HTTP) {
 			if (err.getResponse().getStatus() == 502) {
 				return "Server is down.";
+			} else if (err.getResponse().getStatus() == 401) {
+				return "Not logged in.";
 			} else {
 				return "Server error occurred.";
 			}

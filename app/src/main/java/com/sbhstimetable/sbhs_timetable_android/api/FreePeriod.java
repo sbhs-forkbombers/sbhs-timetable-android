@@ -26,6 +26,11 @@ public class FreePeriod implements Lesson {
 	}
 
 	@Override
+	public String getShortName() {
+		return "Free";
+	}
+
+	@Override
 	public String getRoom() {
 		return "N/A";
 	}

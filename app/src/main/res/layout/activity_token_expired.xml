@@ -36,14 +36,6 @@
 			android:layout_centerHorizontal="true"
 			android:gravity="center_horizontal"/>
 
-		<ImageView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/notameme"
-			android:layout_below="@id/explanation"
-			android:layout_centerHorizontal="true"
-			android:layout_marginTop="8dp"
-			/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -52,6 +44,18 @@
 			android:id="@+id/button_login"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"/>
+
+		<ImageView
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/notameme"
+			android:layout_below="@id/explanation"
+			android:layout_above="@id/button_login"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="8dp"
+			android:src="@drawable/aliens"
+			/>
+
 	</RelativeLayout>
 
 </FrameLayout>

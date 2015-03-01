@@ -20,6 +20,7 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,6 +29,8 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
+import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
@@ -115,6 +118,10 @@ public class ApiWrapper {
 		return false;
 	}
 
+	public static void startTokenExpiredActivity(Context c) {
+		c.startActivity(new Intent(c, TokenExpiredActivity.class));
+	}
+
 	public static boolean isLoggedIn() {
 		if (errIfNotReady()) return false;
 		return sessID != null && !sessID.equals("");
@@ -133,16 +140,19 @@ public class ApiWrapper {
 				} else {
 					t = new TodayEvent(true);
 				}
-				getEventBus().post(t);
 				loadingToday = false;
+				getEventBus().post(t);
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				Log.e("ApiWrapper", "Failed to load /api/today.json", error);
+				if (error.getResponse().getStatus() == 401) {
+					startTokenExpiredActivity(c);
+				}
 				TodayEvent t = new TodayEvent(error);
-				getEventBus().post(t);
 				loadingToday = false;
+				getEventBus().post(t);
 			}
 		});
 	}
@@ -170,6 +180,9 @@ public class ApiWrapper {
 			@Override
 			public void failure(RetrofitError error) {
 				loadingBells = false;
+				if (error.getResponse().getStatus() == 401) {
+					startTokenExpiredActivity(c);
+				}
 				getEventBus().post(new BellsEvent(error));
 			}
 		});
@@ -188,15 +201,18 @@ public class ApiWrapper {
 				} else {
 					t = new NoticesEvent(true);
 				}
-				getEventBus().post(t);
 				loadingNotices = false;
+				getEventBus().post(t);
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				NoticesEvent t = new NoticesEvent(error);
-				getEventBus().post(t);
 				loadingNotices = false;
+				if (error.getResponse().getStatus() == 401) {
+					startTokenExpiredActivity(c);
+				}
+				getEventBus().post(t);
 			}
 		});
 	}
@@ -218,6 +234,9 @@ public class ApiWrapper {
 
 			@Override
 			public void failure(RetrofitError error) {
+				if (error.getResponse().getStatus() == 401) {
+					startTokenExpiredActivity(c);
+				}
 				TimetableEvent t = new TimetableEvent(error);
 				getEventBus().post(t);
 			}

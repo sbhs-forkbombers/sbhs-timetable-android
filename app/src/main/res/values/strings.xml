@@ -82,7 +82,7 @@
 
 	<!-- Token expired activity -->
     <string name="title_activity_token_expired">:)</string>
-	<string name="token_expired_reason">SBHS Timetable accesses all your account data using a special \"token\", which lasts for 90 days. When 90 days has passed, you will need to re-authenticate with SBHS so that the app can get another token.\n\nPress the button below to continue.</string>
+	<string name="token_expired_reason">SBHS Timetable accesses all your account data using a special \"token\", which lasts for 90 days. When 90 days has passed, you will need to re-authenticate with SBHS so that the app can get another token.\n\nWhy is all of this necessary, you ask?</string>
 	<string name="title_token_expired">Your session has expired!</string>
 	<string name="button_login">Login!</string>
 

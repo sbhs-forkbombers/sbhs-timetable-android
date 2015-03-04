@@ -22,6 +22,7 @@ package com.sbhstimetable.sbhs_timetable_android.api;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -77,7 +78,7 @@ public class ApiWrapper {
 		return loadingBells || loadingToday || loadingTimetable || loadingNotices;
 	}
 
-	static {
+	/*static {
 		adapter = new RestAdapter.Builder()
 				.setEndpoint("https://sbhstimetable.tk")
 				.setLog(new AndroidLog("http"))
@@ -85,6 +86,29 @@ public class ApiWrapper {
 				.build();
 
 		api = adapter.create(SbhsTimetableService.class);
+	}*/
+
+	private static void tryLoadAdapter(Context c) {
+		ConnectivityManager conn = (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+		boolean hasNet = conn.getActiveNetworkInfo() != null && conn.getActiveNetworkInfo().isConnected();
+		if (!hasNet) return;
+
+		try {
+
+			adapter = new RestAdapter.Builder()
+					.setEndpoint("https://sbhstimetable.tk")
+					.setLog(new AndroidLog("http"))
+					.setLogLevel(RestAdapter.LogLevel.FULL)
+					.build();
+
+			api = adapter.create(SbhsTimetableService.class);
+		} catch (Exception e) {
+			Log.wtf("ApiWrapper", "Building endpoint adapter failed!", e);
+			adapter = null;
+			api = null;
+		}
+
+
 	}
 
 	private static StorageCache cache(Context c) {
@@ -103,6 +127,7 @@ public class ApiWrapper {
 			p.edit().putString("sessionID", c.getSharedPreferences("timetablePrefs", 0).getString("sessionID", "")).apply();
 			sessID = p.getString("sessionID", "");
 		}
+		tryLoadAdapter(c);
 		initialised = true;
 	}
 
@@ -120,6 +145,10 @@ public class ApiWrapper {
 		return false;
 	}
 
+	private static boolean apiReady() {
+		return api != null;
+	}
+
 	public static void startTokenExpiredActivity(Context c) {
 		c.startActivity(new Intent(c, TokenExpiredActivity.class));
 	}
@@ -131,6 +160,9 @@ public class ApiWrapper {
 
 	public static void requestToday(final Context c) {
 		if (errIfNotReady() || loadingToday) return;
+		if (!apiReady()) {
+			return;
+		}
 		loadingToday = true;
 		api.getTodayJson(sessID, new Callback<Today>() {
 			@Override
@@ -161,6 +193,9 @@ public class ApiWrapper {
 
 	public static void requestBells(final Context c) {
 		if (errIfNotReady() || loadingBells) return;
+		if (!apiReady()) {
+			return;
+		}
 		loadingBells = true;
 		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
 		Log.i("apiwrapper", "Get bells for " + s);
@@ -192,6 +227,9 @@ public class ApiWrapper {
 
 	public static void requestNotices(final Context c) {
 		if (errIfNotReady() || loadingNotices) return;
+		if (!apiReady()) {
+			return;
+		}
 		loadingNotices = true;
 		api.getNotices(sessID, new Callback<Notices>() {
 			@Override
@@ -221,6 +259,9 @@ public class ApiWrapper {
 
 	public static void requestTimetable(final Context c) {
 		if (errIfNotReady()) return;
+		if (!apiReady()) {
+			return;
+		}
 		api.getTimetable(sessID, new Callback<Timetable>() {
 			@Override
 			public void success(Timetable timetable, Response response) {

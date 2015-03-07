@@ -40,6 +40,8 @@ import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 
+import org.joda.time.format.DateTimeFormatterBuilder;
+
 public class DashclockService extends DashClockExtension {
     private FullCycleWrapper cycle;
 	private DateTimeHelper dth;
@@ -114,15 +116,20 @@ public class DashclockService extends DashClockExtension {
 				ApiWrapper.requestTimetable(this);
             }
             String shortTitle;
-            if (cycle.getToday().getDayName().length() > 3) {
-                shortTitle = cycle.getToday().getDayName().substring(0, 3);
-                shortTitle += " " + cycle.getToday().getWeek();
+			String day = new DateTimeFormatterBuilder().appendDayOfWeekText().toFormatter().print(dth.getNextSchoolDay());
+			if (day.length() > 3) {
+                shortTitle = day.substring(0, 3);
+				if (cycle.getToday().getWeek().isEmpty()) {
+					shortTitle += " " + cache.loadWeek();
+				} else {
+					shortTitle += " " + cycle.getToday().getWeek();
+				}
             }
             else {
                 shortTitle = "TMR";
             }
             publishUpdate(res.status(shortTitle)
-							.expandedTitle(t.getDayName())
+							.expandedTitle(day)
 							.expandedBody(subjects)
 							.visible(true)
 			);

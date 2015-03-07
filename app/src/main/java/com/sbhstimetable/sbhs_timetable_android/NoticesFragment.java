@@ -32,6 +32,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,7 +80,7 @@ public class NoticesFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
-		this.mListener.updateCachedStatus(this.menu);
+		//this.mListener.updateCachedStatus(this.menu);
 	}
 
 	@Override
@@ -142,6 +143,9 @@ public class NoticesFragment extends Fragment {
 		NoticesAdapter a = new NoticesAdapter(this.getActivity());
 		v.setAdapter(a);
 		if (ApiWrapper.isLoadingSomething()) {
+			TypedValue typed_value = new TypedValue();
+			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+			res.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
 			res.setRefreshing(true);
 		}
 		return res;
@@ -176,6 +180,9 @@ public class NoticesFragment extends Fragment {
 		public void onEvent(RequestReceivedEvent<?> e) {
 			if (!ApiWrapper.isLoadingSomething())
 				layout.setRefreshing(false);
+			if (!e.successful()) {
+				Toast.makeText(layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 }

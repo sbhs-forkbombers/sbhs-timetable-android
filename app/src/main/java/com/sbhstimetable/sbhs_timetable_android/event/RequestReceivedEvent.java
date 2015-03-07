@@ -19,23 +19,33 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.event;
 
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+
 import retrofit.RetrofitError;
 
 public class RequestReceivedEvent<T> {
 	private T response;
 	private RetrofitError err;
 	private boolean invalidError;
+	private String type;
 
-	protected RequestReceivedEvent(T response) {
+	protected RequestReceivedEvent(T response, String type) {
 		this.response = response;
+		this.type = type;
 	}
 
-	protected RequestReceivedEvent(RetrofitError r) {
+	protected RequestReceivedEvent(RetrofitError r, String type) {
 		this.err = r;
+		this.type = type;
 	}
 
-	protected RequestReceivedEvent(boolean invalid) {
+	protected RequestReceivedEvent(boolean invalid, String type) {
 		this.invalidError = invalid;
+		this.type = type;
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	public RetrofitError getErr() {
@@ -43,6 +53,9 @@ public class RequestReceivedEvent<T> {
 	}
 
 	public String getErrorMessage() {
+		if (ApiWrapper.getApi() == null) {
+			return "You need an internet connection to load data";
+		}
 		if (invalidError) {
 			return "Invalid response from server";
 		}
@@ -66,7 +79,7 @@ public class RequestReceivedEvent<T> {
 		}
 
 		if (err.getKind() == RetrofitError.Kind.NETWORK) {
-			return "You need an internet connection to load data";
+			return "Connection to the server failed";
 		}
 
 		return "Unexpected error occurred.";

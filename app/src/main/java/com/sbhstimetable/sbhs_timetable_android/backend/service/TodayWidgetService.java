@@ -131,6 +131,7 @@ public class TodayWidgetService extends RemoteViewsService {
             }
             if (i == 0) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
+				Log.i("TWS", "day index " + cycle.getCurrentDayInCycle() + " day " + cycle.getToday());
                 String res = cycle.getToday().getDayName() + " " + cycle.getToday().getWeek();
                 r.setTextViewText(R.id.label, res);
                 //r.setInt(R.id.label, "setGravity", Gravity.LEFT);

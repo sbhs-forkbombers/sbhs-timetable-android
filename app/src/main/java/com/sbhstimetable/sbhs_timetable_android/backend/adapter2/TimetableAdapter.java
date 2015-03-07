@@ -60,7 +60,6 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	public TimetableAdapter(Context c) {
 		cycle = new FullCycleWrapper(c);
-		ApiWrapper.requestTimetable(c);
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
 		int tmp = currentIndex - 1;

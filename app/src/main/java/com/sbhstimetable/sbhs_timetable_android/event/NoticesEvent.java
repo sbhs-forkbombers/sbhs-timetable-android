@@ -25,14 +25,14 @@ import retrofit.RetrofitError;
 
 public class NoticesEvent extends RequestReceivedEvent<Notices> {
 	public NoticesEvent(Notices response) {
-		super(response);
+		super(response, "notices");
 	}
 
 	public NoticesEvent(RetrofitError r) {
-		super(r);
+		super(r, "notices");
 	}
 
 	public NoticesEvent(boolean invalid) {
-		super(invalid);
+		super(invalid, "notices");
 	}
 }

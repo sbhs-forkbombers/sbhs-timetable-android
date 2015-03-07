@@ -31,6 +31,7 @@ import android.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,9 +43,11 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.BelltimesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,6 +63,8 @@ public class BelltimesFragment extends Fragment {
 	private CommonFragmentInterface mListener;
 	private SwipeRefreshLayout layout;
 	private BelltimesAdapter adapter;
+
+	private EventListener eventListener;
 
 	/** are we refreshing
 	 *  in the UI?
@@ -130,6 +135,13 @@ public class BelltimesFragment extends Fragment {
 				v.setEnabled(topRowVerticalPosition >= -100);
 			}
 		});*/
+		if (ApiWrapper.isLoadingSomething()) {
+			// this is a workaround - see https://code.google.com/p/android/issues/detail?id=77712
+			TypedValue typed_value = new TypedValue();
+			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+			v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+			v.setRefreshing(true);
+		}
 		this.adapter = new BelltimesAdapter(getActivity());
 		lv.setAdapter(this.adapter);
 		return v;
@@ -138,7 +150,8 @@ public class BelltimesFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
+		this.eventListener = new EventListener(activity);
+		ApiWrapper.getEventBus().register(this.eventListener);
 
 		try {
 			mListener = (CommonFragmentInterface) activity;
@@ -150,7 +163,24 @@ public class BelltimesFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		ApiWrapper.getEventBus().unregister(this.eventListener);
 		mListener = null;
+		eventListener = null;
+	}
+
+	private class EventListener {
+		private Context c;
+		public EventListener(Context c) {
+			this.c = c;
+		}
+		public void onEventMainThread(RequestReceivedEvent<?> e) {
+			if (!ApiWrapper.isLoadingSomething()) {
+				layout.setRefreshing(false);
+			}
+			if (!e.successful()) {
+				Toast.makeText(c, "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
 	}
 
 }

@@ -25,14 +25,14 @@ import retrofit.RetrofitError;
 
 public class TodayEvent extends RequestReceivedEvent<Today> {
 	public TodayEvent(Today response) {
-		super(response);
+		super(response, "room and class variations");
 	}
 
 	public TodayEvent(RetrofitError r) {
-		super(r);
+		super(r, "room and class variations");
 	}
 
 	public TodayEvent(boolean invalid) {
-		super(invalid);
+		super(invalid, "room and class variations");
 	}
 }

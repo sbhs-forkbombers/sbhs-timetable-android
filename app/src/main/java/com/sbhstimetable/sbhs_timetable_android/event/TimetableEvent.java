@@ -25,14 +25,14 @@ import retrofit.RetrofitError;
 
 public class TimetableEvent extends RequestReceivedEvent<Timetable> {
 	public TimetableEvent(Timetable response) {
-		super(response);
+		super(response, "full timetable");
 	}
 
 	public TimetableEvent(RetrofitError r) {
-		super(r);
+		super(r, "full timetable");
 	}
 
 	public TimetableEvent(boolean invalid) {
-		super(invalid);
+		super(invalid, "full timetable");
 	}
 }

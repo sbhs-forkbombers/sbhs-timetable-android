@@ -78,6 +78,14 @@ public class Belltimes {
 		return bells[i].setParent(this);
 	}
 
+	public boolean areBellsAltered() {
+		return bellsAltered;
+	}
+
+	public String getBellsAlteredReason() {
+		return bellsAlteredReason;
+	}
+
 	public String getDayName() {
 		return day;
 	}
@@ -121,6 +129,8 @@ public class Belltimes {
 		private int index;
 		private Integer periodNumber;
 		private Belltimes parent;
+		private boolean different;
+		private String normally;
 
 		public Bell() {}
 
@@ -139,6 +149,10 @@ public class Belltimes {
 				return "Period " + bell;
 			}
 			return this.bell;
+		}
+
+		public boolean differs() {
+			return different;
 		}
 
 		@Override

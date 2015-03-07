@@ -89,7 +89,7 @@ public class LoginActivity extends ActionBarActivity {
 		mWebView.setWebViewClient(new WebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				Log.e("LoginActivity", "navigate to " + url);
-				if (url.startsWith(baseURL) && ((url.endsWith("/") || url.endsWith("loggedIn=true") || url.contains("mobile_loading")))) {
+				if (url.startsWith(baseURL.replace("https", "http")) && ((url.endsWith("/") || url.endsWith("loggedIn=true") || url.contains("mobile_loading")))) {
 					// this would be our website!
 					String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
 					for (String i : cookies) {

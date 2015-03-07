@@ -38,6 +38,8 @@ import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 // TODO retry later if no internet connection
 // TODO respect sync on/off setting
@@ -114,7 +116,7 @@ public class NotificationService extends Service {
 		if (alarm != null) am.cancel(alarm);
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
-		Log.i(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
+		Log.i(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
 		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis())/*+ 5 * 60 * 1000*/, soon);
 		return START_STICKY;
 	}
@@ -195,7 +197,12 @@ public class NotificationService extends Service {
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
 		//topLine = this.today.getDayName() + " Week " + this.today.get
-		topLine = this.dth.getBells().getDayName() + " Week " + this.dth.getBells().getWeek();
+		if (this.dth.getBells().isStatic()) {
+			String day = new DateTimeFormatterBuilder().appendDayOfWeekText().toFormatter().print(dth.getNextSchoolDay());
+			topLine = day + " " + cache.loadWeek();
+		} else {
+			topLine = this.dth.getBells().getDayName() + " Week " + this.dth.getBells().getWeek();
+		}
 		bottomLine = "";
 		if (this.cycle.getToday() != null) {
 			Day today = this.cycle.getToday();

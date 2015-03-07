@@ -21,6 +21,8 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Build;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,22 +36,29 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
+import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
-public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelectedListener {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BelltimesAdapter implements ListAdapter {
 	private StorageCache cache;
 	private Belltimes bells;
-
+	private EventListener eventListener;
+	private List<DataSetObserver> dsos = new ArrayList<>();
 
 	public BelltimesAdapter(Context c) {
 		this.cache = new StorageCache(c);
 		this.bells = cache.loadBells();
-		if (bells == null || !bells.current()) {
+		if (bells == null || (!bells.current() && !bells.isStatic())) {
 			ApiWrapper.requestBells(c);
 			bells = null;
 		}
+		this.eventListener = new EventListener();
+		ApiWrapper.getEventBus().register(this.eventListener);
 	}
 
 	@Override
@@ -64,17 +73,29 @@ public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelected
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-
+		dsos.add(observer);
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
+		dsos.remove(observer);
+	}
 
+	public void notifyDSOs() {
+		for (DataSetObserver i : dsos) {
+			i.onInvalidated();;
+		}
 	}
 
 	@Override
 	public int getCount() {
-		return (bells == null ? 2 : bells.getLength()+1);
+		if (bells == null) {
+			return 2;
+		}
+		if (bells.isStatic() || bells.areBellsAltered()) {
+			return bells.getLength()+2;
+		}
+		return bells.getLength()+1;
 	}
 
 	@Override
@@ -85,6 +106,14 @@ public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelected
 			} else {
 				return "Last updated";
 			}
+		}
+		if (bells.isStatic() || bells.areBellsAltered()) {
+			if (position == 0)
+				return "Some textView";
+			position--;
+		}
+		if (position == getCount()-1) {
+			return "Last updated";
 		}
 		return this.bells.getBellIndex(position);
 	}
@@ -101,8 +130,26 @@ public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelected
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
-		if (position == getCount()-1) {
+		boolean fakedPosition = false;
+		if (bells.isStatic() || bells.areBellsAltered()) {
+			if (position == 0) {
+				View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+				TextView t = (TextView)r.findViewById(R.id.textview);
+				t.setGravity(Gravity.CENTER);
+				t.setTextAppearance(parent.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
+				if (Build.VERSION.SDK_INT >= 17)
+					t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+				if (bells.isStatic()) {
+					t.setText("These bells don't include variations");
+				} else {
+					t.setText("Bells Changed: " + bells.getBellsAlteredReason());
+				}
+				return r;
+			}
+			fakedPosition = true;
+			position--;
+		}
+		if (position == getCount()-(fakedPosition ? 2 : 1)) {
 			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
@@ -149,13 +196,22 @@ public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelected
 		return false;
 	}
 
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+	public void updateBells(Belltimes b) {
+		this.bells = b;
+		this.notifyDSOs();
 	}
 
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {
-
+	private class EventListener {
+		public void onEvent(BellsEvent e) {
+			if (e.successful()) {
+				if (bells != null && e.getResponse().isStatic()) return;
+				Log.i("BellsAdapter$EVL", "successful request - " + e.getResponse());
+				updateBells(e.getResponse());
+			} else {
+				//updateError(e.getErrorMessage());
+				Log.e("BellsAdapter$EVL", "request failed - " + e.getErrorMessage());
+			}
+		}
 	}
+
 }

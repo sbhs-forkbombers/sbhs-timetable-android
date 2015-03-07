@@ -25,14 +25,14 @@ import retrofit.RetrofitError;
 
 public class BellsEvent extends RequestReceivedEvent<Belltimes> {
 	public BellsEvent(Belltimes response) {
-		super(response);
+		super(response, "belltimes");
 	}
 
 	public BellsEvent(RetrofitError r) {
-		super(r);
+		super(r, "belltimes");
 	}
 
 	public BellsEvent(boolean invalid) {
-		super(invalid);
+		super(invalid, "belltimes");
 	}
 }

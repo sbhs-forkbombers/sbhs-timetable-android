@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,6 +57,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
@@ -103,7 +105,7 @@ public class CountdownFragment extends Fragment {
 	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		//final CountdownFragment me = this;
+		final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -125,13 +127,22 @@ public class CountdownFragment extends Fragment {
 			getResources().getColor(R.color.green),
 			getResources().getColor(R.color.yellow),
 			getResources().getColor(R.color.red));
+		final Context c = inflater.getContext();
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
 				refreshing = true;
-
+				ApiWrapper.requestNotices(c);
+				ApiWrapper.requestBells(c);
+				ApiWrapper.requestToday(c);
 			}
 		});
+		if (ApiWrapper.isLoadingSomething()) {
+			TypedValue typed_value = new TypedValue();
+			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+			f.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+			f.setRefreshing(true);
+		}
 		this.mainView = f;
 		return f;
 	}
@@ -241,7 +252,7 @@ public class CountdownFragment extends Fragment {
 				connector = "in";
 				if (cycle.hasFullTimetable()) {
 					extraData.setVisibility(View.VISIBLE);
-					p = cycle.getDayNumber(cycle.getCurrentDayInCycle()).getPeriod(1);
+					p = cycle.getToday().getPeriod(1);
 					teacher.setText(p.getTeacher());
 					room.setText(p.getRoom());
 					subject.setText(p.getSubject());
@@ -324,6 +335,13 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
+		this.mTimer.cancel();
+		ApiWrapper.getEventBus().unregister(this.evListener);
+		this.cycle.removeDataSetObserver(this.evListener);
+		this.dth = null;
+		this.cache = null;
+		this.cycle = null;
+		this.evListener = null;
 		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
 		mListener = null;
 	}
@@ -344,8 +362,17 @@ public class CountdownFragment extends Fragment {
 
 		public void onEventMainThread(BellsEvent b) {
 			Log.i("CountdownFrag$DWatcher", "Got bellsevent. Error: " + b.getErrorMessage());
-			if (b.successful()) {
+			if (b.successful() && !b.getResponse().isStatic()) {
 				updateTimer();
+			}
+		}
+
+		public void onEventMainThread(RequestReceivedEvent<?> e) {
+			if (!ApiWrapper.isLoadingSomething()) {
+				mainView.setRefreshing(false);
+			}
+			if (!e.successful()) {
+				Toast.makeText(mainView.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

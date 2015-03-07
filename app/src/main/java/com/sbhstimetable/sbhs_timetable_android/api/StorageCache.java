@@ -48,6 +48,7 @@ public class StorageCache {
 	public StorageCache(Context c) {
 		this.c = c;
 		this.dateTimeHelper = new DateTimeHelper(c, false);
+		this.cleanCache();
 	}
 
 	private void cache(String desc, String json) {
@@ -77,6 +78,10 @@ public class StorageCache {
 		cache("today", gson.toJson(t));
 		DateTime d = DateTime.now();
 		d = d.withTimeAtStartOfDay().withDayOfWeek(DateTimeConstants.MONDAY);
+		DateTime now = DateTime.now();
+		if (now.getDayOfWeek() >= DateTimeConstants.SATURDAY || (now.getDayOfWeek() == DateTimeConstants.FRIDAY && (now.getHourOfDay() == 15 && now.getMinuteOfHour() >= 15) || now.getHourOfDay() > 15)) {
+			d = d.plusWeeks(1);
+		}
 		cache("week", d.getMillis() + " " + t.getWeek(), "");
 	}
 
@@ -202,11 +207,19 @@ public class StorageCache {
 		if (s == null) {
 			return null;
 		}
-		String[] ary = s.split(" ");
+		String[] ary = s.replace("\n", "").split(" ");
+		Log.i("StorageCache", "PARSE: " + s + " => " + ary.toString());
 		if (ary.length < 2) {
 			return null;
 		}
-		DateTime d = new DateTime(Integer.valueOf(ary[0]));
+		long v;
+		try {
+			v = Long.valueOf(ary[0]);
+		} catch (Exception e) {
+			Log.i("StorageCache", "Failed to parse long - " + ary[0], e);
+			return null;
+		}
+		DateTime d = new DateTime(v);
 		int idx = Arrays.asList("A", "B", "C").indexOf(ary[1].toUpperCase());
 		DateTime thisWeek = DateTime.now().withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay();
 		DateTime now = DateTime.now();
@@ -248,4 +261,20 @@ public class StorageCache {
 		Timetable t = gson.fromJson(res, Timetable.class);
 		return t;
 	}
+
+	public void cleanCache() {
+		File cacheDir = c.getCacheDir();
+		for (File f : cacheDir.listFiles()) {
+			if (!f.isFile()) continue;
+			if (f.getName().contains("-") && !f.getName().substring(0, 10).equals(DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()))) {
+				Log.i("StorageCache$Clean", "clean file: " + f.getName() + " for day: " + f.getName().substring(0, 10) + " (next day: " + DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()) + ")");
+				if (f.delete()) {
+					Log.v("StorageCache$Clean", "done");
+				} else {
+					Log.v("StorageCache$Clean", "failed");
+				}
+			}
+		}
+	}
+
 }

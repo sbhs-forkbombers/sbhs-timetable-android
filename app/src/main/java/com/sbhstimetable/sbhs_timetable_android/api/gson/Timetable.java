@@ -49,6 +49,7 @@ public class Timetable {
 
 	public TimetableDay getDayNumber(int num) {
 		TimetableDay res = days.get(((Integer)num).toString());
+		if (res == null) return res;
 		res.setDayNumber(num);
 		res._subjInfo = subjInfo;
 		return res;
@@ -77,7 +78,7 @@ public class Timetable {
 
 		@Override
 		public String getDayName() {
-			return dayName;
+			return dayName.split(" ")[0];
 		}
 
 		@Override

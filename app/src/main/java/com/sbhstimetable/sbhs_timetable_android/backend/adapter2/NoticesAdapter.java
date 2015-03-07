@@ -67,6 +67,9 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		ApiWrapper.getEventBus().register(this.eventListener);
 		if (this.notices == null) {
 			ApiWrapper.requestNotices(c);
+			if (ApiWrapper.getApi() == null) {
+				curError = "Please connect to the internet to load the notices.";
+			}
 		}
 	}
 
@@ -108,7 +111,8 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	@Override
 	public int getCount() {
 		if (notices == null) {
-			return curError == null ? 0 : 1;
+			//return curError == null ? 1 : 2;
+			return 1;
 		}
 		return notices.getNumberOfNotices()+2;
 	}
@@ -134,7 +138,14 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (notices == null) {
-			return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent);
+			if (position == 0 && curError == null) {
+				return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
+			} else {
+				View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+				TextView t = (TextView)v.findViewById(R.id.textview);
+				t.setText(curError);
+				return v;
+			}
 		}
 		if (notices.getNumberOfNotices() == 0 && position == 0) {
 			TextView res = new TextView(parent.getContext());
@@ -150,7 +161,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 				return theFilterSelector;
 			}
 
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, parent);
+			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
 			ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, years);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
 			s.setAdapter(a);
@@ -159,7 +170,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 			this.theFilterSelector = f;
 			return f;
 		} else if (position == getCount() -1 ) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent);
+			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
@@ -172,7 +183,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.notice_title) instanceof TextView) {
 			res = convertView;
 		} else {
-			res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, parent);
+			res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
 		}
 		TextView v = (TextView)res.findViewById(R.id.notice_body);
 		CharSequence s = n.getTextViewNoticeContents();
@@ -236,6 +247,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	private class EventListener {
 		public void onEvent(NoticesEvent e) {
 			if (e.successful()) {
+				Log.i("NoticesAdapter$EVL", "successful request - " + e.getResponse());
 				updateNotices(e.getResponse());
 			} else {
 				updateError(e.getErrorMessage());

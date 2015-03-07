@@ -73,6 +73,9 @@ public class FullCycleWrapper {
 				int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
 				Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
 				currentDayInCycle = 5*wk + day;
+				Log.i("FullCycleWrapper", "=> " + currentDayInCycle);
+			} else {
+				Log.i("FullCycleWrapper", "I have no idea what the week is.");
 			}
 		}
 		if (variationData == null) {
@@ -89,7 +92,7 @@ public class FullCycleWrapper {
 	}
 
 	public DateTime getFetchTime(int index) {
-		if (index == currentDayInCycle) {
+		if (index == currentDayInCycle && variationData != null) {
 			return variationData.getFetchTime();
 		} else {
 			return cycle.getFetchTime();
@@ -113,7 +116,7 @@ public class FullCycleWrapper {
 	}
 
 	public Day getDayNumber(int num) {
-		if (currentDayInCycle == num) {
+		if (currentDayInCycle == num && variationData != null) {
 			return variationData;
 		}
 		return cycle.getDayNumber(num);
@@ -125,8 +128,8 @@ public class FullCycleWrapper {
 			return currentDayInCycle;
 		}
 		else {
-			Log.i("FullCycleWrapper", "No day available");
-			return 1; // TODO FIXME
+			Log.i("FullCycleWrapper", "No day available", new Exception());
+			return -1; // TODO FIXME
 		}
 	}
 
@@ -160,7 +163,7 @@ public class FullCycleWrapper {
 	}
 
 	private void updateBells(Belltimes b) {
-		currentDayInCycle = b.getDayNumber();
+		if (b.getDayNumber() != -1) currentDayInCycle = b.getDayNumber();
 		this.todayBells = b;
 		this.notifyDSOs();
 	}
@@ -188,6 +191,7 @@ public class FullCycleWrapper {
 		public void onEvent(BellsEvent e) {
 			Log.i("FCW$EventListener", "got BellsEvent");
 			if (e.successful()) {
+				if (e.getResponse().isStatic() && todayBells != null) return;
 				updateBells(e.getResponse());
 			} else {
 				Log.e("FCW$EventListener", "Bells failed - " + e.getErrorMessage());

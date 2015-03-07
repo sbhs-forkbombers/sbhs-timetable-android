@@ -21,38 +21,32 @@
 package com.sbhstimetable.sbhs_timetable_android.debug;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 
 public class DebugActivity extends ActionBarActivity {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
 
+	private StorageCache cache;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	    ThemeHelper.setTheme(this);
         super.onCreate(savedInstanceState);
-		IntentFilter i = new IntentFilter();
-		i.addAction(ApiAccessor.ACTION_TIMETABLE_JSON);
-		LocalBroadcastManager.getInstance(this).registerReceiver(new DebugReceiver(this), i);
+		cache = new StorageCache(this);
         setContentView(R.layout.activity_debug);
 
 	    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -70,44 +64,20 @@ public class DebugActivity extends ActionBarActivity {
 		    getWindow().setStatusBarColor(colorPrimaryDark);
 	    }
 
-		this.findViewById(R.id.get_timetablejson).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				ApiAccessor.getTimetable(view.getContext(), false);
-				Toast.makeText(view.getContext(), "Loading", Toast.LENGTH_SHORT).show();
-			}
-		});
+		final TextView status = (TextView)findViewById(R.id.status);
 
-		this.findViewById(R.id.load_timetablejson).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				JsonObject j = StorageCache.getTimetable(view.getContext());
-				String res;
-				if (j != null) res = j.toString();
-				else res = "(null)";
-
-				((TextView)findViewById(R.id.status)).setText(res);
-
-			}
-		});
-
-		this.findViewById(R.id.start_service).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.guess_week).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(v.getContext(), NotificationService.class);
-				i.setAction(NotificationService.ACTION_INITIALISE);
-				ComponentName c = v.getContext().startService(i);
-				String name = (c != null ? c.flattenToString() : "(failed to start service)");
-				((TextView)findViewById(R.id.status)).setText(name);
+				status.setText(String.valueOf(cache.loadWeek()));
 			}
 		});
 
-		this.findViewById(R.id.stop_service).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.loading_timetable).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(v.getContext(), NotificationService.class);
-				boolean b = v.getContext().stopService(i);
-				((TextView)findViewById(R.id.status)).setText(""+b);
+				ApiWrapper.loadingTimetable = !ApiWrapper.loadingTimetable;
+				status.setText(ApiWrapper.loadingTimetable + "");
 			}
 		});
     }

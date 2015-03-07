@@ -19,6 +19,7 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,7 +58,7 @@ public class ApiWrapper {
 
 	private static boolean loadingBells = false;
 	private static boolean loadingToday = false;
-	private static boolean loadingTimetable = false;
+	public static boolean loadingTimetable = false;
 	private static boolean loadingNotices = false;
 
 	private static final String bells_montue = "{\"staticBells\": true, \"status\":\"OK\",\"bellsAltered\":false,\"bellsAlteredReason\":\"\",\"bells\":[{\"bell\":\"Roll Call\",\"time\":\"09:00\",\"index\":0},{\"bell\":\"1\",\"time\":\"09:05\",\"index\":1},{\"bell\":\"Transition\",\"time\":\"10:05\",\"index\":2},{\"bell\":\"2\",\"time\":\"10:10\",\"index\":3},{\"bell\":\"Lunch 1\",\"time\":\"11:10\",\"index\":4},{\"bell\":\"Lunch 2\",\"time\":\"11:30\",\"index\":5},{\"bell\":\"3\",\"time\":\"11:50\",\"index\":6},{\"bell\":\"Transition\",\"time\":\"12:50\",\"index\":7},{\"bell\":\"4\",\"time\":\"12:55\",\"index\":8},{\"bell\":\"Recess\",\"time\":\"13:55\",\"index\":9},{\"bell\":\"5\",\"time\":\"14:15\",\"index\":10},{\"bell\":\"End of Day\",\"time\":\"15:15\",\"index\":11}],\"date\":\"2015-03-02\",\"day\":\"\",\"term\":\"\",\"week\":\"\",\"weekType\":\"\",\"_fetchTime\":0}";
@@ -86,6 +87,7 @@ public class ApiWrapper {
 		return loadingBells || loadingToday || loadingTimetable || loadingNotices;
 	}
 
+
 	/*static {
 		adapter = new RestAdapter.Builder()
 				.setEndpoint("https://sbhstimetable.tk")
@@ -104,7 +106,7 @@ public class ApiWrapper {
 		try {
 
 			adapter = new RestAdapter.Builder()
-					.setEndpoint("https://sbhstimetable.tk")
+					.setEndpoint(baseURL)
 					.setLog(new AndroidLog("http"))
 					.setLogLevel(RestAdapter.LogLevel.FULL)
 					.build();
@@ -166,12 +168,18 @@ public class ApiWrapper {
 		return false;
 	}
 
-	private static boolean apiReady() {
+	private static boolean apiReady(Context c) {
+		if (api != null) return true;
+		tryLoadAdapter(c);
 		return api != null;
 	}
 
 	public static void startTokenExpiredActivity(Context c) {
-		c.startActivity(new Intent(c, TokenExpiredActivity.class));
+		Intent i = new Intent(c, TokenExpiredActivity.class);
+		if (!(c instanceof Activity)) {
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		}
+		c.startActivity(i);
 	}
 
 	public static boolean isLoggedIn() {
@@ -181,7 +189,8 @@ public class ApiWrapper {
 
 	public static void requestToday(final Context c) {
 		if (errIfNotReady(c) || loadingToday) return;
-		if (!apiReady()) {
+		if (!apiReady(c)) {
+			getEventBus().post(new TodayEvent(true));
 			return;
 		}
 		loadingToday = true;
@@ -202,7 +211,7 @@ public class ApiWrapper {
 			@Override
 			public void failure(RetrofitError error) {
 				Log.e("ApiWrapper", "Failed to load /api/today.json", error);
-				if (error.getResponse().getStatus() == 401) {
+				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
 				if (error.getKind() == RetrofitError.Kind.NETWORK) {
@@ -217,7 +226,7 @@ public class ApiWrapper {
 
 	public static void requestBells(final Context c) {
 		if (errIfNotReady(c) || loadingBells) return;
-		if (!apiReady()) {
+		if (!apiReady(c)) {
 			// wing it
 			BellsEvent b = new BellsEvent(getOfflineBells(c));
 			getEventBus().post(b);
@@ -225,7 +234,6 @@ public class ApiWrapper {
 		}
 		loadingBells = true;
 		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
-		Log.i("apiwrapper", "Get bells for " + s);
 		api.getBelltimes(s, new Callback<Belltimes>() {
 			@Override
 			public void success(Belltimes belltimes, Response response) {
@@ -244,7 +252,7 @@ public class ApiWrapper {
 			@Override
 			public void failure(RetrofitError error) {
 				loadingBells = false;
-				if (error.getResponse().getStatus() == 401) {
+				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
 
@@ -258,7 +266,8 @@ public class ApiWrapper {
 
 	public static void requestNotices(final Context c) {
 		if (errIfNotReady(c) || loadingNotices) return;
-		if (!apiReady()) {
+		if (!apiReady(c)) {
+			getEventBus().post(new NoticesEvent(true));
 			return;
 		}
 		loadingNotices = true;
@@ -280,7 +289,7 @@ public class ApiWrapper {
 			public void failure(RetrofitError error) {
 				NoticesEvent t = new NoticesEvent(error);
 				loadingNotices = false;
-				if (error.getResponse().getStatus() == 401) {
+				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
 
@@ -294,7 +303,8 @@ public class ApiWrapper {
 
 	public static void requestTimetable(final Context c) {
 		if (errIfNotReady(c)) return;
-		if (!apiReady()) {
+		if (!apiReady(c)) {
+			getEventBus().post(new TimetableEvent(true));
 			return;
 		}
 		api.getTimetable(sessID, new Callback<Timetable>() {
@@ -312,7 +322,7 @@ public class ApiWrapper {
 
 			@Override
 			public void failure(RetrofitError error) {
-				if (error.getResponse().getStatus() == 401) {
+				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
 				if (error.getKind() == RetrofitError.Kind.NETWORK) {

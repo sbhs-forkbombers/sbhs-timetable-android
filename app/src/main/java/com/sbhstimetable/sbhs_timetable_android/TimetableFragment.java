@@ -28,6 +28,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
@@ -127,6 +129,9 @@ public class TimetableFragment extends Fragment {
 			}
 		});
 		if (ApiWrapper.isLoadingSomething()) {
+			TypedValue typed_value = new TypedValue();
+			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+			v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
 			v.setRefreshing(true);
 		}
 		if (ThemeHelper.isBackgroundDark()) {
@@ -197,9 +202,14 @@ public class TimetableFragment extends Fragment {
 		public EventListener(TimetableFragment t) {
 			this.t = t;
 		}
-		public void onEvent(RequestReceivedEvent<?> ev) {
-			t.layout.setRefreshing(false);
-			t.layout.clearAnimation();
+		public void onEvent(RequestReceivedEvent<?> e) {
+			if (!ApiWrapper.isLoadingSomething()) {
+				t.layout.setRefreshing(false);
+				t.layout.clearAnimation();
+			}
+			if (!e.successful()) {
+				Toast.makeText(t.layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
 		}
 	}
 

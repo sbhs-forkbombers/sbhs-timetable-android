@@ -59,7 +59,7 @@ public class DebugActivity extends ActionBarActivity {
 	    mTypedValue = new TypedValue();
 	    getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
 	    int colorPrimary = mTypedValue.data;
-	    mToolbar = (Toolbar) findViewById(R.id.toolbar);
+	    mToolbar = toolbar;
 	    mToolbar.setBackgroundColor(colorPrimary);
 	    setSupportActionBar(toolbar);
 	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -74,7 +74,7 @@ public class DebugActivity extends ActionBarActivity {
 			@Override
 			public void onClick(View view) {
 				ApiAccessor.getTimetable(view.getContext(), false);
-				Toast.makeText(view.getContext(), "Loading", Toast.LENGTH_SHORT);
+				Toast.makeText(view.getContext(), "Loading", Toast.LENGTH_SHORT).show();
 			}
 		});
 

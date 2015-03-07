@@ -20,6 +20,7 @@
 
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
+import android.annotation.SuppressLint;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.appwidget.AppWidgetProviderInfo;
@@ -46,6 +47,7 @@ public class TodayAppWidget extends AppWidgetProvider {
 
 
     @Override
+	@SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         int home[] = new int[appWidgetIds.length];
         int lock[] = new int[appWidgetIds.length];
@@ -53,7 +55,7 @@ public class TodayAppWidget extends AppWidgetProvider {
         int homeIdx = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) { // no lockscreen widgets < 4.2, so don't check.
             for (int i : appWidgetIds) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
+                if (appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
                     lock[lockIdx++] = i;
                 } else {
                     home[homeIdx++] = i;

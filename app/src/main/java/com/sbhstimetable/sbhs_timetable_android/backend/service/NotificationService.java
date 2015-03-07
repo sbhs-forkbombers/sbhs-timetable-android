@@ -16,6 +16,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -35,6 +36,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
 // TODO retry later if no internet connection
@@ -79,6 +81,7 @@ public class NotificationService extends Service {
 		if (intent.getAction().equals(ACTION_INITIALISE)) {
 			this.showLoadingNotification();
 			this.updateAllTheThings();
+			this.showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_BELLTIMES)) {
 			dth.setBells(cache.loadBells());
 			showAppropriateNotification();
@@ -111,8 +114,8 @@ public class NotificationService extends Service {
 		if (alarm != null) am.cancel(alarm);
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
-		Log.i(TAG, "Will wake up in " + dth.getNextEvent().toDateTime().getMillis() / 1000 + " seconds to update notification.");
-		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + dth.getNextEvent().toDateTime().getMillis(), soon);
+		Log.i(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
+		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis())/*+ 5 * 60 * 1000*/, soon);
 		return START_STICKY;
 	}
 
@@ -160,7 +163,12 @@ public class NotificationService extends Service {
 		if (!this.dth.hasBells()) return; // belltimes are always needed to show a notification.
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
-		Belltimes.Bell nextPeriod = this.dth.getNextLesson();
+		Belltimes.Bell nextPeriod;
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_only_periods", true)) {
+			nextPeriod = this.dth.getNextPeriod();
+		} else {
+			nextPeriod = this.dth.getNextLesson();
+		}
 		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
 			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());
 			topLine = next.getSubject() + " in room " + next.getRoom();
@@ -169,6 +177,7 @@ public class NotificationService extends Service {
 		} else if (!nextPeriod.isPeriodStart()) {
 			topLine = nextPeriod.getBellName();
 			bottomLine = nextPeriod.getBellDisplay();
+			sideLine = this.dth.getBells().getDayName() + " " + this.dth.getBells().getWeek();
 		} else {
 			topLine = nextPeriod.getBellName() + " at " + nextPeriod.getBellDisplay();
 			bottomLine = getResources().getString(R.string.not_all_data);

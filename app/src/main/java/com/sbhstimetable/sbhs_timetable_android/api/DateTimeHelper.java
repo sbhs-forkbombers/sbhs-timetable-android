@@ -63,6 +63,12 @@ public class DateTimeHelper {
 		this.context = c;
 		if (createCache) {
 			this.cache = new StorageCache(c);
+			if (this.bells == null) {
+				this.bells = cache.loadBells();
+			}
+			if (this.today == null) {
+				this.today = cache.loadToday();
+			}
 		}
 	}
 
@@ -134,7 +140,7 @@ public class DateTimeHelper {
 	}
 
 	public boolean hasBells() {
-		return this.bells != null && this.bells.current();
+		return this.bells != null && (this.bells.current() || this.bells.isStatic());
 	}
 
 	public boolean hasToday() {

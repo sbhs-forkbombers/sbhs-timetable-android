@@ -21,18 +21,22 @@ package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
+import static org.joda.time.DateTimeConstants.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,7 +46,9 @@ public class FullCycleWrapper {
 	private Timetable cycle;
 	private Today variationData;
 	private Belltimes todayBells;
+	private DateTimeHelper dth;
 	private int currentDayInCycle = -1;
+	private static final List<String> weeks = Arrays.asList("A", "B", "C");
 
 	private EventListener l;
 
@@ -53,10 +59,21 @@ public class FullCycleWrapper {
 		cycle = cache.loadTimetable();
 		variationData = cache.loadToday();
 		todayBells = cache.loadBells();
+		this.dth = new DateTimeHelper(c, false);
 		if (variationData != null && variationData.isStillCurrent()) {
 			currentDayInCycle = variationData.getDayNumber();
 		} else if (todayBells != null && todayBells.current()) {
 			currentDayInCycle = todayBells.getDayNumber();
+		}
+
+		if (currentDayInCycle == -1) {
+			String week = cache.loadWeek();
+			if (week != null) {
+				int wk = weeks.indexOf(week.toUpperCase());
+				int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
+				Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
+				currentDayInCycle = 5*wk + day;
+			}
 		}
 		if (variationData == null) {
 			ApiWrapper.requestToday(c);
@@ -92,7 +109,7 @@ public class FullCycleWrapper {
 	}
 
 	public boolean ready() {
-		return cycle != null || variationData != null;
+		return (cycle != null || variationData != null) && currentDayInCycle != -1;
 	}
 
 	public Day getDayNumber(int num) {
@@ -103,10 +120,14 @@ public class FullCycleWrapper {
 	}
 
 	public int getCurrentDayInCycle() {
-		if (currentDayInCycle != -1)
+		if (currentDayInCycle != -1) {
+
 			return currentDayInCycle;
-		else
+		}
+		else {
+			Log.i("FullCycleWrapper", "No day available");
 			return 1; // TODO FIXME
+		}
 	}
 
 	public Day getToday() {

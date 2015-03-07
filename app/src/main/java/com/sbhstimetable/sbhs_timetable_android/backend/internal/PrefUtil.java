@@ -26,4 +26,7 @@ public class PrefUtil {
 	public static final String THEME = "app_theme";
 	public static final String COLOUR = "app_colour";
 	public static final String NOTIFICATIONS_ENABLED = "notifications_enable";
+	public static final String NOTIFICATION_ONLY_PERIODS = "notifications_only_periods";
+	public static final String LAST_WEEK = "last_weektype";
+	public static final String LAST_WEEK_DATE = "last_weekdate";
 }

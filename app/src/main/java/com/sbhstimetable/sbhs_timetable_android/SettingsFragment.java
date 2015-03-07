@@ -126,6 +126,11 @@ public class SettingsFragment extends PreferenceFragment {
 						preference.setSummary("Not showing notifications for next class.");
 					}
 				}
+				if (preference.getKey().equals(PrefUtil.NOTIFICATION_ONLY_PERIODS)) {
+					Intent i = new Intent(preference.getContext(), NotificationService.class);
+					i.setAction(NotificationService.ACTION_INITIALISE);
+					preference.getContext().startService(i);
+				}
 			}
 			return true;
 		}

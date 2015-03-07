@@ -85,6 +85,8 @@
         <service
             android:name=".backend.service.TodayWidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+		<service
+			android:name=".backend.service.WidgetUpdaterService" />
 
         <!-- Broadcast Receivers -->
 
@@ -99,6 +101,13 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/timetable_app_widget_info" />
         </receiver>
+		<receiver
+			android:name=".backend.service.CanHazInternetListener"
+			android:enabled="false">
+			<intent-filter>
+				<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+			</intent-filter>
+		</receiver>
         <receiver android:name=".backend.service.BootFinishedReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

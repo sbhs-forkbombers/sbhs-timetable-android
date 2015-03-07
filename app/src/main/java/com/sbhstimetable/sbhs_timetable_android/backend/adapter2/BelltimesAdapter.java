@@ -119,7 +119,7 @@ public class BelltimesAdapter implements ListAdapter, AdapterView.OnItemSelected
 			t.setTextAppearance(parent.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
 			return t;
 		}
-		if (convertView instanceof FrameLayout) {
+		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.bell_time) != null) {
 			r = convertView;
 		} else {
 			r = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_belltimes_entry, null);

@@ -35,6 +35,7 @@ import java.util.List;
 public class Belltimes {
 	private String status;
 	private boolean bellsAltered;
+	private boolean staticBells = false;
 	private String bellsAlteredReason;
 
 	/**
@@ -83,6 +84,9 @@ public class Belltimes {
 
 	public int getDayNumber() {
 		Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
+		if (weeks.indexOf(weekType) < 0) {
+			return -1;
+		}
 		return (days.indexOf(day)+1) + 5*weeks.indexOf(weekType);
 	}
 
@@ -91,11 +95,18 @@ public class Belltimes {
 	}
 
 	public boolean current() {
+		if (staticBells) {
+			return false;
+		}
 		DateTime expires = getSchoolDay().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
 		if (expires.isAfterNow()) {
 			return true;
 		}
 		return false;
+	}
+
+	public boolean isStatic() {
+		return staticBells;
 	}
 
 	public boolean valid() {

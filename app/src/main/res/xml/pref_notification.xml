@@ -31,5 +31,11 @@
 		android:title="@string/pref_title_allow_notifications"
 		android:summary="@string/pref_desc_allow_notifications"
 		android:defaultValue="true" />
+	<CheckBoxPreference
+		android:key="notifications_only_periods"
+		android:title="@string/pref_title_notification_periods"
+		android:summary="@string/pref_desc_notification_periods"
+		android:defaultValue="true"
+		android:dependency="notifications_enable"/>
 
 </PreferenceScreen>

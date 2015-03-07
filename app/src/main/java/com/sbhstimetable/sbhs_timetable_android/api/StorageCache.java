@@ -29,6 +29,8 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.io.BufferedReader;
@@ -36,6 +38,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class StorageCache {
 	private static final Gson gson = new Gson();
@@ -71,7 +75,11 @@ public class StorageCache {
 
 	public void cacheToday(Today t) {
 		cache("today", gson.toJson(t));
+		DateTime d = DateTime.now();
+		d = d.withTimeAtStartOfDay().withDayOfWeek(DateTimeConstants.MONDAY);
+		cache("week", d.getMillis() + " " + t.getWeek(), "");
 	}
+
 
 	public void cacheBells(Belltimes b) {
 		cache("bells", gson.toJson(b));
@@ -189,6 +197,28 @@ public class StorageCache {
 		return load("date");
 	}
 
+	public String loadWeek() {
+		String s = load("week", "");
+		if (s == null) {
+			return null;
+		}
+		String[] ary = s.split(" ");
+		if (ary.length < 2) {
+			return null;
+		}
+		DateTime d = new DateTime(Integer.valueOf(ary[0]));
+		int idx = Arrays.asList("A", "B", "C").indexOf(ary[1].toUpperCase());
+		DateTime thisWeek = DateTime.now().withDayOfWeek(DateTimeConstants.MONDAY).withTimeAtStartOfDay();
+		DateTime now = DateTime.now();
+		if (now.getDayOfWeek() >= DateTimeConstants.SATURDAY || (now.getDayOfWeek() == DateTimeConstants.FRIDAY && (now.getHourOfDay() == 15 && now.getMinuteOfHour() >= 15) || now.getHourOfDay() > 15)) {
+			thisWeek = thisWeek.plusWeeks(1);
+		}
+		Period gap = new Period(d, thisWeek);
+		idx += gap.getWeeks();
+		idx %= 3;
+		return new String[] {"A","B","C"}[idx];
+	}
+
 	public Today loadToday() {
 		String res = load("today");
 		if (res == null) return null;
@@ -198,7 +228,9 @@ public class StorageCache {
 
 	public Belltimes loadBells() {
 		String res = load("bells");
-		if (res == null) return null;
+		if (res == null) {
+			return ApiWrapper.getOfflineBells(c);
+		}
 		Belltimes t = gson.fromJson(res, Belltimes.class);
 		return t;
 	}

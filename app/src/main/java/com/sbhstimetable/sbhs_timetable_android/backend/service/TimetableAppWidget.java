@@ -21,6 +21,7 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -37,6 +38,7 @@ import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
@@ -45,8 +47,11 @@ import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
 
 public class TimetableAppWidget extends AppWidgetProvider {
     private static PendingIntent pending;
+	private DateTimeHelper dth;
+	private StorageCache cache;
 
     @Override
+	@SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 
@@ -54,7 +59,7 @@ public class TimetableAppWidget extends AppWidgetProvider {
         int lock[] = new int[appWidgetIds.length];
         int lockIdx = 0;
         int homeIdx = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) { // no lockscreen widgets < 4.2, so don't check.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) { // no lockscreen widgets < 4.2, so don't check.
             for (int i : appWidgetIds) {
                 if (appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
                     lock[lockIdx++] = i;

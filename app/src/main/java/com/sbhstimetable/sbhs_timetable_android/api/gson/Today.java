@@ -143,6 +143,9 @@ public class Today implements Day {
 			if (teacherChanged()) {
 				return this.casualDisplay;
 			}
+			if (cancelled()) {
+				return "Nobody";
+			}
 			String tempShort = teacher.toLowerCase();
 			String tempLong = this.fullTeacher.toLowerCase();
 			int lastMatch = 0;

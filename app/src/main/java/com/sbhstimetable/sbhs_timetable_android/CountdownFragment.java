@@ -103,7 +103,7 @@ public class CountdownFragment extends Fragment {
 	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		final CountdownFragment me = this;
+		//final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -342,7 +342,7 @@ public class CountdownFragment extends Fragment {
 			onChanged();
 		}
 
-		public void onEvent(BellsEvent b) {
+		public void onEventMainThread(BellsEvent b) {
 			Log.i("CountdownFrag$DWatcher", "Got bellsevent. Error: " + b.getErrorMessage());
 			if (b.successful()) {
 				updateTimer();

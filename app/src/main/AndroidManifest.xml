@@ -91,7 +91,7 @@
         <!-- Broadcast Receivers -->
 
         <receiver
-            android:name=".backend.service.TimetableAppWidget"
+            android:name=".backend.service.CountdownAppWidget"
             android:label="SBHS Timetable - Countdown" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

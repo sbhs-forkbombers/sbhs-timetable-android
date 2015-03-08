@@ -79,7 +79,7 @@ public class DashclockService extends DashClockExtension {
 		if (!cycle.hasRealTimeInfo()) {
 			ApiWrapper.requestToday(this);
 		}
-		if (this.dth.getNextPeriod() == null) summary = true;
+		if (this.dth.getNextPeriod() == null || this.dth.getNextBell().getBellName().startsWith("Roll")) summary = true;
 		ExtensionData res = new ExtensionData().icon(R.mipmap.ic_notification_icon).clickIntent(new Intent(this, TimetableActivity.class));
         if (t != null && !summary) {
 			Belltimes.Bell next = dth.getNextPeriod();

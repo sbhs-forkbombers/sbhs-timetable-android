@@ -26,7 +26,6 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -44,6 +43,18 @@ public class DateTimeHelper {
 
 	public static DateTimeFormatter getYYYYMMDDFormatter() {
 		return new DateTimeFormatterBuilder().appendYear(4,4).appendLiteral('-').appendMonthOfYear(2).appendLiteral('-').appendDayOfMonth(2).toFormatter();
+	}
+
+	public static String toCountdown(int seconds) {
+		int sec = seconds % 60;
+		seconds = (seconds - sec) / 60;
+		int min = seconds % 60;
+		seconds = (seconds - min) / 60;
+		if (seconds > 0) {
+			return String.format("%02d:%02d:%02d", seconds, min, sec);
+		}
+		return String.format("%02d:%02d", min, sec);
+
 	}
 
 	private static boolean after315(DateTime t) {
@@ -110,7 +121,7 @@ public class DateTimeHelper {
 		this.today = t;
 	}
 
-	public Belltimes.Bell getNextLesson() {
+	public Belltimes.Bell getNextBell() {
 		if (bells == null || getNextSchoolDay().isAfter(DateTime.now().withTimeAtStartOfDay().toLocalDateTime())) {
 			return null;
 		}
@@ -130,9 +141,12 @@ public class DateTimeHelper {
 		if (bells == null) {
 			return null;
 		}
+		if (getNextSchoolDay().isAfter(DateTime.now().toLocalDateTime())) {
+			return null;
+		}
 		int len = bells.getLength();
 		for (int i = 0; i < len; i++) {
-			if (bells.getBellIndex(i).isPeriodStart() && bells.getBellIndex(i).getBellTime().withDate(DateTime.now().toLocalDate()).isAfterNow()) {
+			if (bells.getBellIndex(i).isPeriodStart() && bells.getBellIndex(i).getBellTime().withDate(getNextSchoolDay().toLocalDate()).isAfterNow()) {
 				return bells.getBellIndex(i);
 			}
 		}
@@ -157,7 +171,7 @@ public class DateTimeHelper {
 
 	public LocalDateTime getNextEvent() {
 		//Log.i("dth", "bells => " + this.bells);
-		Belltimes.Bell next = getNextLesson();
+		Belltimes.Bell next = getNextBell();
 		if (next == null) { // count to start of next school day. TODO show a notification or something
 			DateTime day = getNextSchoolDay().toDateTime();
 			if (after(DateTime.now().toLocalDateTime(), 9, 5) && day.equals(DateTime.now().withTimeAtStartOfDay())) {

@@ -2,27 +2,18 @@ package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 
 import android.app.AlarmManager;
-import android.app.IntentService;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
@@ -32,13 +23,10 @@ import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
 // TODO retry later if no internet connection
@@ -93,12 +81,12 @@ public class NotificationService extends Service {
 				this.showLoadingNotification();
 				return START_STICKY;
 			}
-			if (dth.getNextLesson().isPeriodStart()) {
+			if (dth.getNextBell().isPeriodStart()) {
 				showNextPeriodNotification();
 			} else {
 
 			}
-			int nextPeriod = (dth.getNextLesson() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
+			int nextPeriod = (dth.getNextBell() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
 			if (nextPeriod == 1 && !dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
@@ -169,7 +157,7 @@ public class NotificationService extends Service {
 		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_only_periods", true)) {
 			nextPeriod = this.dth.getNextPeriod();
 		} else {
-			nextPeriod = this.dth.getNextLesson();
+			nextPeriod = this.dth.getNextBell();
 		}
 		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
 			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());

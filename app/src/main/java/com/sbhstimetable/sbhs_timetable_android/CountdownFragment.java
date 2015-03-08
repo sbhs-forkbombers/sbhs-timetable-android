@@ -22,17 +22,12 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
@@ -51,17 +46,13 @@ import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
-import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatterBuilder;
 
 public class CountdownFragment extends Fragment {
 
@@ -205,7 +196,7 @@ public class CountdownFragment extends Fragment {
 		}
 		debug("has bells - " + dth.hasBells());
 		if (dth.hasBells()) {
-			Belltimes.Bell next = dth.getNextLesson();
+			Belltimes.Bell next = dth.getNextBell();
 			debug("next - " + next);
 			if (next != null && next.getPreviousBellTime() != null) {
 				Belltimes.Bell now = next.getPreviousBellTime();

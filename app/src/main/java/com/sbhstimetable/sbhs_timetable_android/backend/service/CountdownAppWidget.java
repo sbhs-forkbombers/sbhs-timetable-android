@@ -35,17 +35,21 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
-import com.sbhstimetable.sbhs_timetable_android.backend.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.BelltimesJson;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 
-public class TimetableAppWidget extends AppWidgetProvider {
+public class CountdownAppWidget extends AppWidgetProvider {
     private static PendingIntent pending;
 	private DateTimeHelper dth;
 	private StorageCache cache;
@@ -54,12 +58,17 @@ public class TimetableAppWidget extends AppWidgetProvider {
 	@SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-
+		if (this.cache == null) {
+			this.cache = new StorageCache(context);
+		}
+		if (this.dth == null) {
+			this.dth = new DateTimeHelper(context);
+		}
         int home[] = new int[appWidgetIds.length];
         int lock[] = new int[appWidgetIds.length];
         int lockIdx = 0;
         int homeIdx = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) { // no lockscreen widgets < 4.2, so don't check.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) { // no lockscreen widgets < 4.2, so don't check.
             for (int i : appWidgetIds) {
                 if (appWidgetManager.getAppWidgetOptions(i).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) == AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD) {
                     lock[lockIdx++] = i;
@@ -74,53 +83,56 @@ public class TimetableAppWidget extends AppWidgetProvider {
         }
 
 
-        BelltimesJson b = BelltimesJson.getInstance();
+        Belltimes b = cache.loadBells();//.getInstance();
         String label = "";
         String in = "";
         String cntDwn = "";
-        if (b == null) {
-            ApiAccessor.getBelltimes(context);
-            cntDwn = "Loading…";
+        if (b == null || !b.valid()) {
+            ApiWrapper.requestBells(context);
+            if (b == null) cntDwn = "Loading…";
         }
-        else {
-            if (DateTimeHelper.bells == null) {
-                DateTimeHelper.bells = b;
+        if (b != null) {
+            if (!dth.hasBells()) {
+                dth.setBells(b);
             }
-            long time = DateTimeHelper.milliSecondsUntilNextEvent();
-            BelltimesJson.Bell bell = b.getNextBell();
+			Belltimes.Bell bell = dth.getNextBell();
+			if (bell == null) {
+				ApiWrapper.requestBells(context);
+			}
+            long time = dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis();
+
             label = "School starts";
             in = "in";
             if (bell != null) {
-                label = bell.getLabel();
-                in = "ends in";
+                label = bell.getBellName();
+                in = "starts in";
+				time = bell.getBellTime().toDateTime().withDate(DateTime.now().toLocalDate()).getMillis() - DateTime.now().getMillis();
             }
-            cntDwn = DateTimeHelper.formatToCountdown(time);
+			//Log.i("Countdown", "Up next " + bell + " time: " + bell.getBellTime().toString());
+            cntDwn = DateTimeHelper.toCountdown((int)(time / 1000));
 
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        if (homeIdx > 0) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
+		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
+		views.setTextViewText(R.id.widget_label, label);
+		views.setTextViewText(R.id.widget_in, in);
+		views.setTextViewText(R.id.widget_next_period, cntDwn);
+		if (homeIdx > 0) {
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
             c += "000000";
             views.setInt(R.id.widget_countdown_root, "setBackgroundColor", Color.parseColor(c));
-            views.setTextViewText(R.id.widget_label, label);
-            views.setTextViewText(R.id.widget_in, in);
-            views.setTextViewText(R.id.widget_next_period, cntDwn);
             appWidgetManager.updateAppWidget(home, views);
         }
 
         if (lockIdx > 0) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_LS, "32");
             c += "00".substring(trans.length()) + trans;
             c += "000000";
             views.setInt(R.id.widget_countdown_root, "setBackgroundColor", Color.parseColor(c));
-            views.setTextViewText(R.id.widget_label, label);
-            views.setTextViewText(R.id.widget_in, in);
-            views.setTextViewText(R.id.widget_next_period, cntDwn);
+
             appWidgetManager.updateAppWidget(lock, views);
         }
 
@@ -133,6 +145,11 @@ public class TimetableAppWidget extends AppWidgetProvider {
         pending = PendingIntent.getBroadcast(context, appWidgetIds[0], m, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+1000, pending);
     }
+
+	@Override
+	public void onEnabled(Context c) {
+		Log.i("CountdownAppWidget", "onEnabled");
+	}
 
     @Override
     public void onDisabled(Context context) {

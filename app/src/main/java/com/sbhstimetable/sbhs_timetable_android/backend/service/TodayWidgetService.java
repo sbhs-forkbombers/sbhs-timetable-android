@@ -37,7 +37,6 @@ import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
@@ -157,6 +156,7 @@ public class TodayWidgetService extends RemoteViewsService {
             if (!p.roomChanged() && !p.teacherChanged()) {
                 r.setImageViewBitmap(R.id.timetable_class_changed, null);
             }
+			r.setOnClickFillInIntent(R.id.classinfo_root, new Intent());
             return r;
         }
 

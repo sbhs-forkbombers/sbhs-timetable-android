@@ -39,6 +39,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
@@ -114,6 +115,8 @@ public class CountdownAppWidget extends AppWidgetProvider {
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
 		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
+		Intent intent = new Intent(context, TimetableActivity.class);
+		views.setOnClickPendingIntent(R.id.widget_countdown_root, PendingIntent.getActivity(context, 0, intent, 0));
 		views.setTextViewText(R.id.widget_label, label);
 		views.setTextViewText(R.id.widget_in, in);
 		views.setTextViewText(R.id.widget_next_period, cntDwn);

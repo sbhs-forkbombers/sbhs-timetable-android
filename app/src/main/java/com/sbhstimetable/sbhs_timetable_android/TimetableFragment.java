@@ -25,7 +25,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.TypedValue;
@@ -41,12 +40,9 @@ import android.widget.Toast;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.TimetableAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
-import com.sbhstimetable.sbhs_timetable_android.backend.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.TodayJson;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 
@@ -63,7 +59,6 @@ public class TimetableFragment extends Fragment {
 
 
 	private CommonFragmentInterface mListener;
-	private TodayJson today;
 	private SwipeRefreshLayout layout;
 	private TimetableAdapter adapter;
 	private DateTimeHelper dateTimeHelper;
@@ -184,9 +179,7 @@ public class TimetableFragment extends Fragment {
 	public void onPause() {
 		super.onPause();
 		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
-		if (this.today != null) {
-			StorageCache.cacheTodayJson(this.getActivity(), this.today.getDate(), this.today.toString());
-		}
+
 	}
 
 	@Override

@@ -30,10 +30,8 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.sbhstimetable.sbhs_timetable_android.backend.ApiAccessor;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
@@ -107,11 +105,11 @@ public class SettingsFragment extends PreferenceFragment {
 					i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
 					preference.getContext().sendBroadcast(i);
 				} else if (preference.getKey().startsWith("app_")) {
-					Intent i = new Intent();
-					i.setAction(ApiAccessor.ACTION_THEME_CHANGED);
+					/*Intent i = new Intent();
+					i.setAction(ApiAccessor.ACTION_THEME_CHANGED);*/
 					ThemeHelper.invalidateTheme();
-					LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(preference.getContext());
-					lbm.sendBroadcast(i);
+					/*LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(preference.getContext());
+					lbm.sendBroadcast(i);*/
 				}
 			} else if (preference instanceof CheckBoxPreference) {
 				Log.i("Settings", "Found a CheckBoxPreference with key " + preference.getKey());

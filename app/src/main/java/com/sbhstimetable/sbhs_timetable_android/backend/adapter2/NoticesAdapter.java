@@ -40,7 +40,6 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
-import com.sbhstimetable.sbhs_timetable_android.backend.json.NoticesJson;
 import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
 
 import org.joda.time.format.DateTimeFormatter;

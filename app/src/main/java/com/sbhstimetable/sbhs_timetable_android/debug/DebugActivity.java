@@ -92,17 +92,6 @@ public class DebugActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private class DebugReceiver extends BroadcastReceiver {
-		private DebugActivity a;
-		public DebugReceiver(DebugActivity a) {
-			this.a = a;
-		}
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			TextView t = (TextView) a.findViewById(R.id.status);
-			t.setText(t.getText() + "\n" + "Got intent: " + intent.getAction());
-		}
-	}
 
 	@Override
 	public void onBackPressed() {

@@ -67,6 +67,8 @@ public class ApiWrapper {
 
 	public static final String baseURL = "https://sbhstimetable.tk";
 
+	private static boolean hasLaunchedTokenExpired = false;
+
 	public static boolean isLoadingBells() {
 		return loadingBells;
 	}
@@ -144,6 +146,7 @@ public class ApiWrapper {
 	public static void finishedLogin(Context c, String s) {
 		sessID = s;
 		PreferenceManager.getDefaultSharedPreferences(c).edit().putString("sessionID", s).commit();
+		hasLaunchedTokenExpired = false;
 	}
 
 	static Belltimes getOfflineBells(Context c) {
@@ -169,12 +172,17 @@ public class ApiWrapper {
 	}
 
 	private static boolean apiReady(Context c) {
+		ConnectivityManager conn = (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
+		boolean hasNet = conn.getActiveNetworkInfo() != null && conn.getActiveNetworkInfo().isConnected();
+		if (!hasNet) return false;
 		if (api != null) return true;
 		tryLoadAdapter(c);
 		return api != null;
 	}
 
 	public static void startTokenExpiredActivity(Context c) {
+		if (hasLaunchedTokenExpired) return;
+		hasLaunchedTokenExpired = true;
 		Intent i = new Intent(c, TokenExpiredActivity.class);
 		if (!(c instanceof Activity)) {
 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

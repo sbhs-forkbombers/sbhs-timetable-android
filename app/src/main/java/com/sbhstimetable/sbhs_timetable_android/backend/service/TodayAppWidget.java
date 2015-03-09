@@ -21,6 +21,7 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.appwidget.AppWidgetProviderInfo;
@@ -34,6 +35,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 
 
@@ -67,9 +69,13 @@ public class TodayAppWidget extends AppWidgetProvider {
             homeIdx = appWidgetIds.length;
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+		Intent intent = new Intent(context, TimetableActivity.class);
+		PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
         if (homeIdx > 0) {
             RemoteViews homeScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
-
+			//homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview);
+			homeScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
+			homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);;
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
@@ -83,8 +89,9 @@ public class TodayAppWidget extends AppWidgetProvider {
 
         if (lockIdx > 0 ) {
             RemoteViews lockScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
-
-            String c = "#";
+			lockScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
+			lockScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
+			String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_LS, "00");
             c += "00".substring(trans.length()) + trans;
             c += "000000"; // WHY JAVA

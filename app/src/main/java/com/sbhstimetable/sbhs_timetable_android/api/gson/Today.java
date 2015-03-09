@@ -21,6 +21,7 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
 import com.sbhstimetable.sbhs_timetable_android.api.FreePeriod;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 
@@ -29,7 +30,7 @@ import org.joda.time.DateTime;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-public class Today implements Day {
+public class Today implements Day,FetchedObject {
 	private long _fetchTime;
 	private String date;
 	private boolean variationsFinalised;
@@ -86,6 +87,7 @@ public class Today implements Day {
 		return date;
 	}
 
+	@Override
 	public DateTime getFetchTime() {
 		return new DateTime(_fetchTime*1000);
 	}

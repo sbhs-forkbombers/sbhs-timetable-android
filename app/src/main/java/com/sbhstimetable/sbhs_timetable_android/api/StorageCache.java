@@ -23,6 +23,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
@@ -120,7 +121,7 @@ public class StorageCache {
 	}
 
 	private boolean shouldReload(String desc) {
-		DateTime now = DateTime.now();
+		/*DateTime now = DateTime.now();
 		DateTime lastUpdate = getFetchTime(desc);
 		if (lastUpdate == null) return true;
 		if (now.getYear() != lastUpdate.getYear()) return true; // different year
@@ -148,7 +149,26 @@ public class StorageCache {
 				return true;
 			}
 		}
-
+*/
+		if (desc.equals("timetable")) {
+			Timetable t = loadTimetable();
+			if (t == null) {
+				return true;
+			}
+			if (t.getFetchTime().getMillis() - DateTime.now().getMillis() > 14 * 24 * 60 * 60 * 1000) {
+				return true;
+			}
+			return false;
+		} else if (desc.equals("today")) {
+			Today t = loadToday();
+			return t == null || t.isStillCurrent();
+		} else if (desc.equals("bells")) {
+			Belltimes b = loadBells();
+			return b == null || b.current();
+		} else if (desc.equals("notices")) {
+			Notices n = loadNotices();
+			return n == null || n.getFetchTime().getMillis() - DateTime.now().getMillis() >= 60 * 60 * 1000; // one hour
+		}
 		return false;
 	}
 

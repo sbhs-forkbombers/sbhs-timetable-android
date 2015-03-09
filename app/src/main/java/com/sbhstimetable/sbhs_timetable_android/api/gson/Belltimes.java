@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.Belltime;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class Belltimes {
+public class Belltimes implements FetchedObject {
 	private String status;
 	private boolean bellsAltered;
 	private boolean staticBells = false;
@@ -67,6 +68,7 @@ public class Belltimes {
 		return week + weekType;
 	}
 
+	@Override
 	public DateTime getFetchTime() {
 		return new DateTime(_fetchTime*1000L);
 	}

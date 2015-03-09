@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
+import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
 import com.sbhstimetable.sbhs_timetable_android.api.FreePeriod;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 
@@ -31,7 +32,7 @@ import org.joda.time.DateTime;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
-public class Timetable {
+public class Timetable implements FetchedObject {
 	private HashMap<String, TimetableDay> days;
 	private HashMap<String, SubjectInfo> subjInfo;
 	private String status;
@@ -55,7 +56,7 @@ public class Timetable {
 		return res;
 	}
 
-
+	@Override
 	public DateTime getFetchTime() {
 		return new DateTime(_fetchTime*1000);
 	}

@@ -26,6 +26,7 @@ import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -40,7 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class Notices {
+public class Notices implements FetchedObject {
 	private String date;
 	private String term;
 	private String week;
@@ -86,6 +87,7 @@ public class Notices {
 		this.noticeFiltered = map;
 	}
 
+	@Override
 	public DateTime getFetchTime() {
 		return new DateTime(this._fetchTime*1000);
 	}

@@ -39,12 +39,7 @@ android {
         dev {
             applicationId 'com.sbhstimetable.sbhs_timetable_android_dev'
             versionCode 1
-            versionName '¯\\\\_(ツ)_/¯'
-        }
-        demo {
-            applicationId 'com.sbhstimetable.sbhs_timetable_android_demo'
-            versionCode 1
-            versionName '( ͡ಠ ͜ʖ ͡ಠ) '// solid unicode support android studio
+            versionName '( ͡° ͜ʖ ͡°)'// solid unicode support android studio
         }
 	}
 }

@@ -119,6 +119,10 @@ public class TimetableActivity extends ActionBarActivity
 			DialogFragment f = new FeedbackDialogFragment();
 			f.show(this.getFragmentManager(), "dialog");
 		}
+		if (ThemeHelper.themeNeedsRevalidating()) {
+			//this.
+			this.recreate();
+		}
 		if (this.cache.shouldReloadBells()) ApiWrapper.requestBells(this);
 		if (this.cache.shouldReloadNotices()) ApiWrapper.requestNotices(this);
 		if (this.cache.shouldReloadToday()) ApiWrapper.requestToday(this);

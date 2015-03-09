@@ -77,6 +77,10 @@ public class ThemeHelper {
 
 	}
 
+	public static boolean themeNeedsRevalidating() {
+		return curAppTheme == null;
+	}
+
 	public static void invalidateTheme() {
 		curAppTheme = null;
 	}

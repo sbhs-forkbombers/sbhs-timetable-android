@@ -97,9 +97,9 @@ public class CountdownAppWidget extends AppWidgetProvider {
                 dth.setBells(b);
             }
 			Belltimes.Bell bell = dth.getNextBell();
-			if (bell == null) {
+			/*if (bell == null) {
 				ApiWrapper.requestBells(context);
-			}
+			}*/
             long time = dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis();
 
             label = "School starts";
@@ -148,11 +148,12 @@ public class CountdownAppWidget extends AppWidgetProvider {
         pending = PendingIntent.getBroadcast(context, appWidgetIds[0], m, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+1000, pending);
     }
-
+/*
 	@Override
 	public void onEnabled(Context c) {
-		Log.i("CountdownAppWidget", "onEnabled");
+		//Log.i("CountdownAppWidget", "onEnabled");
 	}
+*/
 
     @Override
     public void onDisabled(Context context) {

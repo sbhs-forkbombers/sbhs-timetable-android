@@ -63,7 +63,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
 		int tmp = currentIndex - 1;
-		Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
+		//Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
 		curDayIndex = (tmp % 5);
 		curWeekIndex = (int)Math.floor(tmp / 5);
 	}
@@ -228,7 +228,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 			this.curDayIndex = position;
 			this.currentIndex = (5 * this.curWeekIndex) + position;
 		}
-		Log.i("TimetableAdapter", "new position wk " + this.curWeekIndex + " day " + this.curDayIndex + " => " + this.currentIndex);
+		//Log.i("TimetableAdapter", "new position wk " + this.curWeekIndex + " day " + this.curDayIndex + " => " + this.currentIndex);
 		this.notifyDSOs();
 	}
 

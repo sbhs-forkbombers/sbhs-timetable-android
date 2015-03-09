@@ -32,7 +32,6 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
-import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.CanHazInternetListener;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
@@ -115,7 +114,7 @@ public class ApiWrapper {
 
 			api = adapter.create(SbhsTimetableService.class);
 		} catch (Exception e) {
-			Log.wtf("ApiWrapper", "Building endpoint adapter failed!", e);
+			Log.wtf("ApiWrapper", "Building endpoint adapter failed (and network seems to be working!)", e);
 			adapter = null;
 			api = null;
 		}
@@ -202,6 +201,7 @@ public class ApiWrapper {
 			return;
 		}
 		loadingToday = true;
+
 		api.getTodayJson(sessID, new Callback<Today>() {
 			@Override
 			public void success(Today today, Response response) {
@@ -218,7 +218,7 @@ public class ApiWrapper {
 
 			@Override
 			public void failure(RetrofitError error) {
-				Log.e("ApiWrapper", "Failed to load /api/today.json", error);
+				Log.d("ApiWrapper", "Failed to load /api/today.json", error);
 				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}

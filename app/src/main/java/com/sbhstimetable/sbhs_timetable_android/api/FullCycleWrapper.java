@@ -71,11 +71,11 @@ public class FullCycleWrapper {
 			if (week != null) {
 				int wk = weeks.indexOf(week.toUpperCase());
 				int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
-				Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
+				//Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
 				currentDayInCycle = 5*wk + day;
-				Log.i("FullCycleWrapper", "=> " + currentDayInCycle);
+				//Log.i("FullCycleWrapper", "=> " + currentDayInCycle);
 			} else {
-				Log.i("FullCycleWrapper", "I have no idea what the week is.");
+				Log.w("FullCycleWrapper", "I have no idea what the week is.");
 			}
 		}
 		if (variationData == null) {
@@ -171,31 +171,31 @@ public class FullCycleWrapper {
 	private class EventListener {
 
 		public void onEvent(TimetableEvent e) {
-			Log.i("FCW$EventListener", "got TimetableEvent");
+			//Log.i("FCW$EventListener", "got TimetableEvent");
 			if (e.successful()) {
 				updateTimetable(e.getResponse());
-			} else {
+			} /*else {
 				Log.e("FCW$EventListener", "Timetable failed - " + e.getErrorMessage());
-			}
+			}*/
 		}
 
 		public void onEvent(TodayEvent e) {
-			Log.i("FCW$EventListener", "got TodayEvent");
+			//Log.i("FCW$EventListener", "got TodayEvent");
 			if (e.successful()) {
 				updateToday(e.getResponse());
-			} else {
+			} /*else {
 				Log.e("FCW$EventListener", "Today failed - " + e.getErrorMessage());
-			}
+			}*/
 		}
 
 		public void onEvent(BellsEvent e) {
-			Log.i("FCW$EventListener", "got BellsEvent");
+			//Log.i("FCW$EventListener", "got BellsEvent");
 			if (e.successful()) {
 				if (e.getResponse().isStatic() && todayBells != null) return;
 				updateBells(e.getResponse());
-			} else {
+			} /*else {
 				Log.e("FCW$EventListener", "Bells failed - " + e.getErrorMessage());
-			}
+			}*/
 		}
 	}
 

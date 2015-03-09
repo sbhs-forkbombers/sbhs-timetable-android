@@ -58,7 +58,7 @@ public class StorageCache {
 
 	private void cache(String desc, String json, String date) {
 		String file = date + desc + ".json";
-		Log.i("StorageCache", "Cache " + desc + " for " + date + " - " + json);
+		Log.v("StorageCache", "Cache " + desc + " for " + date + " - " + json);
 		File toWrite = new File(c.getCacheDir(), file);
 		try {
 			FileWriter f = new FileWriter(toWrite);
@@ -66,7 +66,7 @@ public class StorageCache {
 			f.flush();
 			f.close();
 		} catch (IOException e) {
-			Log.e("StorageCache", "Error happened while writing file " + toWrite.getAbsolutePath() + "!", e);
+			Log.w("StorageCache", "Error happened while writing file " + toWrite.getAbsolutePath() + "!", e);
 		}
 	}
 
@@ -191,7 +191,7 @@ public class StorageCache {
 				//Log.v("StorageCache", "Result: " + result);
 				return result;
 			} catch (IOException e) {
-				Log.e("StorageCache", "Error happened while reading file " + toRead.getAbsolutePath() + "!", e);
+				Log.w("StorageCache", "Error happened while reading file " + toRead.getAbsolutePath() + "!", e);
 			}
 		}
 		//Log.v("StorageCache", "doesn't exist.");
@@ -208,7 +208,6 @@ public class StorageCache {
 			return null;
 		}
 		String[] ary = s.replace("\n", "").split(" ");
-		Log.i("StorageCache", "PARSE: " + s + " => " + ary.toString());
 		if (ary.length < 2) {
 			return null;
 		}
@@ -216,7 +215,7 @@ public class StorageCache {
 		try {
 			v = Long.valueOf(ary[0]);
 		} catch (Exception e) {
-			Log.i("StorageCache", "Failed to parse long - " + ary[0], e);
+			Log.v("StorageCache", "Failed to parse long - " + ary[0], e);
 			return null;
 		}
 		DateTime d = new DateTime(v);
@@ -267,11 +266,11 @@ public class StorageCache {
 		for (File f : cacheDir.listFiles()) {
 			if (!f.isFile()) continue;
 			if (f.getName().contains("-") && !f.getName().substring(0, 10).equals(DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()))) {
-				Log.i("StorageCache$Clean", "clean file: " + f.getName() + " for day: " + f.getName().substring(0, 10) + " (next day: " + DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()) + ")");
+				Log.d("StorageCache$Clean", "clean file: " + f.getName() + " for day: " + f.getName().substring(0, 10) + " (next day: " + DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()) + ")");
 				if (f.delete()) {
-					Log.v("StorageCache$Clean", "done");
+					Log.d("StorageCache$Clean", "done");
 				} else {
-					Log.v("StorageCache$Clean", "failed");
+					Log.d("StorageCache$Clean", "failed");
 				}
 			}
 		}

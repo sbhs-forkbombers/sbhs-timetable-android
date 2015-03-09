@@ -97,7 +97,6 @@ public class SettingsFragment extends PreferenceFragment {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object value) {
 			String stringValue = value.toString();
-			Log.i("Settings", "Preference change: " + preference);
 			if (preference instanceof ListPreference) {
 				// For list preferences, look up the correct display value in
 				// the preference's 'entries' list.
@@ -119,7 +118,7 @@ public class SettingsFragment extends PreferenceFragment {
 					lbm.sendBroadcast(i);*/
 				}
 			} else if (preference instanceof CheckBoxPreference) {
-				Log.i("Settings", "Found a CheckBoxPreference with key " + preference.getKey());
+				//Log.i("Settings", "Found a CheckBoxPreference with key " + preference.getKey());
 				if (preference.getKey().equals(PrefUtil.NOTIFICATIONS_ENABLED)) {
 					Intent i = new Intent(preference.getContext(), NotificationService.class);
 					if ((boolean)value) {

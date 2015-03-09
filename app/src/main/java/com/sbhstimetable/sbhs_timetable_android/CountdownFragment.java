@@ -167,7 +167,7 @@ public class CountdownFragment extends Fragment {
 	public void updateTimer() {
 		final View f = this.getView();
 		if (f == null) {
-			Log.wtf("CountdownFragment", "getView() == NULL!");
+			Log.wtf("CountdownFragment", "getView() == NULL!"); // this should never happen. If it happens, the timer has been left running after the fragment has gone.
 			return;
 		}
 
@@ -272,7 +272,6 @@ public class CountdownFragment extends Fragment {
 		final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
 		//final TextView j = (TextView)f.findViewById(R.id.countdown_name);
 		if (mTimer != null) {
-			Log.i("countdown", "ditch mTimer");
 			return;
 		}
 		CountDownTimer timer = new CountDownTimer(dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis(), 1000) {
@@ -301,7 +300,6 @@ public class CountdownFragment extends Fragment {
 
 			}
 		};
-		Log.i("countdown", "ditch mTimer");
 		mTimer = timer;
 		timer.start();
 	}
@@ -326,7 +324,9 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		this.mTimer.cancel();
+		if (this.mTimer != null) {
+			this.mTimer.cancel();
+		}
 		ApiWrapper.getEventBus().unregister(this.evListener);
 		this.cycle.removeDataSetObserver(this.evListener);
 		this.dth = null;
@@ -341,7 +341,7 @@ public class CountdownFragment extends Fragment {
 		@Override
 		public void onChanged() {
 			super.onChanged();
-			Log.i("CountdownFrag$DWatcher", "DSO changed! Updating labels");
+			//Log.i("CountdownFrag$DWatcher", "DSO changed! Updating labels");
 			updateTimer();
 		}
 
@@ -352,7 +352,7 @@ public class CountdownFragment extends Fragment {
 		}
 
 		public void onEventMainThread(BellsEvent b) {
-			Log.i("CountdownFrag$DWatcher", "Got bellsevent. Error: " + b.getErrorMessage());
+			//Log.i("CountdownFrag$DWatcher", "Got bellsevent. Error: " + b.getErrorMessage());
 			if (b.successful() && !b.getResponse().isStatic()) {
 				updateTimer();
 			}

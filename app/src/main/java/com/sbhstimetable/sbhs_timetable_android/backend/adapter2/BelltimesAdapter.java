@@ -205,12 +205,12 @@ public class BelltimesAdapter implements ListAdapter {
 		public void onEvent(BellsEvent e) {
 			if (e.successful()) {
 				if (bells != null && e.getResponse().isStatic()) return;
-				Log.i("BellsAdapter$EVL", "successful request - " + e.getResponse());
+				//Log.i("BellsAdapter$EVL", "successful request - " + e.getResponse());
 				updateBells(e.getResponse());
-			} else {
+			} /*else {
 				//updateError(e.getErrorMessage());
 				Log.e("BellsAdapter$EVL", "request failed - " + e.getErrorMessage());
-			}
+			}*/
 		}
 	}
 

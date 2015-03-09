@@ -70,7 +70,7 @@ public class NotificationService extends Service {
 			Log.wtf(TAG, "Started without an intent?");
 			return START_STICKY;
 		}
-		Log.i(TAG, "Received start id " + startId + ": " + intent.getAction());
+		Log.d(TAG, "Received start id " + startId + ": " + intent.getAction());
 		if (intent.getAction().equals(ACTION_INITIALISE)) {
 			this.showLoadingNotification();
 			this.updateAllTheThings();
@@ -85,9 +85,8 @@ public class NotificationService extends Service {
 				return START_STICKY;
 			}
 			if (dth.getNextBell().isPeriodStart()) {
+				// TODO I'm not entirely sure this is necessary
 				showNextPeriodNotification();
-			} else {
-
 			}
 			int nextPeriod = (dth.getNextBell() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
 			if (nextPeriod == 1 && !dth.hasBells()) {
@@ -107,7 +106,7 @@ public class NotificationService extends Service {
 		if (alarm != null) am.cancel(alarm);
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
-		Log.i(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
+		Log.d(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
 		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis())/*+ 5 * 60 * 1000*/, soon);
 		return START_STICKY;
 	}
@@ -220,7 +219,7 @@ public class NotificationService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.i(TAG, "Destroyed.");
+		Log.d(TAG, "Destroyed.");
 		mNM.cancel(NOTIFICATION);
 		if (alarm != null) {
 			((AlarmManager)this.getSystemService(Context.ALARM_SERVICE)).cancel(alarm);

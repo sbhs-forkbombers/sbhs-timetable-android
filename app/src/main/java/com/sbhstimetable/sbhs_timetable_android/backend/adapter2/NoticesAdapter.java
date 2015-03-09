@@ -246,12 +246,12 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	private class EventListener {
 		public void onEvent(NoticesEvent e) {
 			if (e.successful()) {
-				Log.i("NoticesAdapter$EVL", "successful request - " + e.getResponse());
+				//Log.i("NoticesAdapter$EVL", "successful request - " + e.getResponse());
 				updateNotices(e.getResponse());
-			} else {
+			}/* else {
 				updateError(e.getErrorMessage());
 				Log.e("NoticesAdapter$EVL", "request failed - " + e.getErrorMessage());
-			}
+			}*/
 		}
 	}
 }

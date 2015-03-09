@@ -32,7 +32,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 public class CanHazInternetListener extends BroadcastReceiver {
 
 	public static void disable(Context c) {
-		Log.i("CanHazInternet", "Disabling your number one source for internet since 1998");
+		Log.d("CanHazInternet", "Disabling your number one source for internet since 1998");
 		ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
 		PackageManager pm = c.getPackageManager();
 		pm.setComponentEnabledSetting(receiver,
@@ -41,7 +41,7 @@ public class CanHazInternetListener extends BroadcastReceiver {
 	}
 
 	public static void enable(Context c) {
-		Log.i("CanHazInternet", "Enabling your number one source for internet since 1998");
+		Log.d("CanHazInternet", "Enabling your number one source for internet since 1998");
 		ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
 		PackageManager pm = c.getPackageManager();
 		pm.setComponentEnabledSetting(receiver,
@@ -51,7 +51,7 @@ public class CanHazInternetListener extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i("CanHazInternet", "Hi I'm the CanHazInternetListener, your number one source for internet since 1998");
+		Log.d("CanHazInternet", "Hi I'm the CanHazInternetListener, your number one source for internet since 1998");
 		ConnectivityManager c = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		boolean hasNet = c.getActiveNetworkInfo() != null && c.getActiveNetworkInfo().isConnected();
 		if (hasNet) {

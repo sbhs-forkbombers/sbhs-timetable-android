@@ -91,7 +91,7 @@ public class Belltimes {
 	}
 
 	public int getDayNumber() {
-		Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
+		//Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
 		if (weeks.indexOf(weekType) < 0) {
 			return -1;
 		}

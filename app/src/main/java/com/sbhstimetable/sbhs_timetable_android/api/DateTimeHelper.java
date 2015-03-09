@@ -113,7 +113,6 @@ public class DateTimeHelper {
 	}
 
 	public void setBells(Belltimes b) {
-		Log.i("dth", "set bells to " + b);
 		this.bells = b;
 	}
 
@@ -191,7 +190,7 @@ public class DateTimeHelper {
 				}
 			}
 		}
-		return next.getBellTime().withDate(DateTime.now().toLocalDate()).toLocalDateTime();
+		return next.getBellTime().withDate(getNextSchoolDay().toLocalDate()).toLocalDateTime();
 	}
 
 }

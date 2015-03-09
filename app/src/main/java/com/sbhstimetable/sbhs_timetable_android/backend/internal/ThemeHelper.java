@@ -50,7 +50,7 @@ public class ThemeHelper {
 		else {
 			isDark = true;
 		}
-		Log.i("ThemeHelper", "Setting colour to " + colour);
+		Log.d("ThemeHelper", "Setting colour to " + colour);
 		int colourRes = R.style.AppTheme;
 		if (!colour.equals("AppTheme")) {
 
@@ -59,7 +59,7 @@ public class ThemeHelper {
 				colourRes = f.getInt(null);
 				a.setTheme(colourRes);
 			} catch (Exception e) {
-				Log.w("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
+				Log.v("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
 			}
 		}
 

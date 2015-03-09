@@ -92,7 +92,8 @@
 	<!-- Notifications -->
 	<string name="loading_data">Loading bell and timetable information&#8230;</string>
 	<string name="not_all_data">Still waiting for timetable information&#8230;</string>
-	<string name="pref_title_notification_periods">Only show periods in notifications?</string>
-	<string name="pref_desc_notification_periods">Don\'t show upcoming breaks.</string>
+	<string name="pref_title_notification_periods">Include breaks in notifications?</string>
+	<string name="pref_desc_notification_periods_negative">Not showing upcoming breaks</string>
+	<string name="pref_desc_notification_periods_positive">Showing upcoming breaks</string>
 
 </resources>

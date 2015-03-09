@@ -53,7 +53,9 @@ public class SettingsFragment extends PreferenceFragment {
 				PrefUtil.WIDGET_TRANSPARENCY_HS,
 				PrefUtil.WIDGET_TRANSPARENCY_LS,
 				PrefUtil.THEME,
-				PrefUtil.COLOUR
+				PrefUtil.COLOUR,
+				PrefUtil.NOTIFICATION_INCLUDE_BREAKS,
+				PrefUtil.NOTIFICATIONS_ENABLED
 		}; // settings to attach listeners to
 
 		// don't offer lock screen widget options on platforms that don't support them
@@ -65,6 +67,8 @@ public class SettingsFragment extends PreferenceFragment {
 					PrefUtil.WIDGET_TRANSPARENCY_HS,
 					PrefUtil.THEME,
 					PrefUtil.COLOUR,
+					PrefUtil.NOTIFICATION_INCLUDE_BREAKS,
+					PrefUtil.NOTIFICATIONS_ENABLED
 			};
 
 		}
@@ -72,13 +76,16 @@ public class SettingsFragment extends PreferenceFragment {
 			Preference thePref = this.findPreference(pref);
 			thePref.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 			SharedPreferences p = thePref.getSharedPreferences();
-			String defaultVal = ((ListPreference) thePref).getValue();
-			thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
+			if (thePref instanceof ListPreference) {
+				String defaultVal = ((ListPreference) thePref).getValue();
+				thePref.getOnPreferenceChangeListener().onPreferenceChange(thePref, p.getString(pref, defaultVal));
+			} else if (thePref instanceof CheckBoxPreference) {
+				CheckBoxPreference checkbox = (CheckBoxPreference)thePref;
+				checkbox.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+				checkbox.getOnPreferenceChangeListener().onPreferenceChange(checkbox, checkbox.getSharedPreferences().getBoolean(checkbox.getKey(), false));
+			}
 		}
 
-		CheckBoxPreference p = (CheckBoxPreference)this.findPreference(PrefUtil.NOTIFICATIONS_ENABLED);
-		p.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-		p.getOnPreferenceChangeListener().onPreferenceChange(p, p.getSharedPreferences().getBoolean(p.getKey(), false));
 
 	}
 
@@ -124,10 +131,15 @@ public class SettingsFragment extends PreferenceFragment {
 						preference.setSummary("Not showing notifications for next class.");
 					}
 				}
-				if (preference.getKey().equals(PrefUtil.NOTIFICATION_ONLY_PERIODS)) {
+				if (preference.getKey().equals(PrefUtil.NOTIFICATION_INCLUDE_BREAKS)) {
 					Intent i = new Intent(preference.getContext(), NotificationService.class);
 					i.setAction(NotificationService.ACTION_INITIALISE);
 					preference.getContext().startService(i);
+					if ((boolean)value) {
+						preference.setSummary(R.string.pref_desc_notification_periods_positive);
+					} else {
+						preference.setSummary(R.string.pref_desc_notification_periods_negative);
+					}
 				}
 			}
 			return true;

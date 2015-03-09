@@ -23,6 +23,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 
 import org.joda.time.DateTime;
@@ -57,8 +58,10 @@ public class NotificationService extends Service {
 	}
 
 	private void updateAllTheThings() {
-		ApiWrapper.requestBells(this);
-		ApiWrapper.requestToday(this);
+		if (cache.shouldReloadBells())
+			ApiWrapper.requestBells(this);
+		if (cache.shouldReloadToday())
+			ApiWrapper.requestToday(this);
 	}
 
 	@Override
@@ -154,14 +157,14 @@ public class NotificationService extends Service {
 		NotificationCompat.Builder b = getBaseNotification();
 		String topLine, bottomLine, sideLine = "";
 		Belltimes.Bell nextPeriod;
-		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("notifications_only_periods", true)) {
+		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PrefUtil.NOTIFICATION_INCLUDE_BREAKS, false)) {
 			nextPeriod = this.dth.getNextPeriod();
 		} else {
 			nextPeriod = this.dth.getNextBell();
 		}
 		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
 			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());
-			topLine = next.getSubject() + " in room " + next.getRoom();
+			topLine = next.getSubject() + " in " + next.getRoom();
 			bottomLine = next.getTeacher() + " at " + nextPeriod.getBellDisplay();
 			sideLine = nextPeriod.getBellName();
 		} else if (!nextPeriod.isPeriodStart()) {

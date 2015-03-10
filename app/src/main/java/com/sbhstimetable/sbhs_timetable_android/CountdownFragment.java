@@ -22,11 +22,11 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.CountDownTimer;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -46,17 +46,15 @@ import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 import org.joda.time.DateTime;
 
 public class CountdownFragment extends Fragment {
-
-	private CommonFragmentInterface mListener;
 
 	private SwipeRefreshLayout mainView;
 	//private BroadcastListener listener;
@@ -135,13 +133,18 @@ public class CountdownFragment extends Fragment {
 			f.setRefreshing(true);
 		}
 		this.mainView = f;
+		this.dth = new DateTimeHelper(getActivity());
+		this.cache = new StorageCache(getActivity());
+		this.cycle = new FullCycleWrapper(getActivity());
+		this.evListener = new DataWatcher();
+		this.cycle.addDataSetObserver(this.evListener);
+		ApiWrapper.getEventBus().registerSticky(this.evListener);
 		return f;
 	}
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		this.mListener.updateCachedStatus(menu);
 	}
 
 	@Override
@@ -307,18 +310,13 @@ public class CountdownFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		this.dth = new DateTimeHelper(activity);
-		this.cache = new StorageCache(activity);
-		this.cycle = new FullCycleWrapper(activity);
-		this.evListener = new DataWatcher();
-		this.cycle.addDataSetObserver(this.evListener);
-		ApiWrapper.getEventBus().register(this.evListener);
-		ApiWrapper.requestBells(activity);
-		try {
+
+		//ApiWrapper.requestBells(activity);
+		/*try {
 			mListener = (CommonFragmentInterface) activity;
 		} catch (ClassCastException e) {
 			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-		}
+		}*/
 	}
 
 	@Override
@@ -334,7 +332,7 @@ public class CountdownFragment extends Fragment {
 		this.cycle = null;
 		this.evListener = null;
 		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
-		mListener = null;
+		//mListener = null;
 	}
 
 	private class DataWatcher extends DataSetObserver {
@@ -364,6 +362,15 @@ public class CountdownFragment extends Fragment {
 			}
 			if (!e.successful()) {
 				Toast.makeText(mainView.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		public void onEventMainThread(RefreshingStateEvent e) {
+			if (e.refreshing && !mainView.isRefreshing()) {
+				TypedValue typed_value = new TypedValue();
+				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+				mainView.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+				mainView.setRefreshing(true);
 			}
 		}
 	}

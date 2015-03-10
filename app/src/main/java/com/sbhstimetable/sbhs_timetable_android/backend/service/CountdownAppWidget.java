@@ -35,7 +35,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
@@ -47,7 +46,6 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatterBuilder;
 
 
 public class CountdownAppWidget extends AppWidgetProvider {

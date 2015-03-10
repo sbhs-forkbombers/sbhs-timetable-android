@@ -19,8 +19,6 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
-import android.util.Log;
-
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
 import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;

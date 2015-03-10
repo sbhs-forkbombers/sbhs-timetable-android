@@ -22,7 +22,6 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +34,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
-import com.sbhstimetable.sbhs_timetable_android.api.Day;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 

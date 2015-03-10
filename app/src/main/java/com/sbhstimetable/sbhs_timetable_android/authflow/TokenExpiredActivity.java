@@ -1,20 +1,20 @@
 package com.sbhstimetable.sbhs_timetable_android.authflow;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 
 public class TokenExpiredActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		ApiWrapper.hasLaunchedTokenExpired = true;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_token_expired);
 		if (this.getIntent().getBooleanExtra("firstTime", false)) {

@@ -21,19 +21,16 @@ package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
-import static org.joda.time.DateTimeConstants.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +44,7 @@ public class FullCycleWrapper {
 	private Today variationData;
 	private Belltimes todayBells;
 	private DateTimeHelper dth;
+	private StorageCache cache;
 	private int currentDayInCycle = -1;
 	private static final List<String> weeks = Arrays.asList("A", "B", "C");
 
@@ -55,7 +53,7 @@ public class FullCycleWrapper {
 	private List<DataSetObserver> watchers = new ArrayList<DataSetObserver>();
 
 	public FullCycleWrapper(Context c) {
-		StorageCache cache = new StorageCache(c);
+		cache = new StorageCache(c);
 		cycle = cache.loadTimetable();
 		variationData = cache.loadToday();
 		todayBells = cache.loadBells();
@@ -69,11 +67,7 @@ public class FullCycleWrapper {
 		if (currentDayInCycle == -1) {
 			String week = cache.loadWeek();
 			if (week != null) {
-				int wk = weeks.indexOf(week.toUpperCase());
-				int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
-				//Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
-				currentDayInCycle = 5*wk + day;
-				//Log.i("FullCycleWrapper", "=> " + currentDayInCycle);
+				guessCurrentDayInCycle();
 			} else {
 				Log.w("FullCycleWrapper", "I have no idea what the week is.");
 			}
@@ -89,6 +83,16 @@ public class FullCycleWrapper {
 		}
 		this.l = new EventListener();
 		ApiWrapper.getEventBus().register(l);
+	}
+
+	private void guessCurrentDayInCycle() {
+		String week = cache.loadWeek();
+		if (week == null) return;
+		int wk = weeks.indexOf(week.toUpperCase());
+		int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
+		if (wk == -1 ) return;
+		//Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
+		currentDayInCycle = 5*wk + day;
 	}
 
 	public DateTime getFetchTime(int index) {
@@ -163,8 +167,12 @@ public class FullCycleWrapper {
 	}
 
 	private void updateBells(Belltimes b) {
-		if (b.getDayNumber() != -1) currentDayInCycle = b.getDayNumber();
 		this.todayBells = b;
+		if (b.getDayNumber() != -1) {
+			currentDayInCycle = b.getDayNumber();
+		} else {
+			guessCurrentDayInCycle();
+		}
 		this.notifyDSOs();
 	}
 

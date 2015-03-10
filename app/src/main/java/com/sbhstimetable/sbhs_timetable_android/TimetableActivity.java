@@ -32,7 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;

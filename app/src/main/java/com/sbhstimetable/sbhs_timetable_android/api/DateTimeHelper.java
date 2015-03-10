@@ -20,7 +20,6 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
@@ -29,7 +28,10 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
-import static org.joda.time.DateTimeConstants.*;
+
+import static org.joda.time.DateTimeConstants.FRIDAY;
+import static org.joda.time.DateTimeConstants.SATURDAY;
+import static org.joda.time.DateTimeConstants.SUNDAY;
 
 public class DateTimeHelper {
 	private Belltimes bells;

@@ -30,13 +30,13 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
-import com.sbhstimetable.sbhs_timetable_android.R;
-import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;

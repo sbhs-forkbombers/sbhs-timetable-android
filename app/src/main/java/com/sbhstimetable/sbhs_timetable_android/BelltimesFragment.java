@@ -22,15 +22,10 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
+import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,13 +35,11 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
-import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.BelltimesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 /**
@@ -60,7 +53,6 @@ import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
  */
 public class BelltimesFragment extends Fragment {
 
-	private CommonFragmentInterface mListener;
 	private SwipeRefreshLayout layout;
 	private BelltimesAdapter adapter;
 
@@ -89,7 +81,6 @@ public class BelltimesFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		//this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
-		this.mListener.updateCachedStatus(menu);
 	}
 
 	@Override
@@ -144,27 +135,22 @@ public class BelltimesFragment extends Fragment {
 		}
 		this.adapter = new BelltimesAdapter(getActivity());
 		lv.setAdapter(this.adapter);
+
+		this.eventListener = new EventListener(getActivity());
+		ApiWrapper.getEventBus().registerSticky(this.eventListener);
 		return v;
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		this.eventListener = new EventListener(activity);
-		ApiWrapper.getEventBus().register(this.eventListener);
 
-		try {
-			mListener = (CommonFragmentInterface) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement CommonFragmentInterface");
-		}
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
 		ApiWrapper.getEventBus().unregister(this.eventListener);
-		mListener = null;
 		eventListener = null;
 	}
 
@@ -179,6 +165,15 @@ public class BelltimesFragment extends Fragment {
 			}
 			if (!e.successful()) {
 				Toast.makeText(c, "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		public void onEventMainThread(RefreshingStateEvent e) {
+			if (e.refreshing && !layout.isRefreshing()) {
+				TypedValue typed_value = new TypedValue();
+				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+				layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+				layout.setRefreshing(true);
 			}
 		}
 	}

@@ -25,9 +25,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import retrofit.Callback;
-import retrofit.client.Response;
 import retrofit.http.GET;
-import retrofit.http.Path;
 import retrofit.http.Query;
 
 public interface SbhsTimetableService {

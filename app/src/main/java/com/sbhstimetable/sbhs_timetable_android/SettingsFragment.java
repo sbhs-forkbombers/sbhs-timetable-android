@@ -30,7 +30,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;

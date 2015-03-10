@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.util.Log;
 

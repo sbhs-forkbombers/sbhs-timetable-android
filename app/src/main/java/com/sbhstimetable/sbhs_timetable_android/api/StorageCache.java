@@ -23,7 +23,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
@@ -39,7 +38,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class StorageCache {
@@ -150,6 +148,7 @@ public class StorageCache {
 			}
 		}
 */
+		boolean res = false;
 		if (desc.equals("timetable")) {
 			Timetable t = loadTimetable();
 			if (t == null) {
@@ -161,15 +160,16 @@ public class StorageCache {
 			return false;
 		} else if (desc.equals("today")) {
 			Today t = loadToday();
-			return t == null || t.isStillCurrent();
+			res = t == null || !t.isStillCurrent();
 		} else if (desc.equals("bells")) {
 			Belltimes b = loadBells();
-			return b == null || b.current();
+			res = b == null || !b.current();
 		} else if (desc.equals("notices")) {
 			Notices n = loadNotices();
-			return n == null || n.getFetchTime().getMillis() - DateTime.now().getMillis() >= 60 * 60 * 1000; // one hour
+			res = n == null || n.getFetchTime().getMillis() - DateTime.now().getMillis() >= 60 * 60 * 1000; // one hour
 		}
-		return false;
+		Log.i("StorageCache", "should reload " + desc + "? " + res);
+		return res;
 	}
 
 	public boolean shouldReloadToday() {

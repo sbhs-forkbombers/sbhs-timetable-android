@@ -19,6 +19,9 @@
  */
 package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
+import android.util.Log;
+
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.Day;
 import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
@@ -60,8 +63,10 @@ public class Today implements Day,FetchedObject {
 	public boolean isStillCurrent() {
 		DateTime d = DateTimeHelper.getYYYYMMDDFormatter().parseDateTime(date).withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
 		if (d.isBeforeNow()) {
+			Log.i("Today", "expired: " + d + "(" + date + ")");
 			return false;
 		}
+		Log.i("Today", "non-expired: " + d + "(" + date + ")");
 		return true;
 	}
 
@@ -71,7 +76,7 @@ public class Today implements Day,FetchedObject {
 		if (!this.timetable.containsKey(key)) {
 			return new FreePeriod();
 		}
-		return this.timetable.get(key).setVariationsReady(this.variationsFinalised);
+		return this.timetable.get(key).setVariationsReady(this.variationsFinalised || ApiWrapper.overrideEnabled);
 	}
 
 	@Override

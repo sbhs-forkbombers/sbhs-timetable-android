@@ -20,16 +20,10 @@
 
 package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
-import com.google.gson.JsonObject;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;

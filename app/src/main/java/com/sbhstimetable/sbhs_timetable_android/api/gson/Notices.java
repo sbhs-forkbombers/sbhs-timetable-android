@@ -22,7 +22,6 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;

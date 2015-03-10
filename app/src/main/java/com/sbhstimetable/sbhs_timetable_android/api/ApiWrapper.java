@@ -36,17 +36,22 @@ import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.CanHazInternetListener;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
-import static org.joda.time.DateTimeConstants.*;
+
 import de.greenrobot.event.EventBus;
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.android.AndroidLog;
 import retrofit.client.Response;
+
+import static org.joda.time.DateTimeConstants.FRIDAY;
+import static org.joda.time.DateTimeConstants.THURSDAY;
+import static org.joda.time.DateTimeConstants.WEDNESDAY;
 
 public class ApiWrapper {
 	private static SbhsTimetableService api;
@@ -55,10 +60,16 @@ public class ApiWrapper {
 	private static boolean initialised = false;
 	private static String sessID;
 
+	static {
+		EVENT_BUS.postSticky(new RefreshingStateEvent(false));
+	}
+
 	private static boolean loadingBells = false;
 	private static boolean loadingToday = false;
 	public static boolean loadingTimetable = false;
 	private static boolean loadingNotices = false;
+
+	public static boolean overrideEnabled = false;
 
 	private static final String bells_montue = "{\"staticBells\": true, \"status\":\"OK\",\"bellsAltered\":false,\"bellsAlteredReason\":\"\",\"bells\":[{\"bell\":\"Roll Call\",\"time\":\"09:00\",\"index\":0},{\"bell\":\"1\",\"time\":\"09:05\",\"index\":1},{\"bell\":\"Transition\",\"time\":\"10:05\",\"index\":2},{\"bell\":\"2\",\"time\":\"10:10\",\"index\":3},{\"bell\":\"Lunch 1\",\"time\":\"11:10\",\"index\":4},{\"bell\":\"Lunch 2\",\"time\":\"11:30\",\"index\":5},{\"bell\":\"3\",\"time\":\"11:50\",\"index\":6},{\"bell\":\"Transition\",\"time\":\"12:50\",\"index\":7},{\"bell\":\"4\",\"time\":\"12:55\",\"index\":8},{\"bell\":\"Recess\",\"time\":\"13:55\",\"index\":9},{\"bell\":\"5\",\"time\":\"14:15\",\"index\":10},{\"bell\":\"End of Day\",\"time\":\"15:15\",\"index\":11}],\"date\":\"2015-03-02\",\"day\":\"\",\"term\":\"\",\"week\":\"\",\"weekType\":\"\",\"_fetchTime\":0}";
 	private static final String bells_wedthu = "{\"staticBells\": true, \"status\":\"OK\",\"bellsAltered\":false,\"bellsAlteredReason\":\"\",\"bells\":[{\"bell\":\"Roll Call\",\"time\":\"09:00\",\"index\":0},{\"bell\":\"1\",\"time\":\"09:05\",\"index\":1},{\"bell\":\"Transition\",\"time\":\"10:05\",\"index\":2},{\"bell\":\"2\",\"time\":\"10:10\",\"index\":3},{\"bell\":\"Recess\",\"time\":\"11:10\",\"index\":4},{\"bell\":\"3\",\"time\":\"11:30\",\"index\":5},{\"bell\":\"Lunch 1\",\"time\":\"12:30\",\"index\":6},{\"bell\":\"Lunch 2\",\"time\":\"12:50\",\"index\":7},{\"bell\":\"4\",\"time\":\"13:10\",\"index\":8},{\"bell\":\"Transition\",\"time\":\"14:10\",\"index\":9},{\"bell\":\"5\",\"time\":\"14:15\",\"index\":10},{\"bell\":\"End of Day\",\"time\":\"15:15\",\"index\":11}],\"date\":\"2015-03-04\",\"day\":\"\",\"term\":\"\",\"week\":\"\",\"weekType\":\"\",\"_fetchTime\":0}";
@@ -66,7 +77,12 @@ public class ApiWrapper {
 
 	public static final String baseURL = "https://sbhstimetable.tk";
 
-	private static boolean hasLaunchedTokenExpired = false;
+	public static boolean hasLaunchedTokenExpired = false;
+
+	public static void loadOverrideEnabled(Context c) {
+		if (c == null) return;
+		overrideEnabled = PreferenceManager.getDefaultSharedPreferences(c).getBoolean("override", false);
+	}
 
 	public static boolean isLoadingBells() {
 		return loadingBells;
@@ -161,6 +177,7 @@ public class ApiWrapper {
 
 	// only used on functions which need sessID.
 	private static boolean errIfNotReady(Context c) {
+		loadOverrideEnabled(c);
 		if (!initialised) {
 			Log.e("ApiWrapper", "Method called before initialise()!", new IllegalStateException());
 			if (c == null) return true;
@@ -189,6 +206,15 @@ public class ApiWrapper {
 		c.startActivity(i);
 	}
 
+	public static void notifyRefreshing() {
+		getEventBus().postSticky(new RefreshingStateEvent(true));
+	}
+
+	public static void doneRefreshing() {
+		if (isLoadingSomething()) return;
+		getEventBus().postSticky(new RefreshingStateEvent(false));
+	}
+
 	public static boolean isLoggedIn() {
 		if (errIfNotReady(null)) return false;
 		return sessID != null && !sessID.equals("");
@@ -201,7 +227,7 @@ public class ApiWrapper {
 			return;
 		}
 		loadingToday = true;
-
+		notifyRefreshing();
 		api.getTodayJson(sessID, new Callback<Today>() {
 			@Override
 			public void success(Today today, Response response) {
@@ -213,12 +239,15 @@ public class ApiWrapper {
 					t = new TodayEvent(true);
 				}
 				loadingToday = false;
+				doneRefreshing();
 				getEventBus().post(t);
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				Log.d("ApiWrapper", "Failed to load /api/today.json", error);
+				loadingToday = false;
+				doneRefreshing();
 				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
@@ -226,7 +255,6 @@ public class ApiWrapper {
 					CanHazInternetListener.enable(c);
 				}
 				TodayEvent t = new TodayEvent(error);
-				loadingToday = false;
 				getEventBus().post(t);
 			}
 		});
@@ -240,6 +268,7 @@ public class ApiWrapper {
 			getEventBus().post(b);
 			return;
 		}
+		notifyRefreshing();
 		loadingBells = true;
 		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
 		api.getBelltimes(s, new Callback<Belltimes>() {
@@ -254,12 +283,14 @@ public class ApiWrapper {
 					b = new BellsEvent(true);
 				}
 				loadingBells = false;
+				doneRefreshing();
 				getEventBus().post(b);
 			}
 
 			@Override
 			public void failure(RetrofitError error) {
 				loadingBells = false;
+				doneRefreshing();
 				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
@@ -279,6 +310,7 @@ public class ApiWrapper {
 			return;
 		}
 		loadingNotices = true;
+		notifyRefreshing();
 		api.getNotices(sessID, new Callback<Notices>() {
 			@Override
 			public void success(Notices notices, Response response) {
@@ -290,6 +322,7 @@ public class ApiWrapper {
 					t = new NoticesEvent(true);
 				}
 				loadingNotices = false;
+				doneRefreshing();
 				getEventBus().post(t);
 			}
 
@@ -297,6 +330,7 @@ public class ApiWrapper {
 			public void failure(RetrofitError error) {
 				NoticesEvent t = new NoticesEvent(error);
 				loadingNotices = false;
+				doneRefreshing();
 				if (error.getKind() == RetrofitError.Kind.HTTP && error.getResponse().getStatus() == 401) {
 					startTokenExpiredActivity(c);
 				}
@@ -315,6 +349,8 @@ public class ApiWrapper {
 			getEventBus().post(new TimetableEvent(true));
 			return;
 		}
+		loadingTimetable = true;
+		notifyRefreshing();
 		api.getTimetable(sessID, new Callback<Timetable>() {
 			@Override
 			public void success(Timetable timetable, Response response) {
@@ -325,6 +361,8 @@ public class ApiWrapper {
 				} else {
 					t = new TimetableEvent(true);
 				}
+				loadingTimetable = false;
+				doneRefreshing();
 				getEventBus().post(t);
 			}
 
@@ -337,6 +375,8 @@ public class ApiWrapper {
 					CanHazInternetListener.enable(c);
 				}
 				TimetableEvent t = new TimetableEvent(error);
+				loadingTimetable = false;
+				doneRefreshing();
 				getEventBus().post(t);
 			}
 		});

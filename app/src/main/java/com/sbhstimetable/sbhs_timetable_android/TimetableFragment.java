@@ -43,6 +43,7 @@ import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.TimetableAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 
@@ -58,11 +59,8 @@ import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 public class TimetableFragment extends Fragment {
 
 
-	private CommonFragmentInterface mListener;
 	private SwipeRefreshLayout layout;
 	private TimetableAdapter adapter;
-	private DateTimeHelper dateTimeHelper;
-	private boolean refreshing = false;
 	private EventListener listener;
 
 	/**
@@ -87,7 +85,6 @@ public class TimetableFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
-		mListener.updateCachedStatus(menu);
 	}
 
 	@Override
@@ -114,7 +111,6 @@ public class TimetableFragment extends Fragment {
 		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				refreshing = true;
 				/*ApiAccessor.getBelltimes(c, false);
 				ApiAccessor.getNotices(c, false);
 				ApiAccessor.getToday(c, false);*/
@@ -143,6 +139,7 @@ public class TimetableFragment extends Fragment {
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
 		//if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return v;
 
+		ApiWrapper.getEventBus().registerSticky(this.listener);
 		return v;
 	}
 
@@ -158,16 +155,10 @@ public class TimetableFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		ApiWrapper.getEventBus().register(this.listener);
 		/*if (this.listener == null) {
 			this.listener = new BroadcastListener(this);
 		}
 		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);*/
-		try {
-			mListener = (CommonFragmentInterface) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-		}
 	}
 
 	@Override
@@ -186,8 +177,6 @@ public class TimetableFragment extends Fragment {
 	public void onDetach() {
 		super.onDetach();
 		ApiWrapper.getEventBus().unregister(this.listener);
-		this.dateTimeHelper = null;
-		mListener = null;
 	}
 
 	private class EventListener {
@@ -202,6 +191,14 @@ public class TimetableFragment extends Fragment {
 			}
 			if (!e.successful()) {
 				Toast.makeText(t.layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
+		public void onEventMainThread(RefreshingStateEvent e) {
+			if (e.refreshing && !t.layout.isRefreshing()) {
+				TypedValue typed_value = new TypedValue();
+				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+				t.layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+				t.layout.setRefreshing(true);
 			}
 		}
 	}

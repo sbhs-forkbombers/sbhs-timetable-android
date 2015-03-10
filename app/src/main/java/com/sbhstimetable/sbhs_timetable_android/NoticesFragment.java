@@ -22,10 +22,10 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.util.TypedValue;
@@ -41,15 +41,14 @@ import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
+import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.NoticesAdapter;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
-import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.NoticesAdapter;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 public class NoticesFragment extends Fragment {
 
-	private CommonFragmentInterface mListener;
-	private Menu menu;
 	private SwipeRefreshLayout layout;
 	private EventListener eventListener;
 	/**
@@ -71,7 +70,6 @@ public class NoticesFragment extends Fragment {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		this.menu = menu;
 		super.onCreateOptionsMenu(menu, inflater);
 		//this.mListener.updateCachedStatus(this.menu);
 	}
@@ -141,24 +139,19 @@ public class NoticesFragment extends Fragment {
 			res.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
 			res.setRefreshing(true);
 		}
+		ApiWrapper.getEventBus().registerSticky(this.eventListener);
+
 		return res;
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		this.mListener.setNavigationStyle(ActionBar.NAVIGATION_MODE_STANDARD);
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		ApiWrapper.getEventBus().register(this.eventListener);
-		try {
-			mListener = (CommonFragmentInterface) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-		}
 	}
 
 	@Override
@@ -166,15 +159,23 @@ public class NoticesFragment extends Fragment {
 		super.onDetach();
 		ApiWrapper.getEventBus().unregister(this.eventListener);
 		this.layout = null;
-		mListener = null;
 	}
 
 	private class EventListener {
-		public void onEvent(RequestReceivedEvent<?> e) {
+		public void onEventMainThread(RequestReceivedEvent<?> e) {
 			if (!ApiWrapper.isLoadingSomething())
 				layout.setRefreshing(false);
 			if (!e.successful()) {
 				Toast.makeText(layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		public void onEventMainThread(RefreshingStateEvent e) {
+			if (e.refreshing && !layout.isRefreshing()) {
+				TypedValue typed_value = new TypedValue();
+				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+				layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+				layout.setRefreshing(true);
 			}
 		}
 	}

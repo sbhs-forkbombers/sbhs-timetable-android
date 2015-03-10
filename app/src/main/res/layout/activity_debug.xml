@@ -38,17 +38,17 @@
 		android:layout_width="match_parent"
 		android:layout_height="48dp"
 		android:layout_below="@id/guess_week"
-		android:text="Toggle loadingTimetable" />
+		android:text="Post RefreshingStateEvent" />
 
-	<Button android:id="@+id/start_service"
+	<CheckBox android:id="@+id/today_override"
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
 			android:layout_below="@id/loading_timetable"
-			android:text="Start Notification Service" />
+			android:text="Enable today.json debugging (at your own risk!)" />
 	<Button android:id="@+id/stop_service"
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
-			android:layout_below="@id/start_service"
+			android:layout_below="@id/today_override"
 			android:text="Stop Notification Service" />
 
 	<ScrollView android:layout_width="match_parent"

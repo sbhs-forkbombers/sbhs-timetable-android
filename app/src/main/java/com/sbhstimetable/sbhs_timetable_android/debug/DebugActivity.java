@@ -20,21 +20,26 @@
 
 package com.sbhstimetable.sbhs_timetable_android.debug;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 
 public class DebugActivity extends ActionBarActivity {
 	public Toolbar mToolbar;
@@ -76,8 +81,46 @@ public class DebugActivity extends ActionBarActivity {
 		findViewById(R.id.loading_timetable).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				ApiWrapper.loadingTimetable = !ApiWrapper.loadingTimetable;
-				status.setText(ApiWrapper.loadingTimetable + "");
+				if (ApiWrapper.getEventBus().getStickyEvent(RefreshingStateEvent.class).refreshing) {
+					status.setText("cancelled refreshing event");
+					ApiWrapper.doneRefreshing();
+				} else {
+					status.setText("posted refreshing event");
+					ApiWrapper.notifyRefreshing();
+				}
+				//status.setText(ApiWrapper.loadingTimetable + "");
+			}
+		});
+
+		((CheckBox)findViewById(R.id.today_override)).setChecked(ApiWrapper.overrideEnabled);
+
+		((CheckBox)findViewById(R.id.today_override)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			//public boolean runOnce = false;
+			@Override
+			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+				/*if (!runOnce) {
+					runOnce = true;
+					return;
+				}*/
+				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
+				if (buttonView.isChecked()) {
+					AlertDialog a = new AlertDialog.Builder(buttonView.getContext()).setTitle("Here be dragons!").setMessage("You might get stuff wrong if you do this. Don't do it, except for testing(tm)").setIcon(R.drawable.ic_warning_white_48dp)
+							.setNegativeButton("Abort!", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									Toast.makeText(buttonView.getContext(), "Crisis averted.", Toast.LENGTH_SHORT).show();
+								}
+							}).setPositiveButton("I'm ready", new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									p.edit().putBoolean("override", true).apply();
+									ApiWrapper.overrideEnabled = true;
+								}
+							}).show();
+				} else {
+					p.edit().putBoolean("override", false).apply();
+					ApiWrapper.overrideEnabled = false;
+				}
 			}
 		});
     }

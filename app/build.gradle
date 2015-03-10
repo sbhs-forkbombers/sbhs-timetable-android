@@ -20,14 +20,14 @@ apply plugin: 'com.android.application'
  */
 
 android {
-	compileSdkVersion 21
-	buildToolsVersion '21.1.2'
+	compileSdkVersion 22
+	buildToolsVersion '22'
 	defaultConfig {
 		applicationId 'com.sbhstimetable.sbhs_timetable_android'
 		minSdkVersion 15
-		targetSdkVersion 21
-		versionCode 17
-		versionName '0.99.0'
+		targetSdkVersion 22
+		versionCode 18
+		versionName '0.99.1'
 	}
 	buildTypes {
 		release {

@@ -109,6 +109,9 @@ public class Timetable implements FetchedObject {
 			public SubjectInfo subjInfo;
 			@Override
 			public String getSubject() {
+				if (subjInfo == null) {
+					return "Unknown";
+				}
 				return subjInfo.getSubjectName();
 				//return subjInfo.get(year + title).getSubjectName();
 			}
@@ -130,6 +133,9 @@ public class Timetable implements FetchedObject {
 
 			@Override
 			public String getTeacher() {
+				if (subjInfo == null) {
+					return "someone";
+				}
 				String[] parts = subjInfo.getNormalTeacher().split(" ");
 				String teacherLastName = "";
 				for (int i = 2; i < parts.length; i++) {

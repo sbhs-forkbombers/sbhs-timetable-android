@@ -32,7 +32,7 @@ public interface SbhsTimetableService {
 	@GET("/api/today.json")
 	void getTodayJson(@Query("SESSID") String sessID, Callback<Today> r);
 
-	@GET("/api/belltimes")
+	@GET("/api/belltimes?SESSID=undefined")
 	void getBelltimes(@Query("date") String date, Callback<Belltimes> r);
 
 	@GET("/api/notices.json")

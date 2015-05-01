@@ -117,6 +117,7 @@ public class TimetableFragment extends Fragment {
 				ApiWrapper.requestBells(c);
 				ApiWrapper.requestNotices(c);
 				ApiWrapper.requestToday(c);
+				ApiWrapper.requestTimetable(c);
 			}
 		});
 		if (ApiWrapper.isLoadingSomething()) {

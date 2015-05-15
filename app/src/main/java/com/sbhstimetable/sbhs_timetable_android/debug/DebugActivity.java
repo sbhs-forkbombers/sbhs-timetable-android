@@ -27,9 +27,11 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -121,6 +123,14 @@ public class DebugActivity extends ActionBarActivity {
 					p.edit().putBoolean("override", false).apply();
 					ApiWrapper.overrideEnabled = false;
 				}
+			}
+		});
+
+		((Button)findViewById(R.id.stop_service)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Log.i("debug", "posting new notification");
+				ApiWrapper.startTokenExpiredActivity(view.getContext(), true);
 			}
 		});
     }

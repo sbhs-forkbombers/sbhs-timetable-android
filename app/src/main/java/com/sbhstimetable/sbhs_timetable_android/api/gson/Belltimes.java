@@ -42,7 +42,7 @@ public class Belltimes implements FetchedObject {
 	/**
 	 * The date, YYYY-MM-DD
 	 */
-	private String date;
+	public String date;
 	/**
 	 * The day of the week (Monday, Tuesday, etc)
 	 */

@@ -123,7 +123,7 @@ public class DateTimeHelper {
 	}
 
 	public Belltimes.Bell getNextBell() {
-		if (bells == null || getNextSchoolDay().isAfter(DateTime.now().withTimeAtStartOfDay().toLocalDateTime())) {
+		if (bells == null || bells.getSchoolDay().withTime(15, 15, 0, 0).isBefore(DateTime.now())) {
 			return null;
 		}
 		int len = bells.getLength();

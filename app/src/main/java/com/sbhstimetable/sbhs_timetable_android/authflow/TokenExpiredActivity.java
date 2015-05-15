@@ -33,7 +33,9 @@ public class TokenExpiredActivity extends ActionBarActivity {
 
 	}
 
-
-
-
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		ApiWrapper.hasLaunchedTokenExpired = false;
+	}
 }

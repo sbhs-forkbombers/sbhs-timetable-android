@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -93,7 +94,7 @@ public class NotificationService extends Service {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 			} else {
-				showNextPeriodNotification();
+				showAppropriateNotification();
 			}
 		}
 
@@ -184,7 +185,7 @@ public class NotificationService extends Service {
 
 	private void showTomorrowNotification() {
 		if (!this.dth.hasBells()) return;
-		NotificationCompat.Builder b = getBaseNotification();
+		NotificationCompat.Builder b = getBaseNotification().setPriority(Notification.PRIORITY_MIN);
 		String topLine, bottomLine, sideLine = "";
 		//topLine = this.today.getDayName() + " Week " + this.today.get
 		if (this.dth.getBells().isStatic()) {

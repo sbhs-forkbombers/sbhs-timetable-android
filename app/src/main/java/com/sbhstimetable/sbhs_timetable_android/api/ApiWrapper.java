@@ -20,14 +20,19 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
@@ -41,6 +46,9 @@ import com.sbhstimetable.sbhs_timetable_android.event.TimetableEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import de.greenrobot.event.EventBus;
 import retrofit.Callback;
@@ -172,7 +180,9 @@ public class ApiWrapper {
 		} else if (next.getDayOfWeek() == FRIDAY) {
 			bells = bells_fri;
 		}
-		return new Gson().fromJson(bells, Belltimes.class);
+		Belltimes b = new Gson().fromJson(bells, Belltimes.class);
+		b.date = next.toString(DateTimeFormat.forPattern("yyyy-MM-dd"));
+		return b;
 	}
 
 	// only used on functions which need sessID.
@@ -195,13 +205,23 @@ public class ApiWrapper {
 		tryLoadAdapter(c);
 		return api != null;
 	}
-
 	public static void startTokenExpiredActivity(Context c) {
-		if (hasLaunchedTokenExpired) return;
+		startTokenExpiredActivity(c, false);
+	}
+
+	public static void startTokenExpiredActivity(Context c, boolean debug) {
+		if (hasLaunchedTokenExpired && !debug) return;
 		hasLaunchedTokenExpired = true;
 		Intent i = new Intent(c, TokenExpiredActivity.class);
-		if (!(c instanceof Activity)) {
+		if (!(c instanceof Activity) || debug) { // we're not in the foreground, show a notification so we're not spammy.
 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			PendingIntent p = PendingIntent.getActivity(c, 0, i, 0);
+			((NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE)).notify(1337,
+					new NotificationCompat.Builder(c).setOngoing(false).setAutoCancel(true)
+							.setSmallIcon(R.mipmap.ic_notification_icon).setContentIntent(p)
+							.setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
+							.setContentTitle("You need to login again")
+							.setContentText("Your SBHS token has expired, please login again").build());
 		}
 		c.startActivity(i);
 	}

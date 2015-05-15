@@ -222,6 +222,7 @@ public class ApiWrapper {
 							.setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
 							.setContentTitle("You need to login again")
 							.setContentText("Your SBHS token has expired, please login again").build());
+			return;
 		}
 		c.startActivity(i);
 	}

@@ -21,14 +21,14 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends AppCompatActivity {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
 

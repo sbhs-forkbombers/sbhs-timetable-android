@@ -27,7 +27,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -41,7 +41,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 
-public class TimetableActivity extends ActionBarActivity
+public class TimetableActivity extends AppCompatActivity
 		implements NavigationDrawerFragment.NavigationDrawerCallbacks, CommonFragmentInterface {
 	private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
 	public static final String BELLTIMES_AVAILABLE = "bellsArePresent";

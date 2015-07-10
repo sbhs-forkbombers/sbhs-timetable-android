@@ -225,7 +225,7 @@ public class TimetableFragment extends Fragment {
 
 				if (act.equals(ApiAccessor.ACTION_TODAY_JSON)) {
 					if (refreshing)
-                    	Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
 					this.f.setRefreshing(false);
 					refreshing = false;
 					this.frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));

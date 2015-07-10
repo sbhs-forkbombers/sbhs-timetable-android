@@ -20,12 +20,12 @@
 
 package com.sbhstimetable.sbhs_timetable_android.debug;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -43,33 +43,33 @@ import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 
-public class DebugActivity extends ActionBarActivity {
+public class DebugActivity extends AppCompatActivity {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
 
 	private StorageCache cache;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-	    ThemeHelper.setTheme(this);
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		ThemeHelper.setTheme(this);
+		super.onCreate(savedInstanceState);
 		cache = new StorageCache(this);
-        setContentView(R.layout.activity_debug);
+		setContentView(R.layout.activity_debug);
 
-	    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-	    mTypedValue = new TypedValue();
-	    getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
-	    int colorPrimary = mTypedValue.data;
-	    mToolbar = toolbar;
-	    mToolbar.setBackgroundColor(colorPrimary);
-	    setSupportActionBar(toolbar);
-	    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		mTypedValue = new TypedValue();
+		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+		int colorPrimary = mTypedValue.data;
+		mToolbar = toolbar;
+		mToolbar.setBackgroundColor(colorPrimary);
+		setSupportActionBar(toolbar);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-	    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-		    getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
-		    int colorPrimaryDark = mTypedValue.data;
-		    getWindow().setStatusBarColor(colorPrimaryDark);
-	    }
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+			int colorPrimaryDark = mTypedValue.data;
+			getWindow().setStatusBarColor(colorPrimaryDark);
+		}
 
 		final TextView status = (TextView)findViewById(R.id.status);
 
@@ -133,7 +133,7 @@ public class DebugActivity extends ActionBarActivity {
 				ApiWrapper.startTokenExpiredActivity(view.getContext(), true);
 			}
 		});
-    }
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -26,7 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -43,7 +43,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import static com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper.baseURL;
 
-public class LoginActivity extends ActionBarActivity {
+public class LoginActivity extends AppCompatActivity {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
 	public WebView mWebView;
@@ -54,7 +54,6 @@ public class LoginActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		supportRequestWindowFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.activity_login);
-		setSupportProgressBarVisibility(true);
 		mTypedValue = new TypedValue();
 		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
 		int colorPrimary = mTypedValue.data;
@@ -70,21 +69,9 @@ public class LoginActivity extends ActionBarActivity {
 		}
 
 		mWebView = (WebView) findViewById(R.id.loginview);
-		mWebView.setBackgroundColor(Color.parseColor("#ffffff"));
+		mWebView.setBackgroundColor(Color.parseColor("#000000"));
 		mWebView.getSettings().setSaveFormData(true);
 		final Activity me = this;
-		mWebView.setWebChromeClient(new WebChromeClient() {
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				super.onProgressChanged(view, newProgress);
-				if (newProgress == 100) {
-					setSupportProgressBarVisibility(false);
-				} else {
-					setSupportProgressBarVisibility(true);
-				}
-				setSupportProgress(newProgress*100);
-			}
-		});
 		mWebView.setWebViewClient(new WebViewClient() {
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
 				//Log.e("LoginActivity", "navigate to " + url);
@@ -123,7 +110,6 @@ public class LoginActivity extends ActionBarActivity {
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		startActivity(i);
 		finish();
-		return;
 	}
 
 }

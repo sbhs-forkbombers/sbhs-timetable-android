@@ -29,7 +29,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -86,9 +86,9 @@ public class NavigationDrawerFragment extends Fragment {
 	private boolean mFromSavedInstanceState;
 	private boolean mUserLearnedDrawer;
 
-    private TextView todayStatus;
-    private TextView noticesStatus;
-    private TextView bellsStatus;
+	private TextView todayStatus;
+	private TextView noticesStatus;
+	private TextView bellsStatus;
 
 
 	private final ArrayList<String> elements = new ArrayList<String>();
@@ -159,12 +159,12 @@ public class NavigationDrawerFragment extends Fragment {
 				this.botElements
 		));
 		/*long temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_BELLTIMES_LAST_UPDATE, 0);
-        this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
+		this.bellsStatus = (TextView)l.findViewById(R.id.navdraw_bellscached);
 		this.bellsStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
-        this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
+		this.todayStatus = (TextView)l.findViewById(R.id.navdraw_todaycached);
 		temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_TODAY_LAST_UPDATE, 0);
 		this.todayStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");
-        this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
+		this.noticesStatus = (TextView)l.findViewById(R.id.navdraw_noticescached);
 		temp = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong(ApiAccessor.PREF_NOTICES_LAST_UPDATE, 0);
 		this.noticesStatus.setText(temp != 0 ? new SimpleDateFormat(FMT).format(new Date(temp)) : "Never");*/
 		return l;
@@ -212,8 +212,8 @@ public class NavigationDrawerFragment extends Fragment {
 		// ActionBarDrawerToggle ties together the the proper interactions
 		// between the navigation drawer and the action bar app icon.
 		mDrawerToggle = new ActionBarDrawerToggle(
-			(ActionBarActivity)getActivity(),                    /* host Activity */
-			mDrawerLayout,                    /* DrawerLayout object */
+			(AppCompatActivity)getActivity(),					/* host Activity */
+			mDrawerLayout,					/* DrawerLayout object */
 			R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
 			R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
 		) {
@@ -326,7 +326,7 @@ public class NavigationDrawerFragment extends Fragment {
 	}*/
 
 	private ActionBar getActionBar() {
-		return ((ActionBarActivity)getActivity()).getSupportActionBar();
+		return ((AppCompatActivity)getActivity()).getSupportActionBar();
 	}
 
 	/**

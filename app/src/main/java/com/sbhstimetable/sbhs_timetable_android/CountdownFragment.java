@@ -221,7 +221,7 @@ public class CountdownFragment extends Fragment {
 				} else if (now.isPeriodStart() && now.getPeriodNumber() == 5) { // last period
 					connector = "in";
 					label = "School ends";
-                    extraData.setVisibility(View.INVISIBLE);
+					extraData.setVisibility(View.INVISIBLE);
 				} else if (!now.isPeriodStart() && next.isPeriodStart()) { // in a break followed by a period - Lunch 2, Recess, Transition.
 					connector = "starts in";
 					if (ApiWrapper.isLoggedIn() && cycle.ready()) {

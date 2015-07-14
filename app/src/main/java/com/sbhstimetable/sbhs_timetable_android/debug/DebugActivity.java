@@ -56,20 +56,20 @@ public class DebugActivity extends AppCompatActivity {
 		cache = new StorageCache(this);
 		setContentView(R.layout.activity_debug);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mTypedValue = new TypedValue();
 		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
 		int colorPrimary = mTypedValue.data;
-		mToolbar = toolbar;
 		mToolbar.setBackgroundColor(colorPrimary);
-		setSupportActionBar(toolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
 			int colorPrimaryDark = mTypedValue.data;
 			getWindow().setStatusBarColor(colorPrimaryDark);
 		}
+
+		setSupportActionBar(mToolbar);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		final TextView status = (TextView)findViewById(R.id.status);
 
@@ -111,6 +111,7 @@ public class DebugActivity extends AppCompatActivity {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
 									Toast.makeText(buttonView.getContext(), "Crisis averted.", Toast.LENGTH_SHORT).show();
+									buttonView.toggle();
 								}
 							}).setPositiveButton("I'm ready", new DialogInterface.OnClickListener() {
 								@Override
@@ -126,7 +127,7 @@ public class DebugActivity extends AppCompatActivity {
 			}
 		});
 
-		((Button)findViewById(R.id.stop_service)).setOnClickListener(new View.OnClickListener() {
+		findViewById(R.id.stop_service).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				Log.i("debug", "posting new notification");

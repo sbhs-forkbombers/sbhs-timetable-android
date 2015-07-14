@@ -128,14 +128,11 @@ public class TimetableFragment extends Fragment {
 		}
 		if (ThemeHelper.isBackgroundDark()) {
 			// ignore these errors
-			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
 		} else {
-			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
 		}
-		v.setColorSchemeColors(getResources().getColor(R.color.blue),
-			getResources().getColor(R.color.green),
-			getResources().getColor(R.color.yellow),
-			getResources().getColor(R.color.red));
+		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
 		//if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return v;

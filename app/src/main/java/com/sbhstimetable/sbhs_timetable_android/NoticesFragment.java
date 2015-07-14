@@ -122,14 +122,11 @@ public class NoticesFragment extends Fragment {
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
-			res.setProgressBackgroundColor(R.color.background_floating_material_dark);
+			res.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
 		} else {
-			res.setProgressBackgroundColor(R.color.background_floating_material_light);
+			res.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
 		}
-		res.setColorSchemeColors(getResources().getColor(R.color.blue),
-			getResources().getColor(R.color.green),
-			getResources().getColor(R.color.yellow),
-			getResources().getColor(R.color.red));
+		res.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
 		NoticesAdapter a = new NoticesAdapter(this.getActivity());
 		v.setAdapter(a);

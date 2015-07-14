@@ -37,22 +37,22 @@
 		android:layout_height="match_parent"
 		android:layout_marginTop="@dimen/scrim_pad">
 
-	<ListView android:id="@+id/navdraw_listview"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		android:choiceMode="singleChoice"
-		android:divider="@android:color/transparent"
-		android:dividerHeight="0dp" />
+		<ListView android:id="@+id/navdraw_listview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:choiceMode="singleChoice"
+			android:divider="@android:color/transparent"
+			android:dividerHeight="0dp" />
 
-	<ListView android:id="@+id/navdraw_botlistview"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_below="@id/navdraw_listview"
-		android:dividerHeight="1dp"
-		android:choiceMode="singleChoice" />
+		<ListView android:id="@+id/navdraw_botlistview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/navdraw_listview"
+			android:choiceMode="singleChoice"
+			android:divider="@android:color/transparent"
+			android:dividerHeight="0dp" />
 
 	</RelativeLayout>
-
 
 </com.sbhstimetable.sbhs_timetable_android.backend.internal.ScrimInsetsFrameLayout>

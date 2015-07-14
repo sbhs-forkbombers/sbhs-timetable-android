@@ -108,14 +108,11 @@ public class CountdownFragment extends Fragment {
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
-			f.setProgressBackgroundColor(R.color.background_floating_material_dark);
+			f.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
 		} else {
-			f.setProgressBackgroundColor(R.color.background_floating_material_light);
+			f.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
 		}
-		f.setColorSchemeColors(getResources().getColor(R.color.blue),
-			getResources().getColor(R.color.green),
-			getResources().getColor(R.color.yellow),
-			getResources().getColor(R.color.red));
+		f.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 		final Context c = inflater.getContext();
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override

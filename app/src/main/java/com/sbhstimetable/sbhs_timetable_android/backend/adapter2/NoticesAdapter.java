@@ -125,7 +125,11 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 
 	@Override
 	public long getItemId(int position) {
-		return notices.getNoticeAtIndex(position).getID();
+		if (position < notices.getNumberOfNotices()) {
+			return notices.getNoticeAtIndex(position).getID();
+		} else {
+			return 0;
+		}
 	}
 
 	@Override

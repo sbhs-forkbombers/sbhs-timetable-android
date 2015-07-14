@@ -48,9 +48,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:id="@+id/last_updated"
-				android:layout_below="@id/label_last_updated"
-				android:textStyle="bold|italic"
-				android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+				android:layout_toRightOf="@id/label_last_updated"
 				android:text="Hello, World!"/>
 
 

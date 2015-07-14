@@ -101,14 +101,11 @@ public class BelltimesFragment extends Fragment {
 			}
 		});
 		if (ThemeHelper.isBackgroundDark()) {
-			v.setProgressBackgroundColor(R.color.background_floating_material_dark);
+			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
 		} else {
-			v.setProgressBackgroundColor(R.color.background_floating_material_light);
+			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
 		}
-		v.setColorSchemeColors(getResources().getColor(R.color.blue),
-			getResources().getColor(R.color.green),
-			getResources().getColor(R.color.yellow),
-			getResources().getColor(R.color.red));
+		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
 		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
 

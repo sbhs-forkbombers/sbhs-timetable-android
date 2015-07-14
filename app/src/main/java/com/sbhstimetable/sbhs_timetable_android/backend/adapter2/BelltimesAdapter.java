@@ -133,12 +133,8 @@ public class BelltimesAdapter implements ListAdapter {
 			if (position == 0) {
 				View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
 				TextView t = (TextView)r.findViewById(R.id.textview);
-				t.setGravity(Gravity.CENTER);
-				t.setTextAppearance(parent.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
-				if (Build.VERSION.SDK_INT >= 17)
-					t.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 				if (bells.isStatic()) {
-					t.setText("These bells don't include variations");
+					t.setText("Offline (default bells)");
 				} else {
 					t.setText("Bells Changed: " + bells.getBellsAlteredReason());
 				}

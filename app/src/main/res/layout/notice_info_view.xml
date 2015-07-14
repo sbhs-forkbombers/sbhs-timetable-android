@@ -61,11 +61,11 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_below="@id/notice_body"
-				android:layout_marginLeft="5dp"
-				android:layout_marginStart="5dp"
+				android:layout_marginLeft="4dp"
+				android:layout_marginStart="4dp"
 				android:layout_toRightOf="@id/notice_author"
 				android:layout_toEndOf="@id/notice_author"
-				android:textStyle="bold" /><!-- TODO smallcaps -->
+				android:textStyle="bold" />
 
 		</RelativeLayout>
 

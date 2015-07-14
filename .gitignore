@@ -5,10 +5,11 @@
 /bin
 /gen
 /out
-/local.properties
+**/local.properties
 .DS_Store
 /build
-/.idea
+**/.idea/workspace.xml
+**/.idea/libraries
 ._*
-/.gradle
+**/.gradle
 *.iml

@@ -127,13 +127,27 @@ public class DebugActivity extends AppCompatActivity {
 			}
 		});
 
-		findViewById(R.id.stop_service).setOnClickListener(new View.OnClickListener() {
+		((CheckBox)findViewById(R.id.http_debugging)).setChecked(ApiWrapper.httpDebugging);
+		((CheckBox)findViewById(R.id.http_debugging)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			//public boolean runOnce = false;
 			@Override
-			public void onClick(View view) {
-				Log.i("debug", "posting new notification");
-				ApiWrapper.startTokenExpiredActivity(view.getContext(), true);
+			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+				/*if (!runOnce) {
+					runOnce = true;
+					return;
+				}*/
+				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
+				if (buttonView.isChecked()) {
+					p.edit().putBoolean("httpDebugging", true).apply();
+				} else {
+					p.edit().putBoolean("httpDebugging", false).apply();
+				}
+				ApiWrapper.initialise(buttonView.getContext()); // re-init api wrapper
+				Toast.makeText(buttonView.getContext(), "Successfully " + (buttonView.isChecked() ? "en" : "dis") + "abled HTTP debugging", Toast.LENGTH_SHORT).show();
 			}
 		});
+
+
 	}
 
 	@Override

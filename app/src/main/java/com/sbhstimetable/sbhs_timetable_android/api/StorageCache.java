@@ -57,7 +57,7 @@ public class StorageCache {
 
 	private void cache(String desc, String json, String date) {
 		String file = date + desc + ".json";
-		Log.v("StorageCache", "Cache " + desc + " for " + date + " - " + json);
+		if (ApiWrapper.httpDebugging) Log.v("StorageCache", "Cache " + desc + " for " + date + " - " + json);
 		File toWrite = new File(c.getCacheDir(), file);
 		try {
 			FileWriter f = new FileWriter(toWrite);
@@ -254,8 +254,7 @@ public class StorageCache {
 	public Today loadToday() {
 		String res = load("today");
 		if (res == null) return null;
-		Today t = gson.fromJson(res, Today.class);
-		return t;
+		return gson.fromJson(res, Today.class);
 	}
 
 	public Belltimes loadBells() {
@@ -263,22 +262,19 @@ public class StorageCache {
 		if (res == null) {
 			return ApiWrapper.getOfflineBells(c);
 		}
-		Belltimes t = gson.fromJson(res, Belltimes.class);
-		return t;
+		return gson.fromJson(res, Belltimes.class);
 	}
 
 	public Notices loadNotices() {
 		String res = load("notices");
 		if (res == null) return null;
-		Notices t = gson.fromJson(res, Notices.class);
-		return t;
+		return gson.fromJson(res, Notices.class);
 	}
 
 	public Timetable loadTimetable() {
 		String res = load("timetable", "");
 		if (res == null) return null;
-		Timetable t = gson.fromJson(res, Timetable.class);
-		return t;
+		return gson.fromJson(res, Timetable.class);
 	}
 
 	public void cleanCache() {

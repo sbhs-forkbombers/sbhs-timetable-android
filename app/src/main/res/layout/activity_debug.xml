@@ -45,15 +45,15 @@
 			android:layout_height="48dp"
 			android:layout_below="@id/loading_timetable"
 			android:text="Enable today.json debugging (at your own risk!)" />
-	<Button android:id="@+id/stop_service"
+	<CheckBox android:id="@+id/http_debugging"
 			android:layout_width="match_parent"
 			android:layout_height="48dp"
 			android:layout_below="@id/today_override"
-			android:text="Stop Notification Service" />
+			android:text="Enable HTTP &amp; StorageCache debug" />
 
 	<ScrollView android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_below="@id/stop_service">
+		android:layout_below="@id/http_debugging">
 
 		<RelativeLayout android:layout_width="match_parent"
 			android:layout_height="wrap_content"

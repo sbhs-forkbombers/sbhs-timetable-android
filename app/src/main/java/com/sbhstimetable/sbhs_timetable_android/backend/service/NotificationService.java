@@ -52,6 +52,7 @@ public class NotificationService extends Service {
 	private StorageCache cache;
 	private DateTimeHelper dth;
 	private EventListener eventListener;
+    public static boolean running;
 	@Override
 	public IBinder onBind(Intent intent) {
 		// nope
@@ -71,6 +72,7 @@ public class NotificationService extends Service {
 			Log.wtf(TAG, "Started without an intent?");
 			return START_STICKY;
 		}
+        running = true;
 		Log.d(TAG, "Received start id " + startId + ": " + intent.getAction());
 		if (intent.getAction().equals(ACTION_INITIALISE)) {
             Log.d(TAG, "init");
@@ -167,6 +169,10 @@ public class NotificationService extends Service {
 		} else {
 			nextPeriod = this.dth.getNextBell();
 		}
+        if (nextPeriod == null) {
+            showEndOfDayNotification();
+            return;
+        }
 		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
 			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());
 			topLine = next.getSubject() + " in " + next.getRoom();
@@ -241,6 +247,7 @@ public class NotificationService extends Service {
 			alarm = null;
 		}
 		ApiWrapper.getEventBus().unregister(this.eventListener);
+        running = false;
 
 	}
 

@@ -38,6 +38,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 
@@ -107,6 +108,11 @@ public class TimetableActivity extends AppCompatActivity
 		ApiAccessor.getTimetable(this, true);*/
 		if (this.cache == null) {
 			this.cache = new StorageCache(this);
+		}
+		if (!NotificationService.running) {
+			Intent i = new Intent(this, NotificationService.class);
+			i.setAction(NotificationService.ACTION_INITIALISE);
+			this.startService(i);
 		}
 
 	}

@@ -65,6 +65,7 @@ public class CountdownFragment extends Fragment {
 	private FullCycleWrapper cycle;
 	private CountDownTimer mTimer;
 	private DataWatcher evListener;
+	private static boolean updatingTimer = false;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -129,14 +130,45 @@ public class CountdownFragment extends Fragment {
 			f.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
 			f.setRefreshing(true);
 		}
+		Log.i("CountdownFragment", "====> onCreateView");
 		this.mainView = f;
+		setup(f);
+		return f;
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+		cleanup();
+		Log.i("CountdownFragment", "<==== onDestroyView");
+	}
+
+	private void setup(View f) {
 		this.dth = new DateTimeHelper(getActivity());
 		this.cache = new StorageCache(getActivity());
 		this.cycle = new FullCycleWrapper(getActivity());
 		this.evListener = new DataWatcher();
 		this.cycle.addDataSetObserver(this.evListener);
 		ApiWrapper.getEventBus().registerSticky(this.evListener);
-		return f;
+		if (f != null) {
+			this.updateTimer(f);
+		} else {
+			this.updateTimer();
+		}
+	}
+
+	private void cleanup() {
+		if (this.mTimer != null) {
+			this.mTimer.cancel();
+		}
+		if (this.evListener != null) {
+			ApiWrapper.getEventBus().unregister(this.evListener);
+			this.cycle.removeDataSetObserver(this.evListener);
+		}
+		this.dth = null;
+		this.cache = null;
+		this.cycle = null;
+		this.evListener = null;
 	}
 
 	@Override
@@ -153,23 +185,20 @@ public class CountdownFragment extends Fragment {
 		Log.d("CountdownFrag", s);
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		/*if (timeLeft != null) {
-			cancelling = true;
-			timeLeft.cancel();
-			cancelling = false;
-		}*/
-		this.updateTimer();
-	}
 
 	public void updateTimer() {
 		final View f = this.getView();
 		if (f == null) {
 			Log.wtf("CountdownFragment", "getView() == NULL!"); // this should never happen. If it happens, the timer has been left running after the fragment has gone.
+			if (mTimer != null) mTimer.cancel();
+			mTimer = null;
 			return;
 		}
+		updateTimer(f);
+	}
+	public void updateTimer(final View f) {
+		//if (updatingTimer) return;
+		updatingTimer = true;
 
 		/*if (timeLeft != null) {
 			cancelling = true;
@@ -251,17 +280,22 @@ public class CountdownFragment extends Fragment {
 					extraData.setVisibility(View.INVISIBLE);
 				}
 			}
+		} else {
+			ApiWrapper.requestBells(this.getActivity());
+			Log.i("CountdownFragment", "Requesting bells to make up for my lameness");
 		}
 
 		if (p != null) {
 			if (p.teacherChanged()) {
 				teacher.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
+				teacher.setTextColor(getActivity().getResources().getColor(R.color.primary_text_default_material_dark));
 				//teacher.setTextColor(getActivity().getResources().getColor(R.color.secondary_text_dark));
 			}
 			if (p.roomChanged()) {
 				room.setTextColor(getActivity().getResources().getColor(R.color.standout));
 			} else {
+				room.setTextColor(getActivity().getResources().getColor(R.color.primary_text_default_material_dark));
 				//room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
 			}
 		}
@@ -271,14 +305,30 @@ public class CountdownFragment extends Fragment {
 		((TextView)f.findViewById(R.id.countdown_in)).setText(connector);
 		final TextView t = (TextView)f.findViewById(R.id.countdown_countdown);
 		//final TextView j = (TextView)f.findViewById(R.id.countdown_name);
-		if (mTimer != null) {
+		/*if (mTimer != null) {
 			return;
-		}
-		CountDownTimer timer = new CountDownTimer(dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis(), 1000) {
+		}*/
+		long millisToCountfor = dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis();
+		millisToCountfor += 1000; // show 00:00
+		Log.i("CountdownFragment", "Will count for " + millisToCountfor + "ms");
+		final CountdownFragment frag = this;
+		CountDownTimer timer = new CountDownTimer(millisToCountfor, 1000) {
 			@Override
 			public void onTick(long millisUntilFinished) {
-				//t.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
-				int secondsLeft = (int) Math.floor((dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis()) / 1000);
+				//t.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()))
+				int secondsLeft;
+				if (dth == null) {
+					Log.i("CountdownFragment", "No DTH!");
+					// probably been destroyed or something
+					this.cancel();
+					return;
+				}
+				if (dth.getNextEvent() != null) {
+					secondsLeft = (int) Math.floor((dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis()) / 1000);
+				} else {
+					Log.w("CountdownFragment", "No next event...");
+					secondsLeft = 0;
+				}
 				int seconds = secondsLeft % 60;
 				secondsLeft -= seconds;
 				secondsLeft /= 60;
@@ -296,38 +346,47 @@ public class CountdownFragment extends Fragment {
 			public void onFinish() {
 				//j.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
 				mTimer = null;
-//				updateTimer();
+				t.setText("00m 00s");
+				updateTimer();
 
 			}
 		};
 		mTimer = timer;
+		updatingTimer = false;
 		timer.start();
 	}
 
 	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
-		//ApiWrapper.requestBells(activity);
-		/*try {
-			mListener = (CommonFragmentInterface) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString() + " must implement OnFragmentInteractionListener");
-		}*/
+	public void onAttach(Activity a) {
+		super.onAttach(a);
+		Log.i("CountdownFragment", "ATTACHED ===> " + this.getView());
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		if (this.mTimer != null) {
-			this.mTimer.cancel();
-		}
-		ApiWrapper.getEventBus().unregister(this.evListener);
-		this.cycle.removeDataSetObserver(this.evListener);
-		this.dth = null;
-		this.cache = null;
-		this.cycle = null;
-		this.evListener = null;
+		Log.i("CountdownFragment", "DETACHED <===");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.i("CountdownFragment", "<==== RESUMING: " + mTimer);
+		/*if (timeLeft != null) {
+			cancelling = true;
+			timeLeft.cancel();
+			cancelling = false;}*/
+		setup(null);
+		Log.i("CountdownFragment", "<==== RESUMED");
+
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i("CountdownFragment", "===> PAUSING");
+		Log.i("CountdownFragment", "===> PAUSED");
+		cleanup();
 		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
 		//mListener = null;
 	}

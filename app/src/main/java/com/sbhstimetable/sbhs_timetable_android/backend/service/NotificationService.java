@@ -73,13 +73,16 @@ public class NotificationService extends Service {
 		}
 		Log.d(TAG, "Received start id " + startId + ": " + intent.getAction());
 		if (intent.getAction().equals(ACTION_INITIALISE)) {
+            Log.d(TAG, "init");
 			this.showLoadingNotification();
 			this.updateAllTheThings();
 			this.showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_BELLTIMES)) {
+            Log.d(TAG, "bells - " + dth.hasBells());
 			dth.setBells(cache.loadBells());
 			showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_UPDATE)) {
+            Log.d(TAG, "update!");
 			if (!dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
@@ -89,8 +92,10 @@ public class NotificationService extends Service {
 				// TODO I'm not entirely sure this is necessary
 				showNextPeriodNotification();
 			}
-			int nextPeriod = (dth.getNextBell() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
-			if (nextPeriod == 1 && !dth.hasBells()) {
+			int nextPeriod = (dth.getNextPeriod() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
+            /*if (dth.getNextBell() != null && dth.getNextPeriod() == null) {
+                showEndOfDayNotification();
+            } else */if (nextPeriod == 1 && !dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 			} else {
@@ -183,9 +188,18 @@ public class NotificationService extends Service {
 
 	}
 
+    private void showEndOfDayNotification() {
+        if (!this.dth.hasBells()) return;
+        NotificationCompat.Builder b = getBaseNotification();
+        Belltimes.Bell eod = this.dth.getNextBell();
+        b.setContentTitle(eod.getBellName());
+        b.setContentText("at " + eod.getBellDisplay());
+        mNM.notify(NOTIFICATION, b.build());
+    }
+
 	private void showTomorrowNotification() {
 		if (!this.dth.hasBells()) return;
-		NotificationCompat.Builder b = getBaseNotification().setPriority(Notification.PRIORITY_MIN);
+		NotificationCompat.Builder b = getBaseNotification().setPriority(NotificationCompat.PRIORITY_MIN);
 		String topLine, bottomLine, sideLine = "";
 		//topLine = this.today.getDayName() + " Week " + this.today.get
 		if (this.dth.getBells().isStatic()) {

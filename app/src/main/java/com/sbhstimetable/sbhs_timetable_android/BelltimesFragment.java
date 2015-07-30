@@ -56,6 +56,7 @@ public class BelltimesFragment extends Fragment {
 	private SwipeRefreshLayout layout;
 	private BelltimesAdapter adapter;
 
+
 	private EventListener eventListener;
 
 	/** are we refreshing

@@ -48,6 +48,8 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
+import java.lang.Override;
+
 
 public class TimetableActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
@@ -191,6 +193,18 @@ public class TimetableActivity extends AppCompatActivity
 				isActive = false;
 				this.startActivity(settings);
 				break;
+		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+			mDrawerLayout.closeDrawer(GravityCompat.START);
+		} else if (onMaster == 1) {
+			finish();
+		} else {
+			navigate(R.id.nav_countdown);
+			onMaster = 1;
 		}
 	}
 

@@ -24,14 +24,21 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
@@ -43,7 +50,7 @@ import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 
 public class TimetableActivity extends AppCompatActivity
-		implements NavigationDrawerFragment.NavigationDrawerCallbacks, CommonFragmentInterface {
+		implements NavigationView.OnNavigationItemSelectedListener {
 	private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
 	public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
 	public static final String TODAY_AVAILABLE = "todayIsPresent";
@@ -53,16 +60,19 @@ public class TimetableActivity extends AppCompatActivity
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
 	 */
-	public NavigationDrawerFragment mNavigationDrawerFragment;
 	public DrawerLayout mDrawerLayout;
 	public Toolbar mToolbar;
+	public NavigationView mNavigationView;
 	public TypedValue mTypedValue;
+	public ActionBarDrawerToggle mDrawerToggle;
 	private Menu menu;
 	public boolean isActive = false;
 	private boolean needToRecreate = false;
 	private int onMaster = 1;
 	private ActivityEventReceiver receiver;
 	private StorageCache cache;
+	public int mNavItemId;
+	private Runnable mPendingRunnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +80,7 @@ public class TimetableActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timetable);
 
+		mNavItemId = R.id.nav_countdown;
 		mTypedValue = new TypedValue();
 		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
 		int colorPrimary = mTypedValue.data;
@@ -78,14 +89,16 @@ public class TimetableActivity extends AppCompatActivity
 		setSupportActionBar(mToolbar);
 
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
-			int colorPrimaryDark = mTypedValue.data;
-			mDrawerLayout.setBackgroundColor(colorPrimaryDark);
-		}
-		mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
-		mNavigationDrawerFragment.setUp(R.id.navigation_drawer, mDrawerLayout);
 
+		mNavigationView = (NavigationView) findViewById(R.id.navigation);
+		mNavigationView.setNavigationItemSelectedListener(this);
+		mNavigationView.getMenu().findItem(mNavItemId).setChecked(true);
+
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerToggle.syncState();
+
+		mNavigationView.getMenu().getItem(4).setIcon(ContextCompat.getDrawable(getApplicationContext(), ThemeHelper.isBackgroundDark() ? R.drawable.ic_settings_dark_24dp : R.drawable.ic_settings_white_24dp));
 		//ApiAccessor.load(this);
 		ApiWrapper.initialise(this);
 		if (!ApiWrapper.isLoggedIn()) {
@@ -115,6 +128,7 @@ public class TimetableActivity extends AppCompatActivity
 			this.startService(i);
 		}
 
+		navigate(mNavItemId);
 	}
 
 	@Override
@@ -134,12 +148,10 @@ public class TimetableActivity extends AppCompatActivity
 		if (this.cache.shouldReloadTimetable()) ApiWrapper.requestTimetable(this);
 		ApiWrapper.getEventBus().register(this.receiver);
 		//NotificationService.startUpdatingNotification(this);
-		this.mNavigationDrawerFragment.updateList();
 		this.isActive = true;
 	}
 
-	@Override
-	public void onNavigationDrawerItemSelected(int position) {
+	private void navigate(int position) {
 		// update the main content by replacing fragments
 		FragmentManager fragmentManager = getFragmentManager();
 		SwipeRefreshLayout v = (SwipeRefreshLayout)this.findViewById(R.id.swrl);
@@ -148,68 +160,63 @@ public class TimetableActivity extends AppCompatActivity
 			v.clearAnimation();
 		}
 		switch (position) { // USE THE BREAK, LUKE!
-			case 0:
+			case R.id.nav_countdown:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, CountdownFragment.newInstance())
-					.commit();
+						.replace(R.id.container, CountdownFragment.newInstance())
+						.commit();
 				onMaster = 1;
 				break;
-			case 1:
+			case R.id.nav_timetable:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, TimetableFragment.newInstance())
-					.commit();
+						.replace(R.id.container, TimetableFragment.newInstance())
+						.commit();
 				onMaster = 0;
 				break;
-			case 2:
+			case R.id.nav_notices:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, NoticesFragment.newInstance())
-					.commit();
+						.replace(R.id.container, NoticesFragment.newInstance())
+						.commit();
 				onMaster = 0;
 				break;
-			case 3:
+			case R.id.nav_belltimes:
 				fragmentManager.beginTransaction()
-					.replace(R.id.container, BelltimesFragment.newInstance())
-					.commit();
+						.replace(R.id.container, BelltimesFragment.newInstance())
+						.commit();
 				onMaster = 0;
 				break;
-			case 4:
+			case R.id.nav_settings:
 				if (!isActive) break; // don't do weirdness
 				//Log.i("timetableactivity", "isActive = false (launching SettingsActivity)");
 				Intent settings = new Intent(this, SettingsActivity.class);
 				isActive = false;
 				this.startActivity(settings);
 				break;
-			case 5:
-				/*if (ApiAccessor.isLoggedIn()) {
-					ApiAccessor.logout(this);
-					this.mNavigationDrawerFragment.updateList();
-					Toast.makeText(this, "Logged out! (You may need to restart the app to remove all your data)", Toast.LENGTH_SHORT).show();
-					//StorageCache.deleteAllCacheFiles(this);
-					fragmentManager.beginTransaction().commit();
-				} else {
-					ApiAccessor.login(this);
-				}*/
-				break; // HAVE YOU GOT A PLAN BREAK?®
 		}
 	}
 
 	@Override
-	public void onBackPressed() {
-		if (mNavigationDrawerFragment.isDrawerOpen()) {
-			mNavigationDrawerFragment.closeDrawer();
+	public boolean onNavigationItemSelected(final MenuItem item) {
+		item.setChecked(true);
+		mNavItemId = item.getItemId();
+		if (item.getItemId() == R.id.nav_settings) {
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					navigate(item.getItemId());
+				}
+			}, 0);
+			mDrawerLayout.closeDrawer(GravityCompat.START);
 		} else {
-			if (onMaster == 1) {
-				finish();
-			} else {
-				mNavigationDrawerFragment.selectItem(0);
-				onMaster = 1;
-			}
+			navigate(item.getItemId());
+			new Handler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mDrawerLayout.closeDrawer(GravityCompat.START);
+				}
+			}, 0);
 		}
-	}
 
-	@Override
-	public void setNavigationStyle(int s) {
-		// required
+		return true;
 	}
 
 	@Override

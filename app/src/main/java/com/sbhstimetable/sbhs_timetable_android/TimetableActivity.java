@@ -23,6 +23,7 @@ package com.sbhstimetable.sbhs_timetable_android;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -44,6 +45,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
@@ -124,7 +126,8 @@ public class TimetableActivity extends AppCompatActivity
 		if (this.cache == null) {
 			this.cache = new StorageCache(this);
 		}
-		if (!NotificationService.running) {
+		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
+		if (!NotificationService.running && p.getBoolean(PrefUtil.NOTIFICATIONS_ENABLED, true) && p.getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true)) {
 			Intent i = new Intent(this, NotificationService.class);
 			i.setAction(NotificationService.ACTION_INITIALISE);
 			this.startService(i);

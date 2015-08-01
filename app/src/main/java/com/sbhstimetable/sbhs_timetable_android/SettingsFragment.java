@@ -54,7 +54,8 @@ public class SettingsFragment extends PreferenceFragment {
 				PrefUtil.THEME,
 				PrefUtil.COLOUR,
 				PrefUtil.NOTIFICATION_INCLUDE_BREAKS,
-				PrefUtil.NOTIFICATIONS_ENABLED
+				PrefUtil.NOTIFICATIONS_ENABLED,
+				PrefUtil.NOTIFICATIONS_PERSISTENT
 		}; // settings to attach listeners to
 
 		// don't offer lock screen widget options on platforms that don't support them
@@ -67,7 +68,8 @@ public class SettingsFragment extends PreferenceFragment {
 					PrefUtil.THEME,
 					PrefUtil.COLOUR,
 					PrefUtil.NOTIFICATION_INCLUDE_BREAKS,
-					PrefUtil.NOTIFICATIONS_ENABLED
+					PrefUtil.NOTIFICATIONS_ENABLED,
+					PrefUtil.NOTIFICATIONS_PERSISTENT
 			};
 
 		}
@@ -109,15 +111,10 @@ public class SettingsFragment extends PreferenceFragment {
 					i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
 					i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, Compat.getWidgetIds(preference.getContext(), TodayAppWidget.class));
 					preference.getContext().sendBroadcast(i);
-				} else if (preference.getKey().startsWith("app_")) {
-					/*Intent i = new Intent();
-					i.setAction(ApiAccessor.ACTION_THEME_CHANGED);*/
+				} else if (preference.getKey().startsWith("app_")) { // new theme!
 					ThemeHelper.invalidateTheme();
-					/*LocalBroadcastManager lbm = LocalBroadcastManager.getInstance(preference.getContext());
-					lbm.sendBroadcast(i);*/
 				}
 			} else if (preference instanceof CheckBoxPreference) {
-				//Log.i("Settings", "Found a CheckBoxPreference with key " + preference.getKey());
 				if (preference.getKey().equals(PrefUtil.NOTIFICATIONS_ENABLED)) {
 					Intent i = new Intent(preference.getContext(), NotificationService.class);
 					if ((boolean)value) {
@@ -128,8 +125,7 @@ public class SettingsFragment extends PreferenceFragment {
 						preference.getContext().stopService(i);
 						preference.setSummary("Not showing notifications for next class.");
 					}
-				}
-				if (preference.getKey().equals(PrefUtil.NOTIFICATION_INCLUDE_BREAKS)) {
+				} else if (preference.getKey().equals(PrefUtil.NOTIFICATION_INCLUDE_BREAKS)) {
 					Intent i = new Intent(preference.getContext(), NotificationService.class);
 					i.setAction(NotificationService.ACTION_INITIALISE);
 					preference.getContext().startService(i);
@@ -137,6 +133,15 @@ public class SettingsFragment extends PreferenceFragment {
 						preference.setSummary(R.string.pref_desc_notification_periods_positive);
 					} else {
 						preference.setSummary(R.string.pref_desc_notification_periods_negative);
+					}
+				} else if (preference.getKey().equals(PrefUtil.NOTIFICATIONS_PERSISTENT)) {
+					Intent i = new Intent(preference.getContext(), NotificationService.class);
+					i.setAction(NotificationService.ACTION_INITIALISE);
+					preference.getContext().startService(i);
+					if ((boolean)value) {
+						preference.setSummary(R.string.pref_desc_notification_persisting);
+					} else {
+						preference.setSummary(R.string.pref_desc_notification_persist_off);
 					}
 				}
 			}

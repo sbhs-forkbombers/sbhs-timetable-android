@@ -2,7 +2,6 @@ package com.sbhstimetable.sbhs_timetable_android.backend.service;
 
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -144,8 +143,8 @@ public class NotificationService extends Service {
 	}
 
 	private NotificationCompat.Builder getBaseNotification() {
-		return new NotificationCompat.Builder(this).setOngoing(true).setAutoCancel(false)
-				.setSmallIcon(R.mipmap.ic_notification_icon).setContentIntent(getStartAppPendingIntent())
+		return new NotificationCompat.Builder(this).setOngoing(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true))
+				.setAutoCancel(false).setSmallIcon(R.mipmap.ic_notification_icon).setContentIntent(getStartAppPendingIntent())
 				.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
 	}
 
@@ -175,8 +174,13 @@ public class NotificationService extends Service {
         }
 		if (this.cycle.ready() && nextPeriod.isPeriodStart()) {
 			Lesson next = this.cycle.getToday().getPeriod(nextPeriod.getPeriodNumber());
-			topLine = next.getSubject() + " in " + next.getRoom();
-			bottomLine = next.getTeacher() + " at " + nextPeriod.getBellDisplay();
+			if (next.cancelled()) {
+				topLine = "Free";
+				bottomLine = "at " + nextPeriod.getBellDisplay();
+			} else {
+				topLine = next.getSubject() + " in " + next.getRoom();
+				bottomLine = next.getTeacher() + " at " + nextPeriod.getBellDisplay();
+			}
 			sideLine = nextPeriod.getBellName();
 		} else if (!nextPeriod.isPeriodStart()) {
 			topLine = nextPeriod.getBellName();

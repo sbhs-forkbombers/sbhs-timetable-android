@@ -29,4 +29,7 @@
 	<string name="pref_header_widget">Widgets</string>
 	<string name="pref_title_widget_transparency_hs">Home screen widget background</string>
 	<string name="pref_title_widget_transparency_ls">Lock screen widget background</string>
+    <string name="pref_title_notification_persist">Make notification permanent?</string>
+    <string name="pref_desc_notification_persisting">Notification is irremovable</string>
+    <string name="pref_desc_notification_persist_off">Notification can be removed</string>
 </resources>

@@ -29,4 +29,5 @@ public class PrefUtil {
 	public static final String NOTIFICATION_INCLUDE_BREAKS = "notifications_only_periods";
 	public static final String LAST_WEEK = "last_weektype";
 	public static final String LAST_WEEK_DATE = "last_weekdate";
+	public static final String NOTIFICATIONS_PERSISTENT = "notification_persist";
 }

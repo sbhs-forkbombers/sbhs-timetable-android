@@ -37,5 +37,12 @@
 		android:summary="@string/pref_desc_notification_periods_negative"
 		android:defaultValue="false"
 		android:dependency="notifications_enable"/>
+	<CheckBoxPreference
+		android:key="notification_persist"
+		android:title="@string/pref_title_notification_persist"
+		android:summary="@string/pref_desc_notification_persisting"
+		android:defaultValue="true"
+		android:dependency="notifications_enable" />
+
 
 </PreferenceScreen>

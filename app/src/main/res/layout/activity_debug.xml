@@ -56,24 +56,28 @@
 		android:layout_below="@id/http_debugging">
 
 		<RelativeLayout android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/loading_timetable"
-			android:layout_alignParentLeft="true"
-			android:layout_alignParentStart="true">
+			android:layout_height="wrap_content">
 
 			<TextView android:id="@+id/sikui"
 				android:layout_width="match_parent"
-				android:layout_height="match_parent"
+				android:layout_height="wrap_content"
 				android:gravity="center_horizontal"
 				android:text="@string/sikui"
 				android:layout_alignParentTop="true"
 				android:layout_alignParentLeft="true"
 				android:layout_alignParentStart="true"/>
 
+			<TextView android:id="@+id/githash"
+					  android:layout_width="match_parent"
+					  android:layout_height="match_parent"
+					  android:gravity="center_horizontal"
+					  android:layout_below="@id/sikui"
+					  android:text="@string/GIT_REV" />
+
 			<TextView android:id="@+id/status"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_below="@+id/sikui"
+				android:layout_below="@+id/githash"
 				android:layout_marginLeft="16dp"
 				android:layout_marginRight="16dp"/>
 

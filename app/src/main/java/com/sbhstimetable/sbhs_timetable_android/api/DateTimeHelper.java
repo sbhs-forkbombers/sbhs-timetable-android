@@ -129,7 +129,7 @@ public class DateTimeHelper {
 		int len = bells.getLength();
 		for (int i = 0; i < len; i++) {
 			DateTime t = bells.getBellIndex(i).getBellTime();
-			t = t.withDate(DateTime.now().toLocalDate());
+			t = t.withDate(getNextSchoolDay().toLocalDate());
 			//Log.i("dth", ""+t);
 			if (t.isAfterNow()) {
 				return bells.getBellIndex(i);

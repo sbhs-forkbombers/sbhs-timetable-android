@@ -228,7 +228,7 @@ public class CountdownFragment extends Fragment {
 		debug("has bells - " + dth.hasBells());
 		if (dth.hasBells()) {
 			Belltimes.Bell next = dth.getNextBell();
-			debug("next - " + next);
+			debug("next - " + next + " " + next.getBellDisplay() + " " + next.getBellName());
 			if (next != null && next.getPreviousBellTime() != null) {
 				Belltimes.Bell now = next.getPreviousBellTime();
 				debug("period start - period => " + now.getBellName() + "(" + now.getPeriodNumber() + ") is ps? " + now.isPeriodStart());

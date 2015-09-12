@@ -27,7 +27,7 @@ android {
 		applicationId 'com.sbhstimetable.sbhs_timetable_android'
 		minSdkVersion 15
 		targetSdkVersion 22
-		versionCode 21
+		versionCode 22
 		versionName '0.99.7'
 		buildConfigField "String", "GIT_REV", "\"${gitRev}\""
 		resValue "string", "GIT_REV", "Rev ${gitRev}"

@@ -127,7 +127,7 @@ public class TimetableActivity extends AppCompatActivity
 			this.cache = new StorageCache(this);
 		}
 		SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-		if (!NotificationService.running && p.getBoolean(PrefUtil.NOTIFICATIONS_ENABLED, true) && p.getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true)) {
+		if (!NotificationService.running && p.getBoolean(PrefUtil.NOTIFICATIONS_ENABLED, false) && p.getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true)) {
 			Intent i = new Intent(this, NotificationService.class);
 			i.setAction(NotificationService.ACTION_INITIALISE);
 			this.startService(i);

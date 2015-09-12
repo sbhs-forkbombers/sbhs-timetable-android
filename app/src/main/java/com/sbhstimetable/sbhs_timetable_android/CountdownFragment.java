@@ -144,12 +144,14 @@ public class CountdownFragment extends Fragment {
 	}
 
 	private void setup(View f) {
-		this.dth = new DateTimeHelper(getActivity());
-		this.cache = new StorageCache(getActivity());
-		this.cycle = new FullCycleWrapper(getActivity());
-		this.evListener = new DataWatcher();
-		this.cycle.addDataSetObserver(this.evListener);
-		ApiWrapper.getEventBus().registerSticky(this.evListener);
+		if (this.dth == null) this.dth = new DateTimeHelper(getActivity());
+		if (this.cache == null)	this.cache = new StorageCache(getActivity());
+		if (this.cycle == null) this.cycle = new FullCycleWrapper(getActivity());
+		if (this.evListener == null) {
+			this.evListener = new DataWatcher();
+			this.cycle.addDataSetObserver(this.evListener);
+			ApiWrapper.getEventBus().registerSticky(this.evListener);
+		}
 		if (f != null) {
 			this.updateTimer(f);
 		} else {
@@ -319,6 +321,10 @@ public class CountdownFragment extends Fragment {
 				int secondsLeft;
 				if (dth == null) {
 					Log.i("CountdownFragment", "No DTH!");
+					if (getActivity() != null) {
+						Log.i("CountdownFragment", "I'll make a DTH");
+						setup(f);
+					}
 					// probably been destroyed or something
 					this.cancel();
 					return;

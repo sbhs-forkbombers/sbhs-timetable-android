@@ -123,6 +123,7 @@ public class FullCycleWrapper {
 		if (currentDayInCycle == num && variationData != null) {
 			return variationData;
 		}
+		if (cycle == null) return null;
 		return cycle.getDayNumber(num);
 	}
 

@@ -21,6 +21,7 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
 import android.util.Log;
 
+import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Belltime;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
@@ -36,7 +37,7 @@ import java.util.List;
 public class Belltimes implements FetchedObject {
 	private String status;
 	private boolean bellsAltered;
-	private boolean staticBells = false;
+	public boolean staticBells;
 	private String bellsAlteredReason;
 
 	/**
@@ -105,6 +106,7 @@ public class Belltimes implements FetchedObject {
 	}
 
 	public boolean current() {
+		Log.i("Belltimes", "" + staticBells);
 		if (staticBells) {
 			return false;
 		}
@@ -159,7 +161,7 @@ public class Belltimes implements FetchedObject {
 
 		@Override
 		public DateTime getBellTime() {
-			return DateTimeHelper.getHHMMFormatter().parseDateTime(time);
+			return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getNextSchoolDayStatic().toLocalDate());
 		}
 
 		@Override

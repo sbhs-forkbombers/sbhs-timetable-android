@@ -184,6 +184,7 @@ public class ApiWrapper {
 		}
 		Belltimes b = new Gson().fromJson(bells, Belltimes.class);
 		b.date = next.toString(DateTimeFormat.forPattern("yyyy-MM-dd"));
+		b.staticBells = true;
 		return b;
 	}
 
@@ -283,6 +284,7 @@ public class ApiWrapper {
 		});
 	}
 
+
 	public static void requestBells(final Context c) {
 		if (errIfNotReady(c) || loadingBells) return;
 		if (!apiReady(c)) {
@@ -298,12 +300,13 @@ public class ApiWrapper {
 			@Override
 			public void success(Belltimes belltimes, Response response) {
 				BellsEvent b;
-				if (belltimes.valid()) {
+				Log.i("ApiWrapper", "bells: " + belltimes + " " + belltimes.valid() + ", " + belltimes.current());
+				if (belltimes.valid() && belltimes.current()) {
 					b = new BellsEvent(belltimes);
 					cache(c).cacheBells(belltimes);
 
 				} else {
-					b = new BellsEvent(true);
+					b = new BellsEvent(getOfflineBells(c));
 				}
 				loadingBells = false;
 				doneRefreshing();
@@ -322,6 +325,7 @@ public class ApiWrapper {
 					CanHazInternetListener.enable(c);
 				}
 				getEventBus().post(new BellsEvent(error));
+				getEventBus().post(new BellsEvent(getOfflineBells(c)));
 			}
 		});
 	}

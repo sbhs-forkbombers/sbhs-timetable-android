@@ -20,11 +20,13 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -101,6 +103,10 @@ public class DateTimeHelper {
 		/*if (this.cache != null && this.cache.hasCachedDate()) {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
 		}*/
+		return getNextSchoolDayStatic();
+	}
+
+	public static LocalDateTime getNextSchoolDayStatic() {
 		int offset = 0;
 		DateTime now = DateTime.now();
 		if (now.getDayOfWeek() == SATURDAY) {
@@ -155,6 +161,12 @@ public class DateTimeHelper {
 	}
 
 	public boolean hasBells() {
+		if (this.bells == null) {
+			this.bells = ApiWrapper.getOfflineBells(this.context);
+			Log.i("DateTimeHelper", "Using this.bells: " + this.bells);
+			if (this.bells != null) return true; // good enough
+		}
+		Log.i("DateTimeHelper", "bells: " + this.bells + " " + (this.bells == null ? "" : (this.bells.isStatic() + " " + this.bells.current())));
 		return this.bells != null && (this.bells.current() || this.bells.isStatic());
 	}
 

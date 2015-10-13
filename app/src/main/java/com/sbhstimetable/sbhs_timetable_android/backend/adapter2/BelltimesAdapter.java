@@ -129,6 +129,12 @@ public class BelltimesAdapter implements ListAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		boolean fakedPosition = false;
+		if (bells == null) {
+			View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+			TextView t = (TextView)r.findViewById(R.id.textview);
+			t.setText("Couldn't load today's bells! Might be a problem with SBHS?");
+			return r;
+		}
 		if (bells.isStatic() || bells.areBellsAltered()) {
 			if (position == 0) {
 				View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);

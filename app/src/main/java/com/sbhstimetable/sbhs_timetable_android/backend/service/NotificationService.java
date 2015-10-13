@@ -194,6 +194,7 @@ public class NotificationService extends Service {
 		b.setContentTitle(topLine);
 		b.setContentText(bottomLine);
 		b.setContentInfo(sideLine);
+		b.setWhen(nextPeriod.getBellTime().getMillis());
 		mNM.notify(NOTIFICATION, b.build());
 
 	}
@@ -204,6 +205,7 @@ public class NotificationService extends Service {
         Belltimes.Bell eod = this.dth.getNextBell();
         b.setContentTitle(eod.getBellName());
         b.setContentText("at " + eod.getBellDisplay());
+		b.setWhen(eod.getBellTime().getMillis());
         mNM.notify(NOTIFICATION, b.build());
     }
 
@@ -239,6 +241,7 @@ public class NotificationService extends Service {
 		b.setContentTitle(topLine);
 		b.setContentText(bottomLine);
 		b.setContentInfo(sideLine);
+		b.setWhen(this.dth.getBells().getBellIndex(0).getBellTime().getMillis());
 		mNM.notify(NOTIFICATION, b.build());
 	}
 

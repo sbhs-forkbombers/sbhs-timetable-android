@@ -28,7 +28,7 @@ android {
 		minSdkVersion 15
 		targetSdkVersion 23
 		versionCode 23
-		versionName "0.99.7-${gitRev}"
+		versionName "1.0.0-${gitRev}"
 		buildConfigField "String", "GIT_REV", "\"${gitRev}\""
 		resValue "string", "GIT_REV", "Rev ${gitRev}"
 	}

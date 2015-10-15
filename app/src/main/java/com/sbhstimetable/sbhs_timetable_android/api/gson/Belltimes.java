@@ -161,7 +161,7 @@ public class Belltimes implements FetchedObject {
 
 		@Override
 		public DateTime getBellTime() {
-			return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getNextSchoolDayStatic().toLocalDate());
+			return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getYYYYMMDDFormatter().parseLocalDateTime(parent.date).toLocalDate());
 		}
 
 		@Override

@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -69,7 +70,7 @@ public class NotificationService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null) {
 			Log.wtf(TAG, "Started without an intent?");
-			return START_STICKY;
+			return START_NOT_STICKY;
 		}
         running = true;
 		Log.d(TAG, "Received start id " + startId + ": " + intent.getAction());
@@ -87,7 +88,7 @@ public class NotificationService extends Service {
 			if (!dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
-				return START_STICKY;
+				return START_NOT_STICKY;
 			}
 			if (dth.getNextBell().isPeriodStart()) {
 				// TODO I'm not entirely sure this is necessary
@@ -114,8 +115,10 @@ public class NotificationService extends Service {
 		PendingIntent soon = PendingIntent.getService(this, 0, me, 0);
 		alarm = soon;
 		Log.d(TAG, "Will wake up in " + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis() /*+ 5 * 60 * 1000*/) / 1000 + " seconds to update notification.");
-		am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis())/*+ 5 * 60 * 1000*/, soon);
-		return START_STICKY;
+		int type = AlarmManager.ELAPSED_REALTIME;
+		long updateTime = SystemClock.elapsedRealtime() + (dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis());/*+ 5 * 60 * 1000*/
+		am.set(type, updateTime, soon);
+		return START_NOT_STICKY;
 	}
 
 	@Override

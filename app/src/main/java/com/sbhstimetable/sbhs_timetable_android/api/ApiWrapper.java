@@ -295,8 +295,8 @@ public class ApiWrapper {
 		}
 		notifyRefreshing();
 		loadingBells = true;
-		String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
-		api.getBelltimes(s, new Callback<Belltimes>() {
+		//String s = DateTimeHelper.getYYYYMMDDFormatter().print(new DateTimeHelper(c).getNextSchoolDay());
+		api.getBelltimes("", new Callback<Belltimes>() {
 			@Override
 			public void success(Belltimes belltimes, Response response) {
 				BellsEvent b;

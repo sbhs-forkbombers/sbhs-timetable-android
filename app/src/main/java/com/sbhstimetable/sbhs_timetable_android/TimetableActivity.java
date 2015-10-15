@@ -20,14 +20,22 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.app.assist.AssistContent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -49,6 +57,8 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
+
+import org.json.JSONObject;
 
 import java.lang.Override;
 
@@ -91,7 +101,6 @@ public class TimetableActivity extends AppCompatActivity
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		mToolbar.setBackgroundColor(colorPrimary);
 		setSupportActionBar(mToolbar);
-
 		mDrawerLayout = (DrawerLayout) getWindow().findViewById(R.id.drawer_layout);
 
 		mNavigationView = (NavigationView) findViewById(R.id.navigation);
@@ -154,6 +163,7 @@ public class TimetableActivity extends AppCompatActivity
 		ApiWrapper.getEventBus().register(this.receiver);
 		//NotificationService.startUpdatingNotification(this);
 		this.isActive = true;
+
 	}
 
 	private void navigate(int position) {
@@ -260,14 +270,9 @@ public class TimetableActivity extends AppCompatActivity
 		ApiWrapper.getEventBus().unregister(this.receiver);
 	}
 
-	public void updateCachedStatus(Menu m) {
-
-	}
-
 	@SuppressWarnings("unused")
 	private class ActivityEventReceiver {
 		private TimetableActivity activity;
-
 		public ActivityEventReceiver(TimetableActivity a) {
 			this.activity = a;
 		}

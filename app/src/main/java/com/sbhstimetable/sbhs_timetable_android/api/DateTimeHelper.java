@@ -40,6 +40,7 @@ public class DateTimeHelper {
 	private Today today;
 	private Context context;
 	private StorageCache cache;
+
 	// useful things
 	public static DateTimeFormatter getHHMMFormatter() {
 		return new DateTimeFormatterBuilder().appendHourOfDay(2).appendLiteral(':').appendMinuteOfHour(2).toFormatter();
@@ -103,6 +104,9 @@ public class DateTimeHelper {
 		/*if (this.cache != null && this.cache.hasCachedDate()) {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
 		}*/
+		if (this.bells != null) {
+			return getYYYYMMDDFormatter().parseLocalDateTime(bells.date);
+		}
 		return getNextSchoolDayStatic();
 	}
 

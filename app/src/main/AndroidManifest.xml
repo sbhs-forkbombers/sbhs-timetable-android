@@ -29,7 +29,8 @@
 		android:allowBackup="true"
 		android:icon="@mipmap/ic_launcher"
 		android:label="@string/app_name"
-		android:theme="@style/AppTheme" >
+		android:theme="@style/AppTheme"
+		android:name=".TimetableApp">
 
 		<!-- Activities -->
 		<activity
@@ -39,6 +40,13 @@
 				<action android:name="android.intent.action.MAIN" />
 
 				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+			<intent-filter android:autoVerify="true">
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="http" android:host="sbhstimetable.tk" />
+				<data android:scheme="https" android:host="sbhstimetable.tk" />
 			</intent-filter>
 		</activity>
 		<activity

@@ -98,7 +98,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public Object getItem(int index) {
-		if (index == 0 && !cycle.hasFullTimetable()) {
+		if (index == 0 && (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null)) {
 			return "Loading view";
 		} else if (index == 7) {
 			return "Last updated view";
@@ -120,7 +120,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public View getView(int i, View convertView, ViewGroup parent) {
-		if (i == 0 && !cycle.hasFullTimetable()) {
+		if (i == 0 && (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null)) {
 			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
 		}
 		if (i == 6) {

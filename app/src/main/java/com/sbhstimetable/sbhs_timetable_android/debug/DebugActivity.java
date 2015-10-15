@@ -38,9 +38,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.TimetableApp;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 
 public class DebugActivity extends AppCompatActivity {
@@ -147,7 +150,15 @@ public class DebugActivity extends AppCompatActivity {
 			}
 		});
 
-
+		((CheckBox)findViewById(R.id.belltime_date_debug)).setChecked(TimetableApp.BELLTIME_ALLOW_FAKE_DAY);
+		((CheckBox)findViewById(R.id.belltime_date_debug)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(compoundButton.getContext());
+				p.edit().putBoolean(PrefUtil.BELLTIMES_DAY_TESTING, compoundButton.isChecked()).apply();
+				Toast.makeText(compoundButton.getContext(), "Done!", Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 
 	@Override

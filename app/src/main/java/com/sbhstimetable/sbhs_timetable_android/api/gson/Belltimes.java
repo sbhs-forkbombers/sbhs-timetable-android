@@ -21,6 +21,7 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 
 import android.util.Log;
 
+import com.sbhstimetable.sbhs_timetable_android.TimetableApp;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Belltime;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
@@ -161,6 +162,8 @@ public class Belltimes implements FetchedObject {
 
 		@Override
 		public DateTime getBellTime() {
+			if (TimetableApp.BELLTIME_ALLOW_FAKE_DAY)
+				return DateTimeHelper.getHHMMFormatter().parseDateTime(time);
 			return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getYYYYMMDDFormatter().parseLocalDateTime(parent.date).toLocalDate());
 		}
 
@@ -206,6 +209,10 @@ public class Belltimes implements FetchedObject {
 				}
 			}
 			return false;
+		}
+
+		public int getIndex() {
+			return this.index;
 		}
 	}
 

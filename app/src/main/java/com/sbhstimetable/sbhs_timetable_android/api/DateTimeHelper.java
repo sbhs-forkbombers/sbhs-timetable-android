@@ -22,6 +22,7 @@ package com.sbhstimetable.sbhs_timetable_android.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.sbhstimetable.sbhs_timetable_android.TimetableApp;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
@@ -104,8 +105,10 @@ public class DateTimeHelper {
 		/*if (this.cache != null && this.cache.hasCachedDate()) {
 			return getYYYYMMDDFormatter().parseDateTime(this.cache.loadDate());
 		}*/
-		if (this.bells != null) {
-			return getYYYYMMDDFormatter().parseLocalDateTime(bells.date);
+		if (!TimetableApp.BELLTIME_ALLOW_FAKE_DAY) {
+			if (this.bells != null) {
+				return getYYYYMMDDFormatter().parseLocalDateTime(bells.date);
+			}
 		}
 		return getNextSchoolDayStatic();
 	}

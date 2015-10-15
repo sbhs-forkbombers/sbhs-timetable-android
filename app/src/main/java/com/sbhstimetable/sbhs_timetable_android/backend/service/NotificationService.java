@@ -66,6 +66,12 @@ public class NotificationService extends Service {
 			ApiWrapper.requestToday(this);
 	}
 
+	public static void start(Context con) {
+		Intent i = new Intent(con, NotificationService.class);
+		i.setAction(ACTION_UPDATE);
+		con.startService(i);
+	}
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null) {
@@ -133,10 +139,17 @@ public class NotificationService extends Service {
 
 	private void showAppropriateNotification() {
 		if (!dth.hasBells()) return;
-		if (dth.getNextPeriod() == null || dth.getNextPeriod().getPeriodNumber() == 1 && (!DateTimeHelper.after(LocalDateTime.now(), 9, 5) || DateTimeHelper.after(LocalDateTime.now(), 15, 15))) {
+		if (dth.getNextBell() == null || dth.getNextBell().getIndex() == 0) {
 			showTomorrowNotification();
 		} else {
-			showNextPeriodNotification();
+			if (dth.getNextPeriod() == null) {
+				Log.i("NotificationService", "doot doot");
+				showEndOfDayNotification();
+
+			} else {
+				Log.i("NotificationService", "oot ootd");
+				showNextPeriodNotification();
+			}
 		}
 	}
 
@@ -208,6 +221,7 @@ public class NotificationService extends Service {
         Belltimes.Bell eod = this.dth.getNextBell();
         b.setContentTitle(eod.getBellName());
         b.setContentText("at " + eod.getBellDisplay());
+		b.setContentInfo("doot doot");
 		b.setWhen(eod.getBellTime().getMillis());
         mNM.notify(NOTIFICATION, b.build());
     }

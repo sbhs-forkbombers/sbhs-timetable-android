@@ -28,4 +28,5 @@ public class PrefUtil {
 	public static final String NOTIFICATIONS_ENABLED = "notifications_enable";
 	public static final String NOTIFICATION_INCLUDE_BREAKS = "notifications_only_periods";
 	public static final String NOTIFICATIONS_PERSISTENT = "notification_persist";
+	public static final String BELLTIMES_DAY_TESTING = "bell_day_testing";
 }

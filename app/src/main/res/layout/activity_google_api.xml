@@ -50,10 +50,16 @@
         android:text="Reset notification date"
         android:id="@+id/resetdate"/>
 
+    <Button android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_below="@id/resetdate"
+            android:text="Force notification"
+            android:id="@+id/forcenotify" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_below="@id/resetdate"
+        android:layout_below="@id/forcenotify"
         android:text="Check connection status"
         android:id="@+id/checkstatus"/>
 

@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -81,7 +82,7 @@ public class GeofencingIntentService extends IntentService {
             int transition = ev.getGeofenceTransition();
             if (!hasNotifiedToday()) {
                 NotificationManager m = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
-                m.notify(GEOFENCING_NOTIFICATION_ID, makeNotification(transition));
+                m.notify(GEOFENCING_NOTIFICATION_ID, makeNotification());
                 setNotifiedToday();
             } else {
                 Log.i(TAG, "Already notified today, not going to do it again");
@@ -90,16 +91,26 @@ public class GeofencingIntentService extends IntentService {
         }
     }
 
-    private Notification makeNotification(int transition) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+
+    public static void fakeNotification(Context c) {
+        NotificationManager m = (NotificationManager) c.getSystemService(NOTIFICATION_SERVICE);
+        m.notify(GEOFENCING_NOTIFICATION_ID, makeNotification(c));
+    }
+
+    private Notification makeNotification() {
+        return makeNotification(this);
+    }
+
+    private static Notification makeNotification(Context c) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(c)
                 .setSmallIcon(R.drawable.barcode)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setContentTitle(getResources().getString(R.string.notification_scan_on_title))
-                .setContentText(getResources().getString(R.string.notification_scan_on_text))
+                .setContentTitle(c.getResources().getString(R.string.notification_scan_on_title))
+                .setContentText(c.getResources().getString(R.string.notification_scan_on_text))
                 .setContentIntent(
-                        PendingIntent.getBroadcast(this, 0,
-                                new Intent(NotificationDismissReceiver.ACTION_DISMISS_NOTIFICATION, null, this, NotificationDismissReceiver.class), 0)
+                        PendingIntent.getBroadcast(c, 0,
+                                new Intent(NotificationDismissReceiver.ACTION_DISMISS_NOTIFICATION, null, c, NotificationDismissReceiver.class), 0)
                 )
                 .setOngoing(true);
         /*switch (transition) {
@@ -113,6 +124,24 @@ public class GeofencingIntentService extends IntentService {
                 builder.setContentTitle("Exit").setContentText("You have left the danger zone");
                 break;
         }*/
+        String sound = PreferenceManager.getDefaultSharedPreferences(c).getString(PrefUtil.GEOFENCE_SOUND, "");
+        if (!sound.equals("")) {
+            builder.setSound(Uri.parse(sound));
+        }
+        if (PreferenceManager.getDefaultSharedPreferences(c).getBoolean(PrefUtil.GEOFENCE_VIBRATE, true)) {
+            builder.setVibrate(new long[] {
+                    0,
+                    500,
+                    150,
+                    500,
+                    100,
+                    200,
+                    100,
+                    200,
+                    100,
+                    200
+            });
+        }
         return builder.build();
     }
 
@@ -121,14 +150,15 @@ public class GeofencingIntentService extends IntentService {
         Intent i = new Intent(c, PermissionsRequestActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
         PendingIntent pi = PendingIntent.getActivity(c, 0, i, 0);
-        Notification n = new NotificationCompat.Builder(c)
+        NotificationCompat.Builder n = new NotificationCompat.Builder(c)
                 .setContentText(c.getString(R.string.notification_no_permissions_text))
                 .setContentTitle(c.getString(R.string.notification_no_permissions_title))
                 .setContentIntent(pi)
                 .setAutoCancel(true)
                 .setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.drawable.ic_warning_white_48dp).build();
-        nm.notify(NOTIFICATION_NEED_PERMS_ID, n);
+                .setSmallIcon(R.drawable.ic_warning_white_48dp);
+
+        nm.notify(NOTIFICATION_NEED_PERMS_ID, n.build());
     }
 
 

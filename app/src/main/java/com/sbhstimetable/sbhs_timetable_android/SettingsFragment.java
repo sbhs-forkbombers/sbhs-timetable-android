@@ -22,16 +22,22 @@ package com.sbhstimetable.sbhs_timetable_android;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.preference.RingtonePreference;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
@@ -64,7 +70,9 @@ public class SettingsFragment extends PreferenceFragment {
 				PrefUtil.NOTIFICATION_INCLUDE_BREAKS,
 				PrefUtil.NOTIFICATIONS_ENABLED,
 				PrefUtil.NOTIFICATIONS_PERSISTENT,
-				PrefUtil.GEOFENCING_ACTIVE
+				PrefUtil.GEOFENCING_ACTIVE,
+				PrefUtil.GEOFENCE_SOUND,
+				PrefUtil.GEOFENCE_VIBRATE
 		)); // settings to attach listeners to
 		// don't offer lock screen widget options on platforms that don't support them
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
@@ -82,6 +90,10 @@ public class SettingsFragment extends PreferenceFragment {
 			};*/
 
 		}
+		if (!((Vibrator)mPreferenceScreen.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
+			prefs.remove(PrefUtil.GEOFENCE_VIBRATE);
+			mPreferenceScreen.removePreference(findPreference(PrefUtil.GEOFENCE_VIBRATE));
+		}
 		for (String pref : prefs) {
 			Preference thePref = this.findPreference(pref);
 			thePref.setOnPreferenceChangeListener(mPreferenceChangeListener);
@@ -93,6 +105,10 @@ public class SettingsFragment extends PreferenceFragment {
 				CheckBoxPreference checkbox = (CheckBoxPreference)thePref;
 				checkbox.setOnPreferenceChangeListener(mPreferenceChangeListener);
 				checkbox.getOnPreferenceChangeListener().onPreferenceChange(checkbox, checkbox.getSharedPreferences().getBoolean(checkbox.getKey(), false));
+			} else if (thePref instanceof RingtonePreference) {
+				RingtonePreference rp = (RingtonePreference)thePref;
+				rp.setOnPreferenceChangeListener(mPreferenceChangeListener);
+				rp.getOnPreferenceChangeListener().onPreferenceChange(rp, rp.getSharedPreferences().getString(rp.getKey(), ""));
 			}
 		}
 
@@ -178,6 +194,15 @@ public class SettingsFragment extends PreferenceFragment {
 					} else if (initDone && !(boolean)value) {
 						GoogleApiHelper.disableApiClient();
 					}
+				}
+			} else if (preference instanceof RingtonePreference) {
+				RingtonePreference rp = (RingtonePreference) preference;
+				if (value.toString().equals("")) {
+					rp.setSummary("No sound");
+				} else {
+					Uri ringtoneUri = Uri.parse(value.toString());
+					Ringtone r = RingtoneManager.getRingtone(rp.getContext(), ringtoneUri);
+					rp.setSummary(r.getTitle(rp.getContext()));
 				}
 			}
 			return true;

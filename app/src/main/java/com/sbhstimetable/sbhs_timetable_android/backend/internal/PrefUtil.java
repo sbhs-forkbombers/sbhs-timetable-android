@@ -31,4 +31,6 @@ public class PrefUtil {
 	public static final String BELLTIMES_DAY_TESTING = "bell_day_testing";
 	public static final String GEOFENCING_ACTIVE = "geofencing_enable";
 	public static final String GEOFENCE_LAST_NOTIFIED_DATE = "geofence_notification_last";
+	public static final String GEOFENCE_SOUND = "geofence_sound";
+	public static final String GEOFENCE_VIBRATE = "geofence_vibrate";
 }

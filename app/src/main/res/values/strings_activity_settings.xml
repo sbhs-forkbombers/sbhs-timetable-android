@@ -36,4 +36,7 @@
     <string name="pref_geofence_enable">Enable scan on reminders</string>
     <string name="pref_geofence_enable_on">Will remind you when you get to school</string>
     <string name="pref_geofence_enable_off">Won\'t remind you when you get to school</string>
+
+    <string name="pref_geofence_sound">Sound for reminder</string>
+    <string name="pref_geofence_vibrate">Vibrate for reminder</string>
 </resources>

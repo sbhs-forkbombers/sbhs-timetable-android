@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
+import com.sbhstimetable.sbhs_timetable_android.gapis.GeofencingIntentService;
 import com.sbhstimetable.sbhs_timetable_android.gapis.GoogleApiHelper;
 
 public class GoogleApiActivity extends AppCompatActivity {
@@ -64,6 +65,14 @@ public class GoogleApiActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 log("GoogleApiHelper.client = " + GoogleApiHelper.getClient());
+            }
+        });
+
+        findViewById(R.id.forcenotify).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GeofencingIntentService.fakeNotification(view.getContext());
+                log("Posted");
             }
         });
     }

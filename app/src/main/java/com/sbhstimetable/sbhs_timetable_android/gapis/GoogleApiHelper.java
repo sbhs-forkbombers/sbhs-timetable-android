@@ -120,8 +120,7 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
                         SBHS_LON,
                         300
                 ).setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL | Geofence.GEOFENCE_TRANSITION_EXIT)
-                .setLoiteringDelay(500)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build();
         LocationServices.GeofencingApi.addGeofences(
                 client,

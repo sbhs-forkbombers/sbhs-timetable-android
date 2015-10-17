@@ -23,17 +23,17 @@
 <resources>
 
     <string name="title_activity_settings">Settings</string>
-    <string name="pref_title_allow_notifications">Show notifications</string>
+    <string name="pref_title_allow_notifications">Show notifications for next class</string>
     <string name="pref_desc_allow_notifications">Show notifications for the next period</string>
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_header_widget">Widgets</string>
     <string name="pref_title_widget_transparency_hs">Home screen widget background</string>
     <string name="pref_title_widget_transparency_ls">Lock screen widget background</string>
-    <string name="pref_title_notification_persist">Make notification permanent?</string>
+    <string name="pref_title_notification_persist">Make notification permanent</string>
     <string name="pref_desc_notification_persisting">Notification is irremovable</string>
     <string name="pref_desc_notification_persist_off">Notification can be removed</string>
-    <string name="geofencing_prefs_title">Scan in reminders</string>
-    <string name="pref_geofence_enable">Enable scan in reminders?</string>
+    <string name="geofencing_prefs_title">Scan on reminders</string>
+    <string name="pref_geofence_enable">Enable scan on reminders</string>
     <string name="pref_geofence_enable_on">Will remind you when you get to school</string>
     <string name="pref_geofence_enable_off">Won\'t remind you when you get to school</string>
 </resources>

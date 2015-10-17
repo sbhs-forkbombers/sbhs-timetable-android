@@ -170,6 +170,12 @@
             android:label="@string/title_activity_permissions_request"
             android:theme="@style/AppTheme" >
         </activity>
+
+        <receiver
+            android:name=".backend.service.NotificationDismissReceiver"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
     </application>
 
 </manifest>

@@ -18,6 +18,7 @@ import com.sbhstimetable.sbhs_timetable_android.PermissionsRequestActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationDismissReceiver;
 
 import org.joda.time.LocalDateTime;
 
@@ -90,18 +91,28 @@ public class GeofencingIntentService extends IntentService {
     }
 
     private Notification makeNotification(int transition) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        switch (transition) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.barcode)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setContentTitle(getResources().getString(R.string.notification_scan_on_title))
+                .setContentText(getResources().getString(R.string.notification_scan_on_text))
+                .setContentIntent(
+                        PendingIntent.getBroadcast(this, 0,
+                                new Intent(NotificationDismissReceiver.ACTION_DISMISS_NOTIFICATION, null, this, NotificationDismissReceiver.class), 0)
+                )
+                .setOngoing(true);
+        /*switch (transition) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
-                builder.setContentTitle("Enter").setContentText("You have entered the danger zone").setSmallIcon(R.drawable.swag);
+                builder.setContentTitle("Enter").setContentText("You have entered the danger zone");
                 break;
             case Geofence.GEOFENCE_TRANSITION_DWELL:
-                builder.setContentTitle("Dwell").setContentText("You are dwelling in the danger zone").setSmallIcon(R.drawable.swag);
+                builder.setContentTitle("Dwell").setContentText("You are dwelling in the danger zone");
                 break;
             case Geofence.GEOFENCE_TRANSITION_EXIT:
-                builder.setContentTitle("Exit").setContentText("You have left the danger zone").setSmallIcon(R.drawable.swag);
+                builder.setContentTitle("Exit").setContentText("You have left the danger zone");
                 break;
-        }
+        }*/
         return builder.build();
     }
 
@@ -117,7 +128,7 @@ public class GeofencingIntentService extends IntentService {
                 .setAutoCancel(true)
                 .setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.drawable.ic_warning_white_48dp).build();
-        nm.notify(GEOFENCING_NOTIFICATION_ID, n);
+        nm.notify(NOTIFICATION_NEED_PERMS_ID, n);
     }
 
 

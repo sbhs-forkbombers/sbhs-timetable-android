@@ -3,6 +3,7 @@ package com.sbhstimetable.sbhs_timetable_android.debug;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.gapis.GoogleApiHelper;
 
 public class GoogleApiActivity extends AppCompatActivity {
@@ -47,6 +49,14 @@ public class GoogleApiActivity extends AppCompatActivity {
                 } else {
                     log("Waiting for permission from user...");
                 }
+            }
+        });
+
+        findViewById(R.id.resetdate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PreferenceManager.getDefaultSharedPreferences(view.getContext()).edit().putString(PrefUtil.GEOFENCE_LAST_NOTIFIED_DATE, "1970-01-01").commit();
+                log("Commited change");
             }
         });
 

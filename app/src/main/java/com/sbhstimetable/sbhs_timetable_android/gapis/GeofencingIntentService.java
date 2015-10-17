@@ -3,14 +3,23 @@ package com.sbhstimetable.sbhs_timetable_android.gapis;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
+import com.sbhstimetable.sbhs_timetable_android.PermissionsRequestActivity;
 import com.sbhstimetable.sbhs_timetable_android.R;
+import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
+
+import org.joda.time.LocalDateTime;
 
 
 /**
@@ -19,7 +28,8 @@ import com.sbhstimetable.sbhs_timetable_android.R;
  * <p/>
  */
 public class GeofencingIntentService extends IntentService {
-
+    public static final int GEOFENCING_NOTIFICATION_ID = 987123;
+    public static final int NOTIFICATION_NEED_PERMS_ID = 67;
 
     public GeofencingIntentService() {
         super("GeofencingIntentService");
@@ -27,6 +37,24 @@ public class GeofencingIntentService extends IntentService {
     }
 
     private final String TAG="GeofencingIntent";
+
+    private String getYYYYMMDD() {
+        return DateTimeHelper.getYYYYMMDDFormatter().print(LocalDateTime.now());
+    }
+
+    private boolean hasNotifiedToday() {
+        Log.i(TAG, getYYYYMMDD());
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(PrefUtil.GEOFENCE_LAST_NOTIFIED_DATE, "1970-01-01")
+                .equals(getYYYYMMDD());
+
+    }
+
+    private void setNotifiedToday() {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit().putString(PrefUtil.GEOFENCE_LAST_NOTIFIED_DATE, getYYYYMMDD())
+                .apply();
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -50,9 +78,13 @@ public class GeofencingIntentService extends IntentService {
                 return;
             }
             int transition = ev.getGeofenceTransition();
-
-            NotificationManager m = (NotificationManager)this.getSystemService(NOTIFICATION_SERVICE);
-            m.notify(987123, makeNotification(transition));
+            if (!hasNotifiedToday()) {
+                NotificationManager m = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+                m.notify(GEOFENCING_NOTIFICATION_ID, makeNotification(transition));
+                setNotifiedToday();
+            } else {
+                Log.i(TAG, "Already notified today, not going to do it again");
+            }
 
         }
     }
@@ -64,13 +96,28 @@ public class GeofencingIntentService extends IntentService {
                 builder.setContentTitle("Enter").setContentText("You have entered the danger zone").setSmallIcon(R.drawable.swag);
                 break;
             case Geofence.GEOFENCE_TRANSITION_DWELL:
-                builder.setContentTitle("Dwell").setContentTitle("You are dwelling in the danger zone").setSmallIcon(R.drawable.swag);
+                builder.setContentTitle("Dwell").setContentText("You are dwelling in the danger zone").setSmallIcon(R.drawable.swag);
                 break;
             case Geofence.GEOFENCE_TRANSITION_EXIT:
-                builder.setContentTitle("Exit").setContentTitle("You have left the danger zone").setSmallIcon(R.drawable.swag);
+                builder.setContentTitle("Exit").setContentText("You have left the danger zone").setSmallIcon(R.drawable.swag);
                 break;
         }
         return builder.build();
+    }
+
+    public static void postPermissionsNotification(Context c) {
+        NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent i = new Intent(c, PermissionsRequestActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        PendingIntent pi = PendingIntent.getActivity(c, 0, i, 0);
+        Notification n = new NotificationCompat.Builder(c)
+                .setContentText(c.getString(R.string.notification_no_permissions_text))
+                .setContentTitle(c.getString(R.string.notification_no_permissions_title))
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setLargeIcon(BitmapFactory.decodeResource(c.getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.drawable.ic_warning_white_48dp).build();
+        nm.notify(GEOFENCING_NOTIFICATION_ID, n);
     }
 
 

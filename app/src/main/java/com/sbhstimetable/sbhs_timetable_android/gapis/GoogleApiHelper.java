@@ -2,6 +2,7 @@ package com.sbhstimetable.sbhs_timetable_android.gapis;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,9 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
+
+import java.util.Arrays;
 
 public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
@@ -33,8 +37,8 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
 
     /**
      *
-     * @param c
-     * @param a
+     * @param c - a context
+     * @param a - null if you just want to know if we have permission
      * @return false if calling activity must wait to initialise, true if permissions are granted and we can go straight away
      */
     public static boolean checkPermission(Context c, Activity a) {
@@ -77,6 +81,15 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
 
     public static boolean ready() {
         return INSTANCE != null && INSTANCE.client.isConnected();
+    }
+
+    public static void disableApiClient() {
+        if (ready()) {
+            NotificationManager nm = (NotificationManager)INSTANCE.cxt.getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.cancel(GeofencingIntentService.GEOFENCING_NOTIFICATION_ID);
+            LocationServices.GeofencingApi.removeGeofences(INSTANCE.client, Arrays.asList(new String[] {"sbhs"}));
+            INSTANCE.client.disconnect();
+        }
     }
 
     public static GoogleApiClient getClient() {

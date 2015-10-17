@@ -39,7 +39,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_below="@+id/initconn"
+        android:layout_below="@id/initconn"
         android:text="Get GoogleApiClient"
         android:id="@+id/getapi"/>
 
@@ -47,6 +47,13 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_below="@id/getapi"
+        android:text="Reset notification date"
+        android:id="@+id/resetdate"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_below="@id/resetdate"
         android:text="Check connection status"
         android:id="@+id/checkstatus"/>
 

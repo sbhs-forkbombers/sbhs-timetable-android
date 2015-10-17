@@ -5,6 +5,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.google.android.gms.location.LocationServices;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.gapis.GoogleApiHelper;
 
@@ -19,7 +20,10 @@ public class TimetableApp extends Application {
         TimetableApp.context = getApplicationContext();
         BELLTIME_ALLOW_FAKE_DAY = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PrefUtil.BELLTIMES_DAY_TESTING, false);
         Log.i("TimetableApp", "onCreate");
-        //GoogleApiHelper.initialise(getApplicationContext());
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(PrefUtil.GEOFENCING_ACTIVE, false) &&
+                GoogleApiHelper.checkPermission(context, null) && !GoogleApiHelper.ready()) {
+            GoogleApiHelper.initialise(getApplicationContext());
+        }
     }
 
     public static Context getAppContext() {

@@ -49,6 +49,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
@@ -57,6 +60,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
+import com.sbhstimetable.sbhs_timetable_android.gapis.GoogleApiHelper;
 
 import org.json.JSONObject;
 
@@ -270,6 +274,7 @@ public class TimetableActivity extends AppCompatActivity
 		ApiWrapper.getEventBus().unregister(this.receiver);
 	}
 
+
 	@SuppressWarnings("unused")
 	private class ActivityEventReceiver {
 		private TimetableActivity activity;
@@ -287,4 +292,6 @@ public class TimetableActivity extends AppCompatActivity
 
 
 	}
+
+
 }

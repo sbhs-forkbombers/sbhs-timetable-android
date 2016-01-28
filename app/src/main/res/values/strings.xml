@@ -29,6 +29,8 @@
 	<string name="title_activity_login">Login</string>
 	<string name="title_activity_debug">Debuggering</string>
 	<string name="title_activity_class_info">Some Class</string>
+	<string name="title_activity_google_api">Play Services Debuggering</string>
+	<string name="title_activity_permissions_request">Request permissions</string>
 
 	<!-- action labels -->
 	<string name="navigation_drawer_open">Open navigation drawer</string>
@@ -92,9 +94,13 @@
 	<!-- Notifications -->
 	<string name="loading_data">Loading bell and timetable information&#8230;</string>
 	<string name="not_all_data">Still waiting for timetable information&#8230;</string>
-	<string name="pref_title_notification_periods">Include breaks in notifications?</string>
+	<string name="pref_title_notification_periods">Include breaks in notifications</string>
 	<string name="pref_desc_notification_periods_negative">Not showing upcoming breaks</string>
 	<string name="pref_desc_notification_periods_positive">Showing upcoming breaks</string>
+	<string name="notification_no_permissions_title">You need to grant permissions</string>
+	<string name="notification_no_permissions_text">Tap to grant permissions to remind you to scan on</string>
+	<string name="notification_scan_on_title">You need to scan on!</string>
+	<string name="notification_scan_on_text">Tap to dismiss once you\'ve scanned on.</string>
 
 	<!-- Belltimes Adapter -->
 	<string name="err_bells_couldnt_load">Couldn\'t load today\'s bells! Might be a problem with SBHS?</string>

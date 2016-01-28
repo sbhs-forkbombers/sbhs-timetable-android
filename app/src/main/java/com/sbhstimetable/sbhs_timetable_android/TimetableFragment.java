@@ -25,11 +25,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,7 +60,6 @@ public class TimetableFragment extends Fragment {
 	private SwipeRefreshLayout layout;
 	private EventListener listener;
 	private static final String TAG = "TimetableFragment";
-	private GestureDetectorCompat gestureDetector;
 
 	/**
 	 * Use this factory method to create a new instance of

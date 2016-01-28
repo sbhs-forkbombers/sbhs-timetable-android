@@ -24,7 +24,6 @@ import android.database.DataSetObserver;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;

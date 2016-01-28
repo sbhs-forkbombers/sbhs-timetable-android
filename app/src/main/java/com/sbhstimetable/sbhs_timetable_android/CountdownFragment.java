@@ -48,6 +48,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.debug.DebugActivity;
+import com.sbhstimetable.sbhs_timetable_android.debug.GoogleApiActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
@@ -59,6 +60,7 @@ public class CountdownFragment extends Fragment {
 	private SwipeRefreshLayout mainView;
 	//private BroadcastListener listener;
 	private int tapCount = 0;
+	private int gapiTapCount = 0;
 	private DateTimeHelper dth;
 	private StorageCache cache;
 	private FullCycleWrapper cycle;
@@ -99,6 +101,17 @@ public class CountdownFragment extends Fragment {
 					Toast.makeText(getActivity(), R.string.toast_debug_entry, Toast.LENGTH_SHORT).show();
 					tapCount = 0;
 					Intent i = new Intent(getActivity(), DebugActivity.class);
+					getActivity().startActivity(i);
+				}
+			}
+		});
+		f.findViewById(R.id.countdown_countdown).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				if (++gapiTapCount == 7) {
+					Toast.makeText(getActivity(), R.string.toast_debug_entry, Toast.LENGTH_SHORT).show();
+					tapCount = 0;
+					Intent i = new Intent(getActivity(), GoogleApiActivity.class);
 					getActivity().startActivity(i);
 				}
 			}

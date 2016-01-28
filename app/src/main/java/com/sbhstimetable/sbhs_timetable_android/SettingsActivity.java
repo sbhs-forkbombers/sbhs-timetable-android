@@ -20,17 +20,22 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
+import com.sbhstimetable.sbhs_timetable_android.gapis.GoogleApiHelper;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements SettingsFragment.SettingsFragmentListener {
 	public Toolbar mToolbar;
 	public TypedValue mTypedValue;
+	private SettingsFragment mSettingsFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,8 @@ public class SettingsActivity extends AppCompatActivity {
 			int colorPrimaryDark = mTypedValue.data;
 			getWindow().setStatusBarColor(colorPrimaryDark);
 		}
+
+
 		setSupportActionBar(mToolbar);
 		if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
@@ -64,7 +71,26 @@ public class SettingsActivity extends AppCompatActivity {
 	}
 
 	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		if (requestCode == GoogleApiHelper.MY_PERMS_GEOFENCING_REQUEST) {
+			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				GoogleApiHelper.initialise(this);
+			} else {
+				if (mSettingsFragment != null) {
+					mSettingsFragment.onLocationPermissionDenied();
+				}
+				Toast.makeText(this, "You cannot enable scan in reminders unless you grant SBHS Timetable location access.", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	@Override
 	public void onBackPressed() {
 		finish();
+	}
+
+	@Override
+	public void setSettingsFragment(SettingsFragment frag) {
+		mSettingsFragment = frag;
 	}
 }

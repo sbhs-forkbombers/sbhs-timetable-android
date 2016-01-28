@@ -43,7 +43,8 @@ android {
 		dev {
 			applicationId 'com.sbhstimetable.sbhs_timetable_android_dev'
 			versionCode 9001
-			versionName '( ͡° ͜ʖ °)'// solid unicode support android studio
+			//versionName '( ͡° ͜ʖ °)'// solid unicode support android studio
+			versionName 'ಠ_ಠ'
 			buildConfigField "boolean", "DEBUG_MODE", "true"
 			buildConfigField "String", "GIT_REV", "\"${gitRev}-dev\""
 			resValue "string", "GIT_REV", "Rev ${gitRev}-dev"
@@ -64,4 +65,5 @@ dependencies {
 	compile 'com.squareup.retrofit:retrofit:1.9.0'
 	compile 'joda-time:joda-time:2.7'
 	compile 'de.greenrobot:eventbus:2.4.0'
+	compile 'com.google.android.gms:play-services-location:8.4.0'
 }

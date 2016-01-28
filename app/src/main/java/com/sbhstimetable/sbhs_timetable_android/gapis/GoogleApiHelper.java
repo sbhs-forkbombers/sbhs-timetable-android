@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -20,7 +21,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
-import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
 
 import java.util.Arrays;
 
@@ -29,7 +29,6 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
     private static GoogleApiHelper INSTANCE;
     private Context cxt;
     private GoogleApiClient client;
-    private boolean connected = false;
     private static final double SBHS_LAT = -33.892398;
     private static final double SBHS_LON = 151.210911;
     private static final int FENCE_RADIUS = 100;
@@ -123,11 +122,16 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
                 ).setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build();
-        LocationServices.GeofencingApi.addGeofences(
-                client,
-                getGeofencingRequest(),
-                getGeofencePendingIntent()
-        ).setResultCallback(this);
+        try {
+            LocationServices.GeofencingApi.addGeofences(
+                    client,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(this);
+        } catch (SecurityException e) {
+            // kek
+            GeofencingIntentService.postPermissionsNotification(this.cxt);
+        }
         Log.i("GoogleApiHelper", "Setup geofences!");
     }
 
@@ -137,12 +141,12 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i("GoogleApiHelper", "Connection to Google APIs failed: " + connectionResult.getErrorMessage());
     }
 
     @Override
-    public void onResult(Status status) {
+    public void onResult(@NonNull Status status) {
         Log.i("GoogleApiHelper", status + ", " + status.getStatusMessage());
     }
 }

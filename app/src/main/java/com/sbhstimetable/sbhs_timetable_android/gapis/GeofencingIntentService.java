@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.location.GeofencingEvent;
 import com.sbhstimetable.sbhs_timetable_android.PermissionsRequestActivity;
@@ -62,16 +61,6 @@ public class GeofencingIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.i("GeofencingIntentService", "DOOT DOOT");
         if (intent != null) {
-            /*final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
-            }*/
             Log.i(TAG, "Got intent: " + intent.getAction());
             GeofencingEvent ev = GeofencingEvent.fromIntent(intent);
             if (ev.hasError()) {

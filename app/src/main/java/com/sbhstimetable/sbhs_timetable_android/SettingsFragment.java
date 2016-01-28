@@ -20,7 +20,6 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;

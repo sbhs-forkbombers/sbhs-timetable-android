@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.content.pm.PackageManager;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;

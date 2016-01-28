@@ -25,11 +25,15 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -58,6 +62,8 @@ public class TimetableFragment extends Fragment {
 
 	private SwipeRefreshLayout layout;
 	private EventListener listener;
+	private static final String TAG = "TimetableFragment";
+	private GestureDetectorCompat gestureDetector;
 
 	/**
 	 * Use this factory method to create a new instance of
@@ -128,6 +134,7 @@ public class TimetableFragment extends Fragment {
 		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
 		ApiWrapper.getEventBus().registerSticky(this.listener);
+
 		return v;
 	}
 
@@ -135,7 +142,13 @@ public class TimetableFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-		TimetableAdapter adapter = new TimetableAdapter(this.getActivity());
+		final TimetableAdapter adapter = new TimetableAdapter(this.getActivity());
+		z.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return adapter.getGestureListener().onTouchEvent(event);
+			}
+		});
 		z.setAdapter(adapter);
 
 	}
@@ -170,4 +183,5 @@ public class TimetableFragment extends Fragment {
 			}
 		}
 	}
+
 }

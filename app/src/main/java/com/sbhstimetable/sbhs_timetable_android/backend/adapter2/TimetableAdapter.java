@@ -23,7 +23,11 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -51,6 +55,8 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	private FrameLayout theFilterSelector;
 	private List<DataSetObserver> watchers = new ArrayList<>();
 
+    private GestureDetectorCompat gesture;
+
 	private int curDayIndex;
 	private int curWeekIndex;
 
@@ -61,6 +67,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		cycle = new FullCycleWrapper(c);
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
+        gesture = new GestureDetectorCompat(c, new MyGestureListener());
 		int tmp = currentIndex;
 		//Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
 		curDayIndex = (tmp % 5);
@@ -208,8 +215,18 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		} else {
             roomText.setTextColor(ThemeHelper.getTextColor());
         }
-		return view;
+		return attachSwipeListener(view);
 	}
+
+    private View attachSwipeListener(View v) {
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gesture.onTouchEvent(event);
+            }
+        });
+        return v;
+    }
 
 	@Override
 	public int getItemViewType(int position) {
@@ -243,6 +260,10 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		this.notifyDSOs();
 	}
 
+    public GestureDetectorCompat getGestureListener() {
+        return gesture;
+    }
+
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
 
@@ -258,4 +279,55 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	public void onInvalidated() {
 		onChanged();
 	}
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String TAG = "MEMES";
+        boolean isNewGesture = true;
+        boolean hasCompletedScroll = false;
+        @Override
+        public boolean onDown(MotionEvent e) {
+            isNewGesture = true;
+            hasCompletedScroll = false;
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent start, MotionEvent end, float deltaX, float deltaY) {
+            final int MIN_DISTANCE = 50;
+            final int MAX_DELTA_Y = 200;
+            if (!isNewGesture && hasCompletedScroll) {
+                return true;
+            }
+            isNewGesture = false;
+            try {
+                if (Math.abs(start.getY() - end.getY()) > MAX_DELTA_Y) {
+                    return false;
+                }
+                if (start.getX() - end.getX() > MIN_DISTANCE) {
+                    // gone left
+                    hasCompletedScroll = true;
+                    currentIndex--;
+                    currentIndex = (currentIndex < 0 ? 15 + currentIndex : currentIndex);
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    return true;
+                } else if (end.getX() - start.getX() > MIN_DISTANCE) {
+                    // gone right
+                    hasCompletedScroll = true;
+                    currentIndex++;
+                    currentIndex = currentIndex % 15;
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    return true;
+                }
+            } catch (Exception e) {
+                // meh
+            }
+            return false;
+        }
+    }
 }

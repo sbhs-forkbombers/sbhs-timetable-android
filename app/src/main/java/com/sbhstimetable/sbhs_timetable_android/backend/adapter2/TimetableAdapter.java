@@ -37,6 +37,7 @@ import android.widget.TextView;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -119,43 +120,47 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		return false;
 	}
 
+    private View inflateLayout(int id, ViewGroup parent, boolean b) {
+        return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(id, parent, b);
+    }
+
 	@Override
 	public View getView(int i, View convertView, ViewGroup parent) {
-		if (i == 0 && (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null)) {
-			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent, false);
-		}
-		if (i == 6) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
+		if (i == 0) {
+            if (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null) {
+                return inflateLayout(R.layout.view_list_loading, parent, false);
+            } else {
+                if (this.theFilterSelector != null) {
+                    Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner_day);
+                    this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
+                    s.setOnItemSelectedListener(this);
+                    s = (Spinner)theFilterSelector.findViewById(R.id.spinner_week);
+                    this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
+                    s.setOnItemSelectedListener(this);
+                    return theFilterSelector;
+                }
+                FrameLayout f = (FrameLayout)inflateLayout(R.layout.layout_today_spinner, parent, false);
+                Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
+                ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, days);
+                s.setAdapter(a);
+                s.setSelection(this.curDayIndex);
+                s.setOnItemSelectedListener(this);
+                s = (Spinner)f.findViewById(R.id.spinner_week);
+                a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, weeks);
+                s.setAdapter(a);
+                s.setSelection(this.curWeekIndex);
+                s.setOnItemSelectedListener(this);
+                this.theFilterSelector = f;
+                return f;
+            }
+        } else if (i == 6) {
+			View v = inflateLayout(R.layout.layout_last_updated, parent, false);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
 					.appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
 			t.setText(f.print(this.cycle.getFetchTime(this.cycle.getCurrentDayInCycle()).toLocalDateTime()));
 			return v;
-		}
-		if (i == 0) {
-			if (this.theFilterSelector != null) {
-				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner_day);
-				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
-				s.setOnItemSelectedListener(this);
-				s = (Spinner)theFilterSelector.findViewById(R.id.spinner_week);
-				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
-				s.setOnItemSelectedListener(this);
-				return theFilterSelector;
-			}
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_today_spinner, parent, false);
-			Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
-			ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, days);
-			s.setAdapter(a);
-			s.setSelection(this.curDayIndex);
-			s.setOnItemSelectedListener(this);
-			s = (Spinner)f.findViewById(R.id.spinner_week);
-			a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, weeks);
-			s.setAdapter(a);
-			s.setSelection(this.curWeekIndex);
-			s.setOnItemSelectedListener(this);
-			this.theFilterSelector = f;
-			return f;
 		}
 		final FrameLayout view;
 		final TextView header;
@@ -165,7 +170,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.timetable_class_header) != null) {
 			view = (FrameLayout)convertView;
 		} else {
-			view = (FrameLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_timetable_classinfo, parent, false);
+			view = (FrameLayout)inflateLayout(R.layout.layout_timetable_classinfo, parent, false);
 		}
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
 		roomText = (TextView)view.findViewById(R.id.timetable_class_room);
@@ -187,15 +192,22 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 			roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 			teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-		}
+		} else {
+            roomText.setPaintFlags(0);
+            teacherText.setPaintFlags(0);
+        }
 
 		if (l.teacherChanged() || l.cancelled()) {
 			teacherText.setTextColor(colour);
-		}
+		} else {
+            teacherText.setTextColor(ThemeHelper.getTextColor());
+        }
 
 		if (l.roomChanged() || l.cancelled()) {
 			roomText.setTextColor(colour);
-		}
+		} else {
+            roomText.setTextColor(ThemeHelper.getTextColor());
+        }
 		return view;
 	}
 
@@ -223,7 +235,6 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 			this.curWeekIndex = position;
 			this.currentIndex = (5*position) + this.curDayIndex;
 		} else if (parent.getId() == R.id.spinner_day) {
-			position++;
 			if (position == this.curDayIndex) return;
 			this.curDayIndex = position;
 			this.currentIndex = (5 * this.curWeekIndex) + position;

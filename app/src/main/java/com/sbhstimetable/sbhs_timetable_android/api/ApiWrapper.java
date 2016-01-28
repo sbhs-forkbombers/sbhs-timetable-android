@@ -38,6 +38,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.CanHazInternetListener;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
@@ -87,7 +88,7 @@ public class ApiWrapper {
 
 	public static void loadOverrideEnabled(Context c) {
 		if (c == null) return;
-		overrideEnabled = PreferenceManager.getDefaultSharedPreferences(c).getBoolean("override", false);
+		overrideEnabled = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(PrefUtil.OVERRIDE, false);
 	}
 
 	public static boolean isLoadingSomething() {

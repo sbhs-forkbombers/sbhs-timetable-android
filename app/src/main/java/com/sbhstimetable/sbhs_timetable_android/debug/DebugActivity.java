@@ -117,12 +117,12 @@ public class DebugActivity extends AppCompatActivity {
 							}).setPositiveButton("I'm ready", new DialogInterface.OnClickListener() {
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									p.edit().putBoolean("override", true).apply();
+									p.edit().putBoolean(PrefUtil.OVERRIDE, true).apply();
 									ApiWrapper.overrideEnabled = true;
 								}
 							}).show();
 				} else {
-					p.edit().putBoolean("override", false).apply();
+					p.edit().putBoolean(PrefUtil.OVERRIDE, false).apply();
 					ApiWrapper.overrideEnabled = false;
 				}
 			}

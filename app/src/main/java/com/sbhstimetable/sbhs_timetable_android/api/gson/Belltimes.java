@@ -98,7 +98,7 @@ public class Belltimes implements FetchedObject {
 		if (weeks.indexOf(weekType) < 0) {
 			return -1;
 		}
-		return (days.indexOf(day)+1) + 5*weeks.indexOf(weekType);
+		return (days.indexOf(day)) + 5*weeks.indexOf(weekType);
 	}
 
 	public int getLength() {

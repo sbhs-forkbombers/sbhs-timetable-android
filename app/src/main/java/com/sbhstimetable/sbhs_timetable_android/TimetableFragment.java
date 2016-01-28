@@ -62,7 +62,7 @@ public class TimetableFragment extends Fragment {
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
-	 * @return A new instance of fragment CountdownFragment.
+	 * @return A new instance of fragment TimetableFragment.
 	 */
 	public static TimetableFragment newInstance() {
 		return new TimetableFragment();
@@ -107,9 +107,6 @@ public class TimetableFragment extends Fragment {
 		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				/*ApiAccessor.getBelltimes(c, false);
-				ApiAccessor.getNotices(c, false);
-				ApiAccessor.getToday(c, false);*/
 				ApiWrapper.requestBells(c);
 				ApiWrapper.requestNotices(c);
 				ApiWrapper.requestToday(c);

@@ -31,4 +31,5 @@ public class PrefUtil {
 	public static final String BELLTIMES_DAY_TESTING = "bell_day_testing";
 	public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
 	public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
+	public static final String OVERRIDE = "ignoreVariationsReady";
 }

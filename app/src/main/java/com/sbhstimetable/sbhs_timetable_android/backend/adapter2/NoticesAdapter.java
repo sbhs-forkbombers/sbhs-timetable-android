@@ -111,8 +111,10 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		if (notices == null) {
 			//return curError == null ? 1 : 2;
 			return 1;
+		} else if (notices.getVisibleNotices() == 0) {
+			return 3;
 		}
-		return notices.getNumberOfNotices()+2;
+		return notices.getVisibleNotices()+2;
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 
 	@Override
 	public long getItemId(int position) {
-		if (position < notices.getNumberOfNotices()) {
+		if (position < notices.getVisibleNotices()) {
 			return notices.getNoticeAtIndex(position).getID();
 		} else {
 			return 0;
@@ -179,6 +181,12 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 					.appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
 			t.setText(f.print(this.notices.getFetchTime().toLocalDateTime()));
 			return v;
+		} else if (position == getCount() - 2 && notices.getVisibleNotices() == 0) {
+			TextView res = new TextView(parent.getContext());
+			setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
+			res.setGravity(Gravity.CENTER);
+			res.setText(R.string.no_notices);
+			return res;
 		}
 		Notices.Notice n = notices.getNoticeAtIndex(position-1);
 		View res;

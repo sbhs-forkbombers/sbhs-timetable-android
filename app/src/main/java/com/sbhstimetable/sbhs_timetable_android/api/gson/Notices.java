@@ -63,6 +63,14 @@ public class Notices implements FetchedObject {
 	public int getNumberOfNotices() {
 		int total = 0;
 		for (String i : getWeights()) {
+			total += notices.get(i).length;
+		}
+		return total;
+	}
+
+	public int getVisibleNotices() {
+		int total = 0;
+		for (String i : getWeights()) {
 			total += getNoticesForWeight(i).length;
 		}
 		return total;

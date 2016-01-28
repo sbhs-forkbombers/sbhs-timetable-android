@@ -30,8 +30,9 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
     private Context cxt;
     private GoogleApiClient client;
     private boolean connected = false;
-    private static final double SBHS_LAT = -33.892817;
-    private static final double SBHS_LON = 151.219873;
+    private static final double SBHS_LAT = -33.892398;
+    private static final double SBHS_LON = 151.210911;
+    private static final int FENCE_RADIUS = 100;
     public static final int MY_PERMS_GEOFENCING_REQUEST = 4; // chosen by fair dice roll. Guaranteed to be random.
     private Geofence sbhsGeofence;
 
@@ -118,7 +119,7 @@ public class GoogleApiHelper implements GoogleApiClient.ConnectionCallbacks,
                 .setCircularRegion(
                         SBHS_LAT,
                         SBHS_LON,
-                        300
+                        FENCE_RADIUS
                 ).setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .build();

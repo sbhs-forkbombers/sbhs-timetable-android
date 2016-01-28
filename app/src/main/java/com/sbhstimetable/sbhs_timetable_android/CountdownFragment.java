@@ -21,13 +21,13 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
@@ -61,13 +61,11 @@ public class CountdownFragment extends Fragment {
 	//private BroadcastListener listener;
 	private int tapCount = 0;
 	private int gapiTapCount = 0;
-	private boolean refreshing = false;
 	private DateTimeHelper dth;
 	private StorageCache cache;
 	private FullCycleWrapper cycle;
 	private CountDownTimer mTimer;
-	private DataWatcher evListener;
-	private static boolean updatingTimer = false;
+	private DataWatcherEventListener evListener;
 	/**
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
@@ -83,8 +81,6 @@ public class CountdownFragment extends Fragment {
 
 	public CountdownFragment() {
 		// Required empty public constructor
-
-
 	}
 
 	@Override
@@ -97,7 +93,6 @@ public class CountdownFragment extends Fragment {
 	@SuppressLint("ResourceAsColor")
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		final CountdownFragment me = this;
 		final SwipeRefreshLayout f = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_countdown, container, false);
 		f.findViewById(R.id.countdown_name).setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -131,7 +126,6 @@ public class CountdownFragment extends Fragment {
 		f.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			@Override
 			public void onRefresh() {
-				refreshing = true;
 				ApiWrapper.requestNotices(c);
 				ApiWrapper.requestBells(c);
 				ApiWrapper.requestToday(c);
@@ -161,7 +155,7 @@ public class CountdownFragment extends Fragment {
 		if (this.cache == null)	this.cache = new StorageCache(getActivity());
 		if (this.cycle == null) this.cycle = new FullCycleWrapper(getActivity());
 		if (this.evListener == null) {
-			this.evListener = new DataWatcher();
+			this.evListener = new DataWatcherEventListener();
 			this.cycle.addDataSetObserver(this.evListener);
 			ApiWrapper.getEventBus().registerSticky(this.evListener);
 		}
@@ -211,15 +205,8 @@ public class CountdownFragment extends Fragment {
 		}
 		updateTimer(f);
 	}
-	public void updateTimer(final View f) {
-		//if (updatingTimer) return;
-		updatingTimer = true;
 
-		/*if (timeLeft != null) {
-			cancelling = true;
-			timeLeft.cancel();
-			cancelling = false;
-		}*/
+	public void updateTimer(final View f) {
 
 		RelativeLayout extraData = (RelativeLayout)f.findViewById(R.id.countdown_extraData);
 		TextView teacher = (TextView)extraData.findViewById(R.id.countdown_extraData_teacher);
@@ -234,15 +221,12 @@ public class CountdownFragment extends Fragment {
 		if (!dth.hasBells()) {
 			Belltimes bells = cache.loadBells();
 			dth.setBells(bells);
-			if (bells == null) {
-				//ApiWrapper.requestBells(this.getActivity());
-			}
 		}
 		debug("has bells - " + dth.hasBells());
 		if (dth.hasBells()) {
 			Belltimes.Bell next = dth.getNextBell();
-			debug("next - " + next + " " + next.getBellDisplay() + " " + next.getBellName());
 			if (next != null && next.getPreviousBellTime() != null) {
+				debug("next - " + next + " " + next.getBellDisplay() + " " + next.getBellName());
 				Belltimes.Bell now = next.getPreviousBellTime();
 				debug("period start - period => " + now.getBellName() + "(" + now.getPeriodNumber() + ") is ps? " + now.isPeriodStart());
 				if (now.isPeriodStart() && now.getPeriodNumber() < 5) { // in a period, it's not last period.
@@ -302,15 +286,15 @@ public class CountdownFragment extends Fragment {
 
 		if (p != null) {
 			if (p.teacherChanged()) {
-				teacher.setTextColor(getActivity().getResources().getColor(R.color.standout));
+				teacher.setTextColor(ContextCompat.getColor(getActivity(), R.color.standout));
 			} else {
-				teacher.setTextColor(getActivity().getResources().getColor(R.color.primary_text_default_material_dark));
+				teacher.setTextColor(ContextCompat.getColor(getActivity(), R.color.primary_text_default_material_dark));
 				//teacher.setTextColor(getActivity().getResources().getColor(R.color.secondary_text_dark));
 			}
 			if (p.roomChanged()) {
-				room.setTextColor(getActivity().getResources().getColor(R.color.standout));
+				room.setTextColor(ContextCompat.getColor(getActivity(), R.color.standout));
 			} else {
-				room.setTextColor(getActivity().getResources().getColor(R.color.primary_text_default_material_dark));
+				room.setTextColor(ContextCompat.getColor(getActivity(), R.color.primary_text_default_material_dark));
 				//room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
 			}
 		}
@@ -326,7 +310,6 @@ public class CountdownFragment extends Fragment {
 		long millisToCountfor = dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis();
 		millisToCountfor += 1000; // show 00:00
 		Log.i("CountdownFragment", "Will count for " + millisToCountfor + "ms");
-		final CountdownFragment frag = this;
 		CountDownTimer timer = new CountDownTimer(millisToCountfor, 1000) {
 			@Override
 			public void onTick(long millisUntilFinished) {
@@ -365,18 +348,17 @@ public class CountdownFragment extends Fragment {
 			public void onFinish() {
 				//j.setText(new DateTimeFormatterBuilder().append(DateTimeHelper.getHHMMFormatter()).appendLiteral(':').appendSecondOfMinute(2).appendMillisOfSecond(4).toFormatter().print(DateTime.now().toLocalTime()));
 				mTimer = null;
-				t.setText("00m 00s");
+				t.setText(R.string.no_time_left);
 				updateTimer();
 
 			}
 		};
 		mTimer = timer;
-		updatingTimer = false;
 		timer.start();
 	}
 
 	@Override
-	public void onAttach(Activity a) {
+	public void onAttach(Context a) {
 		super.onAttach(a);
 		Log.i("CountdownFragment", "ATTACHED ===> " + this.getView());
 	}
@@ -410,7 +392,8 @@ public class CountdownFragment extends Fragment {
 		//mListener = null;
 	}
 
-	private class DataWatcher extends DataSetObserver {
+	@SuppressWarnings("unused")
+	private class DataWatcherEventListener extends DataSetObserver {
 		@Override
 		public void onChanged() {
 			super.onChanged();

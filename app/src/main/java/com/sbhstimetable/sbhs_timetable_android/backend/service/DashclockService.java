@@ -59,10 +59,7 @@ public class DashclockService extends DashClockExtension {
     protected void onUpdateData(int reason) {
         int num;
         boolean summary = false;
-        if (dth.hasBells()) {
-
-		}
-        else {
+        if (!dth.hasBells()) {
             publishUpdate(new ExtensionData().visible(false));
             return;
         }

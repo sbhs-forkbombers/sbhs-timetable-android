@@ -20,23 +20,16 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.app.assist.AssistContent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -45,9 +38,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.Menu;
+import android.view.GestureDetector;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.MotionEvent;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,7 +48,6 @@ import com.google.android.gms.location.LocationServices;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationService;
@@ -67,13 +59,9 @@ import org.json.JSONObject;
 import java.lang.Override;
 
 
+
 public class TimetableActivity extends AppCompatActivity
 		implements NavigationView.OnNavigationItemSelectedListener {
-	private static final String COUNTDOWN_FRAGMENT_TAG = "countdownFragment";
-	public static final String BELLTIMES_AVAILABLE = "bellsArePresent";
-	public static final String TODAY_AVAILABLE = "todayIsPresent";
-	public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
-	public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
 
 	/**
 	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -83,14 +71,11 @@ public class TimetableActivity extends AppCompatActivity
 	public NavigationView mNavigationView;
 	public TypedValue mTypedValue;
 	public ActionBarDrawerToggle mDrawerToggle;
-	private Menu menu;
 	public boolean isActive = false;
 	private boolean needToRecreate = false;
 	private int onMaster = 1;
-	private ActivityEventReceiver receiver;
 	private StorageCache cache;
 	public int mNavItemId;
-	private Runnable mPendingRunnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -125,10 +110,6 @@ public class TimetableActivity extends AppCompatActivity
 			finish();
 		}
 
-		if (this.receiver == null) {
-			this.receiver = new ActivityEventReceiver(this);
-
-		}
 
 
 		// Grab belltimes.json
@@ -152,7 +133,7 @@ public class TimetableActivity extends AppCompatActivity
 	@Override
 	public void onResume() {
 		super.onResume();
-		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREF_DISABLE_DIALOG, false)) {
+		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PrefUtil.PREF_DISABLE_DIALOG, false)) {
 			DialogFragment f = new FeedbackDialogFragment();
 			f.show(this.getFragmentManager(), "dialog");
 		}
@@ -164,7 +145,6 @@ public class TimetableActivity extends AppCompatActivity
 		if (this.cache.shouldReloadNotices()) ApiWrapper.requestNotices(this);
 		if (this.cache.shouldReloadToday()) ApiWrapper.requestToday(this);
 		if (this.cache.shouldReloadTimetable()) ApiWrapper.requestTimetable(this);
-		ApiWrapper.getEventBus().register(this.receiver);
 		//NotificationService.startUpdatingNotification(this);
 		this.isActive = true;
 
@@ -266,31 +246,6 @@ public class TimetableActivity extends AppCompatActivity
 			this.recreate();
 		}
 		this.isActive = true;
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		ApiWrapper.getEventBus().unregister(this.receiver);
-	}
-
-
-	@SuppressWarnings("unused")
-	private class ActivityEventReceiver {
-		private TimetableActivity activity;
-		public ActivityEventReceiver(TimetableActivity a) {
-			this.activity = a;
-		}
-
-		public void onEvent(TodayEvent t) {
-			if (t.successful()) {
-				// TODO
-			} else {
-
-			}
-		}
-
-
 	}
 
 

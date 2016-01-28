@@ -32,7 +32,4 @@ public class BellsEvent extends RequestReceivedEvent<Belltimes> {
 		super(r, "belltimes");
 	}
 
-	public BellsEvent(boolean invalid) {
-		super(invalid, "belltimes");
-	}
 }

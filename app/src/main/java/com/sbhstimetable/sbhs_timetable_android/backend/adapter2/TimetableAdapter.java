@@ -22,7 +22,12 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -36,6 +41,7 @@ import android.widget.TextView;
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -47,7 +53,9 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	private FullCycleWrapper cycle;
 	private int currentIndex;
 	private FrameLayout theFilterSelector;
-	private List<DataSetObserver> watchers = new ArrayList<DataSetObserver>();
+	private List<DataSetObserver> watchers = new ArrayList<>();
+
+    private GestureDetectorCompat gesture;
 
 	private int curDayIndex;
 	private int curWeekIndex;
@@ -59,7 +67,8 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		cycle = new FullCycleWrapper(c);
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
-		int tmp = currentIndex - 1;
+        gesture = new GestureDetectorCompat(c, new MyGestureListener());
+		int tmp = currentIndex;
 		//Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
 		curDayIndex = (tmp % 5);
 		curWeekIndex = (int)Math.floor(tmp / 5);
@@ -118,43 +127,47 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		return false;
 	}
 
+    private View inflateLayout(int id, ViewGroup parent, boolean b) {
+        return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(id, parent, b);
+    }
+
 	@Override
 	public View getView(int i, View convertView, ViewGroup parent) {
-		if (i == 0 && (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null)) {
-			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
-		}
-		if (i == 6) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
+		if (i == 0) {
+            if (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null) {
+                return inflateLayout(R.layout.view_list_loading, parent, false);
+            } else {
+                if (this.theFilterSelector != null) {
+                    Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner_day);
+                    this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
+                    s.setOnItemSelectedListener(this);
+                    s = (Spinner)theFilterSelector.findViewById(R.id.spinner_week);
+                    this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
+                    s.setOnItemSelectedListener(this);
+                    return theFilterSelector;
+                }
+                FrameLayout f = (FrameLayout)inflateLayout(R.layout.layout_today_spinner, parent, false);
+                Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
+                ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, days);
+                s.setAdapter(a);
+                s.setSelection(this.curDayIndex);
+                s.setOnItemSelectedListener(this);
+                s = (Spinner)f.findViewById(R.id.spinner_week);
+                a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, weeks);
+                s.setAdapter(a);
+                s.setSelection(this.curWeekIndex);
+                s.setOnItemSelectedListener(this);
+                this.theFilterSelector = f;
+                return f;
+            }
+        } else if (i == 6) {
+			View v = inflateLayout(R.layout.layout_last_updated, parent, false);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
 					.appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
 			t.setText(f.print(this.cycle.getFetchTime(this.cycle.getCurrentDayInCycle()).toLocalDateTime()));
 			return v;
-		}
-		if (i == 0) {
-			if (this.theFilterSelector != null) {
-				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner_day);
-				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
-				s.setOnItemSelectedListener(this);
-				s = (Spinner)theFilterSelector.findViewById(R.id.spinner_week);
-				this.onItemSelected(s, null, s.getSelectedItemPosition(), 0);
-				s.setOnItemSelectedListener(this);
-				return theFilterSelector;
-			}
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_today_spinner, null);
-			Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
-			ArrayAdapter<String> a = new ArrayAdapter<String>(parent.getContext(), R.layout.textview, days);
-			s.setAdapter(a);
-			s.setSelection(this.curDayIndex);
-			s.setOnItemSelectedListener(this);
-			s = (Spinner)f.findViewById(R.id.spinner_week);
-			a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, weeks);
-			s.setAdapter(a);
-			s.setSelection(this.curWeekIndex);
-			s.setOnItemSelectedListener(this);
-			this.theFilterSelector = f;
-			return f;
 		}
 		final FrameLayout view;
 		final TextView header;
@@ -164,7 +177,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.timetable_class_header) != null) {
 			view = (FrameLayout)convertView;
 		} else {
-			view = (FrameLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
+			view = (FrameLayout)inflateLayout(R.layout.layout_timetable_classinfo, parent, false);
 		}
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
 		roomText = (TextView)view.findViewById(R.id.timetable_class_room);
@@ -181,22 +194,39 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		} else {
 			changed.setVisibility(View.VISIBLE);
 		}
-		int colour = roomText.getContext().getResources().getColor(R.color.standout);
+		int colour = ContextCompat.getColor(roomText.getContext(), R.color.standout);
 		if (l.cancelled()) {
 			roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 			teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 
-		}
+		} else {
+            roomText.setPaintFlags(0);
+            teacherText.setPaintFlags(0);
+        }
 
 		if (l.teacherChanged() || l.cancelled()) {
 			teacherText.setTextColor(colour);
-		}
+		} else {
+            teacherText.setTextColor(ThemeHelper.getTextColor());
+        }
 
 		if (l.roomChanged() || l.cancelled()) {
 			roomText.setTextColor(colour);
-		}
-		return view;
+		} else {
+            roomText.setTextColor(ThemeHelper.getTextColor());
+        }
+		return attachSwipeListener(view);
 	}
+
+    private View attachSwipeListener(View v) {
+        v.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gesture.onTouchEvent(event);
+            }
+        });
+        return v;
+    }
 
 	@Override
 	public int getItemViewType(int position) {
@@ -213,6 +243,8 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		return false;
 	}
 
+
+	/* spinner stuff */
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if (parent.getId() == R.id.spinner_week) {
@@ -220,7 +252,6 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 			this.curWeekIndex = position;
 			this.currentIndex = (5*position) + this.curDayIndex;
 		} else if (parent.getId() == R.id.spinner_day) {
-			position++;
 			if (position == this.curDayIndex) return;
 			this.curDayIndex = position;
 			this.currentIndex = (5 * this.curWeekIndex) + position;
@@ -228,6 +259,10 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		//Log.i("TimetableAdapter", "new position wk " + this.curWeekIndex + " day " + this.curDayIndex + " => " + this.currentIndex);
 		this.notifyDSOs();
 	}
+
+    public GestureDetectorCompat getGestureListener() {
+        return gesture;
+    }
 
 	@Override
 	public void onNothingSelected(AdapterView<?> parent) {
@@ -242,7 +277,96 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public void onInvalidated() {
-		//super.onInvalidated();
 		onChanged();
 	}
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String TAG = "MEMES";
+        boolean isNewGesture = true;
+        boolean hasCompletedScroll = false;
+        static final int MIN_DISTANCE = 50;
+        static final int MAX_DELTA_Y = 300;
+        @Override
+        public boolean onDown(MotionEvent e) {
+            isNewGesture = true;
+            hasCompletedScroll = false;
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent start, MotionEvent end, float deltaX, float deltaY) {
+            if (!isNewGesture && hasCompletedScroll) {
+                return true;
+            }
+            isNewGesture = false;
+            try {
+                if (Math.abs(start.getY() - end.getY()) > MAX_DELTA_Y) {
+                    return false;
+                }
+                if (start.getX() - end.getX() > MIN_DISTANCE) {
+                    // gone left
+                    hasCompletedScroll = true;
+                    currentIndex--;
+                    currentIndex = (currentIndex < 0 ? 15 + currentIndex : currentIndex);
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    return true;
+                } else if (end.getX() - start.getX() > MIN_DISTANCE) {
+                    // gone right
+                    hasCompletedScroll = true;
+                    currentIndex++;
+                    currentIndex = currentIndex % 15;
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    return true;
+                }
+            } catch (Exception e) {
+                // meh
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent start, MotionEvent end, float velocityX, float velocityY) {
+            if (!isNewGesture && hasCompletedScroll) {
+                return true;
+            }
+            isNewGesture = false;
+            try {
+                if (Math.abs(start.getY() - end.getY()) > MAX_DELTA_Y) {
+                    return false;
+                }
+                if (start.getX() - end.getX() > MIN_DISTANCE) {
+                    // gone left
+                    hasCompletedScroll = true;
+                    currentIndex--;
+                    currentIndex = (currentIndex < 0 ? 15 + currentIndex : currentIndex);
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    hasCompletedScroll = true;
+                    return true;
+                } else if (end.getX() - start.getX() > MIN_DISTANCE) {
+                    // gone right
+                    hasCompletedScroll = true;
+                    currentIndex++;
+                    currentIndex = currentIndex % 15;
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    hasCompletedScroll = true;
+                    return true;
+                }
+            } catch (Exception e) {
+
+            }
+            return false;
+        }
+    }
 }

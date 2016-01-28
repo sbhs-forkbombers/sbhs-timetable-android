@@ -20,13 +20,15 @@
 
 package com.sbhstimetable.sbhs_timetable_android;
 
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
+
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 
 public class FeedbackDialogFragment extends DialogFragment {
 	@Override
@@ -36,7 +38,7 @@ public class FeedbackDialogFragment extends DialogFragment {
 		builder.setMessage(R.string.pls2feedback).setPositiveButton(R.string.no_show, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialogInterface, int i) {
-			PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(TimetableActivity.PREF_DISABLE_DIALOG, true).apply();
+			PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(PrefUtil.PREF_DISABLE_DIALOG, true).apply();
 			}
 		}).setTitle(R.string.dialog_title);
 		return builder.create();

@@ -58,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
 
 		setSupportActionBar(mToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

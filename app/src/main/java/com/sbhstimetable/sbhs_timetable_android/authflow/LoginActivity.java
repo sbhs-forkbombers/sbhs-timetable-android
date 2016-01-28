@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -32,13 +33,13 @@ import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.Window;
 import android.webkit.CookieManager;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.TimetableActivity;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 import static com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper.baseURL;
@@ -49,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
 	public WebView mWebView;
 
 	@Override
+	@SuppressWarnings("ConstantConditions")
 	protected void onCreate(Bundle savedInstanceState) {
 		ThemeHelper.setTheme(this);
 		super.onCreate(savedInstanceState);
@@ -62,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
 		setSupportActionBar(mToolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
 			int colorPrimaryDark = mTypedValue.data;
 			getWindow().setStatusBarColor(colorPrimaryDark);
@@ -84,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
 							String sessionID = i.split("=")[1];
 							ApiWrapper.finishedLogin(me, sessionID);
 
-							PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(TimetableActivity.PREF_LOGGED_IN_ONCE, true).apply();
+							PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(PrefUtil.PREF_LOGGED_IN_ONCE, true).apply();
 							me.onBackPressed();
 						}
 					}

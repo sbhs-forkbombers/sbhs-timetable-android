@@ -8,7 +8,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
@@ -26,21 +25,16 @@ import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
+import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
-// TODO retry later if no internet connection
 // TODO respect sync on/off setting
 public class NotificationService extends Service {
 	public static final String ACTION_INITIALISE = "com.sbhstimetable.action.NotificationService.init";
 	public static final String ACTION_BELLTIMES = "com.sbhstimetable.action.NotificationService.belltimes";
-	public static final String ACTION_TIMETABLE = "com.sbhstimetable.action.NotificationService.timetable";
 	public static final String ACTION_TODAY = "com.sbhstimetable.action.NotificationService.today";
-
-	public static final String EXTRA_DATA = "com.sbhstimetable.data.json";
-
 	private static final String ACTION_UPDATE = "com.sbhstimetable.action.NotificationService.update";
 	private static final String TAG = "NotificationService";
 
@@ -89,6 +83,9 @@ public class NotificationService extends Service {
             Log.d(TAG, "bells - " + dth.hasBells());
 			dth.setBells(cache.loadBells());
 			showAppropriateNotification();
+		} else if (intent.getAction().equals(ACTION_TODAY)) {
+			dth.setToday(cache.loadToday());
+			showAppropriateNotification();
 		} else if (intent.getAction().equals(ACTION_UPDATE)) {
             Log.d(TAG, "update!");
 			if (!dth.hasBells()) {
@@ -96,14 +93,9 @@ public class NotificationService extends Service {
 				this.showLoadingNotification();
 				return START_NOT_STICKY;
 			}
-			if (dth.getNextBell().isPeriodStart()) {
-				// TODO I'm not entirely sure this is necessary
-				showNextPeriodNotification();
-			}
+
 			int nextPeriod = (dth.getNextPeriod() == null ? 1 : dth.getNextPeriod().getPeriodNumber());
-            /*if (dth.getNextBell() != null && dth.getNextPeriod() == null) {
-                showEndOfDayNotification();
-            } else */if (nextPeriod == 1 && !dth.hasBells()) {
+            if (nextPeriod == 1 && !dth.hasBells()) {
 				this.updateAllTheThings();
 				this.showLoadingNotification();
 			} else {
@@ -275,6 +267,7 @@ public class NotificationService extends Service {
 
 	}
 
+	@SuppressWarnings("unused")
 	public class EventListener {
 		private Context con;
 		public EventListener(Context c) {
@@ -289,6 +282,11 @@ public class NotificationService extends Service {
 			if (b.successful()) {
 				this.startService(ACTION_BELLTIMES, con);
 			}
+		}
+
+		public void onEvent(TodayEvent t) {
+			if (t.successful())
+				this.startService(ACTION_TODAY, con);
 		}
 	}
 }

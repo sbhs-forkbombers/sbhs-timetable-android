@@ -21,8 +21,10 @@
 package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 
@@ -31,6 +33,7 @@ import java.lang.reflect.Field;
 public class ThemeHelper {
 	private static boolean isDark = true;
 	private static Integer curAppTheme = null;
+	private static ColorStateList curTextColor = null;
 
 	public static void setTheme(Activity a) {
 		if (curAppTheme != null) {
@@ -61,19 +64,10 @@ public class ThemeHelper {
 				Log.v("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
 			}
 		}
-
-		/*Log.i("ThemeHelper", "setting theme to " + theme);
-		if (theme.equals("dark")) {
-			isDark = true;
-			toChange.applyStyle(R.style.AppTheme, false);
-		} else if (theme.equals("light")) {
-			isDark = false;
-			toChange.applyStyle(R.style.AppTheme_Light, false);
-		}*/
+		TextView tv = new TextView(a);
+		curTextColor = tv.getTextColors();
 
 		curAppTheme = colourRes;
-		//a.getTheme().setTo(curAppTheme);
-
 	}
 
 	public static boolean themeNeedsRevalidating() {
@@ -86,5 +80,9 @@ public class ThemeHelper {
 
 	public static boolean isBackgroundDark() {
 		return isDark;
+	}
+
+	public static ColorStateList getTextColor() {
+		return curTextColor;
 	}
 }

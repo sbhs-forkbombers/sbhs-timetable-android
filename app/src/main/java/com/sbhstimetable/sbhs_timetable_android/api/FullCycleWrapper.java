@@ -40,6 +40,7 @@ import java.util.List;
  * This class represents a full three week cycle (i.e. a Timetable), with information from Today overlayed if it is available
  */
 public class FullCycleWrapper {
+	private static final String TAG = "FullCYcleWrapper";
 	private Timetable cycle;
 	private Today variationData;
 	private Belltimes todayBells;
@@ -47,10 +48,9 @@ public class FullCycleWrapper {
 	private StorageCache cache;
 	private int currentDayInCycle = -1;
 	private static final List<String> weeks = Arrays.asList("A", "B", "C");
+	private static final List<String> days = Arrays.asList("Monday","Tuesday","Wednesday","Thursday","Friday");
 
-	private EventListener l;
-
-	private List<DataSetObserver> watchers = new ArrayList<DataSetObserver>();
+	private List<DataSetObserver> watchers = new ArrayList<>();
 
 	public FullCycleWrapper(Context c) {
 		cache = new StorageCache(c);
@@ -59,8 +59,10 @@ public class FullCycleWrapper {
 		todayBells = cache.loadBells();
 		this.dth = new DateTimeHelper(c, false);
 		if (variationData != null && variationData.isStillCurrent()) {
+			Log.i(TAG, "using variationData for curDayInCycle => " + variationData.getDayNumber());
 			currentDayInCycle = variationData.getDayNumber();
 		} else if (todayBells != null && todayBells.current()) {
+			Log.i(TAG, "using bells for curDayInCycle => " + todayBells.getDayNumber());
 			currentDayInCycle = todayBells.getDayNumber();
 		}
 
@@ -81,7 +83,7 @@ public class FullCycleWrapper {
 		if (todayBells == null) {
 			ApiWrapper.requestBells(c);
 		}
-		this.l = new EventListener();
+		EventListener l = new EventListener();
 		ApiWrapper.getEventBus().register(l);
 	}
 
@@ -90,6 +92,7 @@ public class FullCycleWrapper {
 		if (week == null) return;
 		int wk = weeks.indexOf(week.toUpperCase());
 		int day = dth.getNextSchoolDay().toDateTime().getDayOfWeek();
+		Log.i("FullCycleWrapper", "Guessing that the currentDayInCycle will be " + dth.getNextSchoolDay().toDateTime().getDayOfWeek() + " dow => " + dth.getNextSchoolDay().toDateTime().toString());
 		if (wk == -1 ) return;
 		//Log.i("FullCycleWrapper", "Guessing that currentDayInCycle will be week " + week + " (5*"+wk+"+"+day+")");
 		currentDayInCycle = 5*wk + day;
@@ -101,10 +104,6 @@ public class FullCycleWrapper {
 		} else {
 			return cycle.getFetchTime();
 		}
-	}
-
-	public Today getVariationData() {
-		return variationData;
 	}
 
 	public boolean hasFullTimetable() {
@@ -134,7 +133,7 @@ public class FullCycleWrapper {
 		}
 		else {
 			Log.i("FullCycleWrapper", "No day available", new Exception());
-			return -1; // TODO FIXME
+			return -1;
 		}
 	}
 
@@ -177,34 +176,26 @@ public class FullCycleWrapper {
 		this.notifyDSOs();
 	}
 
+	@SuppressWarnings("unused")
 	private class EventListener {
 
 		public void onEvent(TimetableEvent e) {
-			//Log.i("FCW$EventListener", "got TimetableEvent");
 			if (e.successful()) {
 				updateTimetable(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Timetable failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 
 		public void onEvent(TodayEvent e) {
-			//Log.i("FCW$EventListener", "got TodayEvent");
 			if (e.successful()) {
 				updateToday(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Today failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 
 		public void onEvent(BellsEvent e) {
-			//Log.i("FCW$EventListener", "got BellsEvent");
 			if (e.successful()) {
 				if (e.getResponse().isStatic() && todayBells != null) return;
 				updateBells(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Bells failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 	}
 

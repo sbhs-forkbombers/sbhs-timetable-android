@@ -50,9 +50,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SettingsFragment extends PreferenceFragment {
-	private PreferenceScreen mPreferenceScreen;
-	private ListPreference mListPreference;
+
 	private boolean initDone = false;
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,11 +74,11 @@ public class SettingsFragment extends PreferenceFragment {
 				PrefUtil.GEOFENCE_SOUND,
 				PrefUtil.GEOFENCE_VIBRATE
 		)); // settings to attach listeners to
+		PreferenceScreen s = getPreferenceScreen();
 		// don't offer lock screen widget options on platforms that don't support them
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-			mPreferenceScreen = getPreferenceScreen();
-			mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
-			mPreferenceScreen.removePreference(mListPreference);
+			ListPreference p = (ListPreference) findPreference("widget_transparency_lockscreen");
+			s.removePreference(p);
 			prefs.remove(PrefUtil.WIDGET_TRANSPARENCY_LS);
 			/*prefs = new String[] {
 					PrefUtil.WIDGET_TRANSPARENCY_HS,
@@ -90,9 +90,9 @@ public class SettingsFragment extends PreferenceFragment {
 			};*/
 
 		}
-		if (!((Vibrator)mPreferenceScreen.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
+		if (!((Vibrator)s.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
 			prefs.remove(PrefUtil.GEOFENCE_VIBRATE);
-			mPreferenceScreen.removePreference(findPreference(PrefUtil.GEOFENCE_VIBRATE));
+			s.removePreference(findPreference(PrefUtil.GEOFENCE_VIBRATE));
 		}
 		for (String pref : prefs) {
 			Preference thePref = this.findPreference(pref);
@@ -130,7 +130,7 @@ public class SettingsFragment extends PreferenceFragment {
 
 	/**
 	 * A preference value change listener that updates the preference's summary
-	 * to reflect its new value. -- TODO
+	 * to reflect its new value.
 	 */
 	private Preference.OnPreferenceChangeListener mPreferenceChangeListener = new Preference.OnPreferenceChangeListener() {
 		@Override

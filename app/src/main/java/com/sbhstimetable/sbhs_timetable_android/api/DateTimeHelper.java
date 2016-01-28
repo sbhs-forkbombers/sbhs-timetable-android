@@ -27,7 +27,6 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
@@ -40,7 +39,6 @@ public class DateTimeHelper {
 	private Belltimes bells;
 	private Today today;
 	private Context context;
-	private StorageCache cache;
 
 	// useful things
 	public static DateTimeFormatter getHHMMFormatter() {
@@ -79,7 +77,7 @@ public class DateTimeHelper {
 		}
 		this.context = c;
 		if (createCache) {
-			this.cache = new StorageCache(c);
+			StorageCache cache = new StorageCache(c);
 			if (this.bells == null) {
 				this.bells = cache.loadBells();
 			}

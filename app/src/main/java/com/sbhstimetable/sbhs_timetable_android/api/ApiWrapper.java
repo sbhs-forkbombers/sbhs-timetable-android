@@ -38,6 +38,7 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import com.sbhstimetable.sbhs_timetable_android.api.gson.Today;
 import com.sbhstimetable.sbhs_timetable_android.authflow.TokenExpiredActivity;
+import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 import com.sbhstimetable.sbhs_timetable_android.backend.service.CanHazInternetListener;
 import com.sbhstimetable.sbhs_timetable_android.event.BellsEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.NoticesEvent;
@@ -47,8 +48,6 @@ import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 
 import de.greenrobot.event.EventBus;
 import retrofit.Callback;
@@ -63,7 +62,6 @@ import static org.joda.time.DateTimeConstants.WEDNESDAY;
 
 public class ApiWrapper {
 	private static SbhsTimetableService api;
-	private static RestAdapter adapter;
 	private static final EventBus EVENT_BUS = new EventBus();
 	private static boolean initialised = false;
 	private static String sessID;
@@ -90,45 +88,18 @@ public class ApiWrapper {
 
 	public static void loadOverrideEnabled(Context c) {
 		if (c == null) return;
-		overrideEnabled = PreferenceManager.getDefaultSharedPreferences(c).getBoolean("override", false);
-	}
-
-	public static boolean isLoadingBells() {
-		return loadingBells;
-	}
-
-	public static boolean isLoadingToday() {
-		return loadingToday;
-	}
-
-	public static boolean isLoadingTimetable() {
-		return loadingTimetable;
-	}
-
-	public static boolean isLoadingNotices() {
-		return loadingNotices;
+		overrideEnabled = PreferenceManager.getDefaultSharedPreferences(c).getBoolean(PrefUtil.OVERRIDE, false);
 	}
 
 	public static boolean isLoadingSomething() {
 		return loadingBells || loadingToday || loadingTimetable || loadingNotices;
 	}
 
-
-	/*static {
-		adapter = new RestAdapter.Builder()
-				.setEndpoint("https://sbhstimetable.tk")
-				.setLog(new AndroidLog("http"))
-				.setLogLevel(RestAdapter.LogLevel.FULL)
-				.build();
-
-		api = adapter.create(SbhsTimetableService.class);
-	}*/
-
 	private static void tryLoadAdapter(Context c) {
 		ConnectivityManager conn = (ConnectivityManager)c.getSystemService(Context.CONNECTIVITY_SERVICE);
 		boolean hasNet = conn.getActiveNetworkInfo() != null && conn.getActiveNetworkInfo().isConnected();
 		if (!hasNet) return;
-
+		RestAdapter adapter;
 		try {
 
 			adapter = new RestAdapter.Builder()
@@ -140,7 +111,6 @@ public class ApiWrapper {
 			api = adapter.create(SbhsTimetableService.class);
 		} catch (Exception e) {
 			Log.wtf("ApiWrapper", "Building endpoint adapter failed (and network seems to be working!)", e);
-			adapter = null;
 			api = null;
 		}
 
@@ -239,6 +209,7 @@ public class ApiWrapper {
 		getEventBus().postSticky(new RefreshingStateEvent(false));
 	}
 
+	@SuppressWarnings("SimplifiableIfStatement")
 	public static boolean isLoggedIn() {
 		if (errIfNotReady(null)) return false;
 		return sessID != null && !sessID.equals("");

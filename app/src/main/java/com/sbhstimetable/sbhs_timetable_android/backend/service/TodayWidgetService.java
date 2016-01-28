@@ -26,16 +26,15 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.sbhstimetable.sbhs_timetable_android.R;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
-import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.FullCycleWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Lesson;
-import com.sbhstimetable.sbhs_timetable_android.api.StorageCache;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.event.TodayEvent;
 
@@ -53,47 +52,15 @@ public class TodayWidgetService extends RemoteViewsService {
         private Context con;
 		private EventListener e;
 		private FullCycleWrapper cycle;
-		private DateTimeHelper dth;
-		private StorageCache cache;
         TodayRemoteViewsFactory(Context c) {
             this.con = c;
 			this.e = new EventListener(c);
 			this.cycle = new FullCycleWrapper(c);
-			this.dth = new DateTimeHelper(c);
-			this.cache = new StorageCache(c);
 			ApiWrapper.getEventBus().register(e);
 		}
 
         @Override
         public void onCreate() {
-            /*LocalBroadcastManager.getInstance(con).registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    today = new TodayJson(JsonUtil.safelyParseJson(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA)));
-                    Intent i = new Intent();
-                    int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), TodayAppWidget.class));
-                    i.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-                    i.setClass(con, TodayAppWidget.class);
-                    i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
-                    sendBroadcast(i);
-                }
-            }, new IntentFilter(ApiAccessor.ACTION_TODAY_JSON));
-            ApiAccessor.load(con);
-            ApiAccessor.getToday(con);
-            ScheduledExecutorService ses = new ScheduledThreadPoolExecutor(1);
-            Calendar c = new GregorianCalendar();
-            c.set(Calendar.HOUR_OF_DAY, 15);
-            c.set(Calendar.MINUTE, 16);
-            long wait = c.getTimeInMillis() - DateTimeHelper.getTimeMillis();
-            if (wait < 0) return; // bail out.
-            Log.i("todayWidgetService", "updating in " + DateTimeHelper.formatToCountdown(wait));
-            ses.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    ApiAccessor.getToday(con);
-                    ApiAccessor.getBelltimes(con); // update all the things yea
-                }
-            }, wait, TimeUnit.MILLISECONDS);*/
 			Log.i("TodayWidgetService", "Hi I am the today widget service your number one source for widgets since 1998");
 			DateTime nextUpdate = DateTime.now().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
 			AlarmManager am = (AlarmManager)con.getSystemService(Context.ALARM_SERVICE);
@@ -140,17 +107,17 @@ public class TodayWidgetService extends RemoteViewsService {
             RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_timetable_classinfo_widget);
             r.setTextViewText(R.id.timetable_class_header, p.getSubject());
             r.setTextViewText(R.id.timetable_class_room, p.getRoom());
-            int standout = getResources().getColor(R.color.standout);
+            int standout = ContextCompat.getColor(con, R.color.standout);
             if (p.roomChanged()) {
                 r.setTextColor(R.id.timetable_class_room, standout);
             } else {
-				r.setTextColor(R.id.timetable_class_room, getResources().getColor(R.color.primary_text_default_material_dark));
+				r.setTextColor(R.id.timetable_class_room, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
 			}
             r.setTextViewText(R.id.timetable_class_teacher, p.getTeacher());
             if (p.teacherChanged()) {
                 r.setTextColor(R.id.timetable_class_teacher, standout);
             } else {
-				r.setTextColor(R.id.timetable_class_teacher, getResources().getColor(R.color.primary_text_default_material_dark));
+				r.setTextColor(R.id.timetable_class_teacher, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
 			}
 
             if (!p.roomChanged() && !p.teacherChanged()) {
@@ -182,6 +149,7 @@ public class TodayWidgetService extends RemoteViewsService {
             return false;
         }
 
+        @SuppressWarnings("unused")
 		private class EventListener {
 			private Context context;
 			public EventListener(Context c) {

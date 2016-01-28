@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Notices implements FetchedObject {
 	private String date;
 	private String term;
@@ -63,6 +63,14 @@ public class Notices implements FetchedObject {
 	public int getNumberOfNotices() {
 		int total = 0;
 		for (String i : getWeights()) {
+			total += notices.get(i).length;
+		}
+		return total;
+	}
+
+	public int getVisibleNotices() {
+		int total = 0;
+		for (String i : getWeights()) {
 			total += getNoticesForWeight(i).length;
 		}
 		return total;
@@ -81,7 +89,7 @@ public class Notices implements FetchedObject {
 					res.add(j);
 				}
 			}
-			map.put(i.getKey(), res.toArray(new Notice[0]));
+			map.put(i.getKey(), res.toArray(new Notice[res.size()]));
 		}
 		this.noticeFiltered = map;
 	}
@@ -112,7 +120,7 @@ public class Notices implements FetchedObject {
 			}
 		};
 
-		List<String> weights = Arrays.asList(getWeights().toArray(new String[0]));
+		List<String> weights = Arrays.asList(getWeights().toArray(new String[getWeights().size()]));
 		Collections.sort(weights, comp);
 		Collections.reverse(weights);
 		String last = null;

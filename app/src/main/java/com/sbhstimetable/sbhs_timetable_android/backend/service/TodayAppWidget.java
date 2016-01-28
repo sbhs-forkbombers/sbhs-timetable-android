@@ -46,8 +46,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 // TODO should use AlarmManager.
 public class TodayAppWidget extends AppWidgetProvider {
 
-
-
     @Override
 	@SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -75,7 +73,7 @@ public class TodayAppWidget extends AppWidgetProvider {
             RemoteViews homeScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
 			//homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview);
 			homeScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
-			homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);;
+			homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
@@ -105,17 +103,6 @@ public class TodayAppWidget extends AppWidgetProvider {
 
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-    }
-
-
-    @Override
-    public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
-    }
-
-    @Override
-    public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
     }
 }
 

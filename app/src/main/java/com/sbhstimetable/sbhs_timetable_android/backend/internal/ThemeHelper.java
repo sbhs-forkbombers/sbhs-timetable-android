@@ -62,18 +62,7 @@ public class ThemeHelper {
 			}
 		}
 
-		/*Log.i("ThemeHelper", "setting theme to " + theme);
-		if (theme.equals("dark")) {
-			isDark = true;
-			toChange.applyStyle(R.style.AppTheme, false);
-		} else if (theme.equals("light")) {
-			isDark = false;
-			toChange.applyStyle(R.style.AppTheme_Light, false);
-		}*/
-
 		curAppTheme = colourRes;
-		//a.getTheme().setTo(curAppTheme);
-
 	}
 
 	public static boolean themeNeedsRevalidating() {

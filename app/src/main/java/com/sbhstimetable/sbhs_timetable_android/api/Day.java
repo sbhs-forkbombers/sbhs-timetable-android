@@ -19,12 +19,12 @@ package com.sbhstimetable.sbhs_timetable_android.api;/*
  */
 
 public interface Day {
-	public int getDayNumber();
-	public String getDayName();
-	public String getWeek();
+	int getDayNumber();
+	String getDayName();
+	String getWeek();
 
-	public Lesson getPeriod(int number);
+	Lesson getPeriod(int number);
 
-	public boolean varies();
+	boolean varies();
 
 }

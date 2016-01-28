@@ -96,4 +96,16 @@
 	<string name="pref_desc_notification_periods_negative">Not showing upcoming breaks</string>
 	<string name="pref_desc_notification_periods_positive">Showing upcoming breaks</string>
 
+	<!-- Belltimes Adapter -->
+	<string name="err_bells_couldnt_load">Couldn\'t load today\'s bells! Might be a problem with SBHS?</string>
+	<string name="warn_bells_offline">Offline (default bells)</string>
+	<string name="lbl_bells_changed">Bells Changed: %1$s</string>
+
+	<!-- Notices Adapter -->
+	<string name="no_notices">There are no notices!</string>
+
+	<!-- Belltimes Fragment -->
+	<string name="no_time_left">00m 00s</string>
+
+
 </resources>

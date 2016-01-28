@@ -38,8 +38,6 @@ import com.sbhstimetable.sbhs_timetable_android.backend.service.NotificationServ
 import com.sbhstimetable.sbhs_timetable_android.backend.service.TodayAppWidget;
 
 public class SettingsFragment extends PreferenceFragment {
-	private PreferenceScreen mPreferenceScreen;
-	private ListPreference mListPreference;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,9 +58,9 @@ public class SettingsFragment extends PreferenceFragment {
 
 		// don't offer lock screen widget options on platforms that don't support them
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1 || Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-			mPreferenceScreen = getPreferenceScreen();
-			mListPreference = (ListPreference) findPreference("widget_transparency_lockscreen");
-			mPreferenceScreen.removePreference(mListPreference);
+			PreferenceScreen s = getPreferenceScreen();
+			ListPreference p = (ListPreference) findPreference("widget_transparency_lockscreen");
+			s.removePreference(p);
 			prefs = new String[] {
 					PrefUtil.WIDGET_TRANSPARENCY_HS,
 					PrefUtil.THEME,
@@ -92,7 +90,7 @@ public class SettingsFragment extends PreferenceFragment {
 
 	/**
 	 * A preference value change listener that updates the preference's summary
-	 * to reflect its new value. -- TODO
+	 * to reflect its new value.
 	 */
 	private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
 		@Override

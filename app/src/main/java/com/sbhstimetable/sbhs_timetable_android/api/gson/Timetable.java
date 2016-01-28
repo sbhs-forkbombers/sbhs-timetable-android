@@ -29,7 +29,7 @@ import org.joda.time.DateTime;
 
 import java.util.HashMap;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection", "ConstantConditions"})
 public class Timetable implements FetchedObject {
 	private HashMap<String, TimetableDay> days;
 	private HashMap<String, SubjectInfo> subjInfo;

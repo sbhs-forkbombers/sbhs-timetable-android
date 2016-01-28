@@ -50,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
 			getWindow().setStatusBarColor(colorPrimaryDark);
 		}
 		setSupportActionBar(mToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

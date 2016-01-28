@@ -69,32 +69,22 @@ public class StorageCache {
 		}
 	}
 
-	public void cacheDate(String s) {
-		cache("date", s);
-	}
-
-	public void cacheToday(Today t) {
-		cache("today", gson.toJson(t));
-		DateTime d = DateTime.now();
-		d = d.withTimeAtStartOfDay().withDayOfWeek(DateTimeConstants.MONDAY);
-		DateTime now = DateTime.now();
-		if (now.getDayOfWeek() >= DateTimeConstants.SATURDAY || (now.getDayOfWeek() == DateTimeConstants.FRIDAY && (now.getHourOfDay() == 15 && now.getMinuteOfHour() >= 15) || now.getHourOfDay() > 15)) {
-			d = d.plusWeeks(1);
+	private boolean shouldReload(String desc) {
+		switch (desc) {
+			case "timetable":
+				Timetable t = loadTimetable();
+				return t == null || t.getFetchTime().getMillis() - DateTime.now().getMillis() > 14 * 24 * 60 * 60 * 1000;
+			case "today":
+				Today t2 = loadToday();
+				return t2 == null || !t2.isStillCurrent();
+			case "bells":
+				Belltimes b = loadBells();
+				return b == null || !b.current();
+			case "notices":
+				Notices n = loadNotices();
+				return n == null || n.getFetchTime().getMillis() - DateTime.now().getMillis() >= 60 * 60 * 1000; // one hour
 		}
-		cache("week", d.getMillis() + " " + t.getWeek(), "");
-	}
-
-
-	public void cacheBells(Belltimes b) {
-		cache("bells", gson.toJson(b));
-	}
-
-	public void cacheNotices(Notices n) {
-		cache("notices", gson.toJson(n));
-	}
-
-	public void cacheTimetable(Timetable t) {
-		cache("timetable", gson.toJson(t), "");
+		return false;
 	}
 
 	private boolean exists(String desc) {
@@ -104,92 +94,6 @@ public class StorageCache {
 	private boolean exists(String desc, String date) {
 		String file = date + desc + ".json";
 		return new File(c.getCacheDir(), file).exists();
-	}
-
-	private DateTime getFetchTime(String desc) {
-		return getFetchTime(desc, DateTimeHelper.getYYYYMMDDFormatter().print(dateTimeHelper.getNextSchoolDay()));
-	}
-
-	private DateTime getFetchTime(String desc, String date) {
-		if (!exists(desc, date)) {
-			return null;
-		}
-		File f = new File(c.getCacheDir(), date + desc + ".json");
-		return new DateTime(f.lastModified());
-	}
-
-	private boolean shouldReload(String desc) {
-		/*DateTime now = DateTime.now();
-		DateTime lastUpdate = getFetchTime(desc);
-		if (lastUpdate == null) return true;
-		if (now.getYear() != lastUpdate.getYear()) return true; // different year
-
-		if (desc.equals("timetable")) {
-			if (now.getDayOfYear() - lastUpdate.getDayOfYear() >= 14) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		if (now.getDayOfYear() != lastUpdate.getDayOfYear()) return true; // different day in year
-		if (desc.equals("bells") || desc.equals("notices")) {
-			if ((lastUpdate.getHourOfDay()) > 9 || (lastUpdate.getHourOfDay() == 9 && lastUpdate.getMinuteOfHour() >= 5)) {
-				return false;
-			}
-		}
-		if (now.getMinuteOfDay() - lastUpdate.getMinuteOfDay() > 30) { // > 30 minutes since last update
-			return true;
-		}
-		if (desc.equals("today")) {
-			if ((now.getHourOfDay() > 8 || (now.getHourOfDay() == 8 && now.getMinuteOfHour() > 30))
-					&& (lastUpdate.getHourOfDay() < 8 || (lastUpdate.getHourOfDay() == 8 && now.getMinuteOfHour() < 30))) { // after 8:30, last update was before 8:30
-				return true;
-			}
-		}
-*/
-		boolean res = false;
-		if (desc.equals("timetable")) {
-			Timetable t = loadTimetable();
-			if (t == null) {
-				return true;
-			}
-			if (t.getFetchTime().getMillis() - DateTime.now().getMillis() > 14 * 24 * 60 * 60 * 1000) {
-				return true;
-			}
-			return false;
-		} else if (desc.equals("today")) {
-			Today t = loadToday();
-			res = t == null || !t.isStillCurrent();
-		} else if (desc.equals("bells")) {
-			Belltimes b = loadBells();
-			res = b == null || !b.current();
-		} else if (desc.equals("notices")) {
-			Notices n = loadNotices();
-			res = n == null || n.getFetchTime().getMillis() - DateTime.now().getMillis() >= 60 * 60 * 1000; // one hour
-		}
-		Log.i("StorageCache", "should reload " + desc + "? " + res);
-		return res;
-	}
-
-	public boolean shouldReloadToday() {
-		return shouldReload("today");
-	}
-
-	public boolean shouldReloadBells() {
-		return shouldReload("bells");
-	}
-
-	public boolean shouldReloadNotices() {
-		return shouldReload("notices");
-	}
-
-	public boolean shouldReloadTimetable() {
-		return shouldReload("timetable");
-	}
-
-	public boolean hasCachedDate() {
-		return exists("date");
 	}
 
 	private String load(String desc) {
@@ -218,8 +122,73 @@ public class StorageCache {
 		return null;
 	}
 
-	public String loadDate() {
-		return load("date");
+	/* TODAY */
+	public void cacheToday(Today t) {
+		cache("today", gson.toJson(t));
+		DateTime d = DateTime.now();
+		d = d.withTimeAtStartOfDay().withDayOfWeek(DateTimeConstants.MONDAY);
+		DateTime now = DateTime.now();
+		if (now.getDayOfWeek() >= DateTimeConstants.SATURDAY || (now.getDayOfWeek() == DateTimeConstants.FRIDAY && (now.getHourOfDay() == 15 && now.getMinuteOfHour() >= 15) || now.getHourOfDay() > 15)) {
+			d = d.plusWeeks(1);
+		}
+		cache("week", d.getMillis() + " " + t.getWeek(), "");
+	}
+
+	public boolean shouldReloadToday() {
+		return shouldReload("today");
+	}
+
+	public Today loadToday() {
+		String res = load("today");
+		if (res == null) return null;
+		return gson.fromJson(res, Today.class);
+	}
+
+	/* BELLS */
+	public void cacheBells(Belltimes b) {
+		cache("bells", gson.toJson(b));
+	}
+
+	public boolean shouldReloadBells() {
+		return shouldReload("bells");
+	}
+
+	public Belltimes loadBells() {
+		String res = load("bells");
+		if (res == null) {
+			return ApiWrapper.getOfflineBells(c);
+		}
+		return gson.fromJson(res, Belltimes.class);
+	}
+
+	/* NOTICES */
+	public void cacheNotices(Notices n) {
+		cache("notices", gson.toJson(n));
+	}
+
+	public boolean shouldReloadNotices() {
+		return shouldReload("notices");
+	}
+
+	public Notices loadNotices() {
+		String res = load("notices");
+		if (res == null) return null;
+		return gson.fromJson(res, Notices.class);
+	}
+
+	/* TIMETABLE */
+	public void cacheTimetable(Timetable t) {
+		cache("timetable", gson.toJson(t), "");
+	}
+
+	public boolean shouldReloadTimetable() {
+		return shouldReload("timetable");
+	}
+
+	public Timetable loadTimetable() {
+		String res = load("timetable", "");
+		if (res == null) return null;
+		return gson.fromJson(res, Timetable.class);
 	}
 
 	public String loadWeek() {
@@ -249,32 +218,6 @@ public class StorageCache {
 		idx += gap.getWeeks();
 		idx %= 3;
 		return new String[] {"A","B","C"}[idx];
-	}
-
-	public Today loadToday() {
-		String res = load("today");
-		if (res == null) return null;
-		return gson.fromJson(res, Today.class);
-	}
-
-	public Belltimes loadBells() {
-		String res = load("bells");
-		if (res == null) {
-			return ApiWrapper.getOfflineBells(c);
-		}
-		return gson.fromJson(res, Belltimes.class);
-	}
-
-	public Notices loadNotices() {
-		String res = load("notices");
-		if (res == null) return null;
-		return gson.fromJson(res, Notices.class);
-	}
-
-	public Timetable loadTimetable() {
-		String res = load("timetable", "");
-		if (res == null) return null;
-		return gson.fromJson(res, Timetable.class);
 	}
 
 	public void cleanCache() {

@@ -26,6 +26,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,4 +63,13 @@ public class Compat {
     public static int[] getWidgetIds(Context c, Class<?> clazz) {
         return AppWidgetManager.getInstance(c).getAppWidgetIds(new ComponentName(c, clazz));
     }
+
+	@SuppressWarnings("deprecation")
+	public static void setTextAppearanceCompat(TextView v, int res) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+			v.setTextAppearance(v.getContext(), res);
+		} else {
+			v.setTextAppearance(res);
+		}
+	}
 }

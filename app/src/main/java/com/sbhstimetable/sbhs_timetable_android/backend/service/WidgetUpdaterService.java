@@ -37,7 +37,7 @@ public class WidgetUpdaterService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null) {
 			Log.wtf("WidgetUpdateService", "NULL INTENT WTF");
-			return super.onStartCommand(intent, flags, startId);
+			return super.onStartCommand(null, flags, startId);
 		}
 		if (intent.getAction() == null) {
 			Log.wtf("WidgetUpdateService", "NULL ACTION " + intent.describeContents());

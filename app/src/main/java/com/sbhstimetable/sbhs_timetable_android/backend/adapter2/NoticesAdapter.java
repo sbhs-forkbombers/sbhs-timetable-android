@@ -47,11 +47,11 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat.setTextAppearanceCompat;
+
 public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedListener {
-	private StorageCache cache;
 	private Notices notices;
 	private List<DataSetObserver> dsos = new ArrayList<>();
-	private EventListener eventListener;
 	private int curIndex;
 	private FrameLayout theFilterSelector;
 	private String curError = null;
@@ -59,10 +59,10 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	private static final String[] years = new String[] {"All Notices", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Staff"};
 
 	public NoticesAdapter(Context c) {
-		this.cache = new StorageCache(c);
+		StorageCache cache = new StorageCache(c);
 		this.notices = cache.loadNotices();
-		this.eventListener = new EventListener();
-		ApiWrapper.getEventBus().register(this.eventListener);
+		EventListener e = new EventListener();
+		ApiWrapper.getEventBus().register(e);
 		if (this.notices == null) {
 			ApiWrapper.requestNotices(c);
 			if (ApiWrapper.getApi() == null) {
@@ -141,9 +141,9 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (notices == null) {
 			if (position == 0 && curError == null) {
-				return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
+				return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent, false);
 			} else {
-				View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+				View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, parent, false);
 				TextView t = (TextView)v.findViewById(R.id.textview);
 				t.setText(curError);
 				return v;
@@ -151,9 +151,9 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		}
 		if (notices.getNumberOfNotices() == 0 && position == 0) {
 			TextView res = new TextView(parent.getContext());
-			res.setTextAppearance(parent.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
+			setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
 			res.setGravity(Gravity.CENTER);
-			res.setText("There are no notices!");
+			res.setText(R.string.no_notices);
 			return res;
 		} else if (position == 0) {
 			if (this.theFilterSelector != null) {
@@ -163,7 +163,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 				return theFilterSelector;
 			}
 
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, null);
+			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, parent, false);
 			ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, years);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner);
 			s.setAdapter(a);
@@ -172,7 +172,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 			this.theFilterSelector = f;
 			return f;
 		} else if (position == getCount() -1 ) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
+			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
@@ -185,7 +185,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.notice_title) instanceof TextView) {
 			res = convertView;
 		} else {
-			res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, null);
+			res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, parent, false);
 		}
 		TextView v = (TextView)res.findViewById(R.id.notice_body);
 		CharSequence s = n.getTextViewNoticeContents();
@@ -204,7 +204,7 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		TextView author = (TextView)res.findViewById(R.id.notice_author);
 		author.setText(n.getAuthor());
 		TextView targ = (TextView)res.findViewById(R.id.notice_target);
-		targ.setText("("+n.getDisplayTarget()+")");
+		targ.setText(String.format("(%s)", n.getDisplayTarget()));
 		return res;
 	}
 
@@ -241,20 +241,12 @@ public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedLi
 		this.notifyDSOs();
 	}
 
-	private void updateError(String err) {
-		this.curError = err;
-		this.notifyDSOs();
-	}
-
+	@SuppressWarnings("unused")
 	private class EventListener {
 		public void onEvent(NoticesEvent e) {
 			if (e.successful()) {
-				//Log.i("NoticesAdapter$EVL", "successful request - " + e.getResponse());
 				updateNotices(e.getResponse());
-			}/* else {
-				updateError(e.getErrorMessage());
-				Log.e("NoticesAdapter$EVL", "request failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 	}
 }

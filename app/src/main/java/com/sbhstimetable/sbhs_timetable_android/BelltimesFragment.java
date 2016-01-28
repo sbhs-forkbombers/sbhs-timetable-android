@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -37,15 +36,13 @@ import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.BelltimesAdapter;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface} interface
+ * Activities that contain this fragment must be activities
  * to handle interaction events.
  * Use the {@link BelltimesFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -54,7 +51,6 @@ import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
 public class BelltimesFragment extends Fragment {
 
 	private SwipeRefreshLayout layout;
-	private BelltimesAdapter adapter;
 
 
 	private EventListener eventListener;
@@ -131,18 +127,12 @@ public class BelltimesFragment extends Fragment {
 			v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
 			v.setRefreshing(true);
 		}
-		this.adapter = new BelltimesAdapter(getActivity());
-		lv.setAdapter(this.adapter);
+		BelltimesAdapter adapter = new BelltimesAdapter(getActivity());
+		lv.setAdapter(adapter);
 
 		this.eventListener = new EventListener(getActivity());
 		ApiWrapper.getEventBus().registerSticky(this.eventListener);
 		return v;
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-
 	}
 
 	@Override
@@ -152,6 +142,7 @@ public class BelltimesFragment extends Fragment {
 		eventListener = null;
 	}
 
+	@SuppressWarnings("unused")
 	private class EventListener {
 		private Context c;
 		public EventListener(Context c) {

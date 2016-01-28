@@ -21,7 +21,6 @@
 package com.sbhstimetable.sbhs_timetable_android;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -38,10 +37,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
-import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.authflow.LoginActivity;
 import com.sbhstimetable.sbhs_timetable_android.backend.adapter2.TimetableAdapter;
-import com.sbhstimetable.sbhs_timetable_android.backend.internal.CommonFragmentInterface;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
@@ -60,7 +57,6 @@ public class TimetableFragment extends Fragment {
 
 
 	private SwipeRefreshLayout layout;
-	private TimetableAdapter adapter;
 	private EventListener listener;
 
 	/**
@@ -134,9 +130,6 @@ public class TimetableFragment extends Fragment {
 		}
 		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
-		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-		//if (this.getActivity() == null || this.getActivity().findViewById(R.id.timetable_listview) == null) return v;
-
 		ApiWrapper.getEventBus().registerSticky(this.listener);
 		return v;
 	}
@@ -145,29 +138,8 @@ public class TimetableFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-		this.adapter = new TimetableAdapter(this.getActivity());
-		z.setAdapter(this.adapter);
-
-	}
-
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		/*if (this.listener == null) {
-			this.listener = new BroadcastListener(this);
-		}
-		LocalBroadcastManager.getInstance(this.getActivity()).registerReceiver(this.listener, i);*/
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		//LocalBroadcastManager.getInstance(this.getActivity()).unregisterReceiver(this.listener);
+		TimetableAdapter adapter = new TimetableAdapter(this.getActivity());
+		z.setAdapter(adapter);
 
 	}
 
@@ -177,6 +149,7 @@ public class TimetableFragment extends Fragment {
 		ApiWrapper.getEventBus().unregister(this.listener);
 	}
 
+	@SuppressWarnings("unused")
 	private class EventListener {
 		private TimetableFragment t;
 		public EventListener(TimetableFragment t) {
@@ -200,41 +173,4 @@ public class TimetableFragment extends Fragment {
 			}
 		}
 	}
-
-	/*private class BroadcastListener extends BroadcastReceiver {
-		private SwipeRefreshLayout f;
-		private TimetableFragment frag;
-		BroadcastListener(TimetableFragment f) {
-			this.f = f.layout;
-			this.frag = f;
-		}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String act = intent.getAction();
-			if (act.equals(ApiAccessor.ACTION_BELLTIMES_JSON) || act.equals(ApiAccessor.ACTION_TODAY_JSON) || act.equals(ApiAccessor.ACTION_NOTICES_JSON)) {
-				if (this.f == null) {
-					this.f = this.frag.layout;
-				}
-				if (this.f == null) {
-					return;
-				}
-
-				if (act.equals(ApiAccessor.ACTION_TODAY_JSON)) {
-					if (refreshing)
-						Toast.makeText(context, R.string.refresh_success, Toast.LENGTH_SHORT).show();
-					this.f.setRefreshing(false);
-					refreshing = false;
-					this.frag.doTimetable(intent.getStringExtra(ApiAccessor.EXTRA_JSON_DATA));
-				}
-			}
-			if (act.equals(ApiAccessor.ACTION_TODAY_FAILED)) {
-				if (refreshing)
-					Toast.makeText(context, intent.getIntExtra(ApiAccessor.EXTRA_ERROR_MESSAGE, R.string.err_noerr), Toast.LENGTH_SHORT).show();
-				refreshing = false;
-				if (this.frag == null) return;
-				this.frag.layout.setRefreshing(false);
-			}
-		}
-	}*/
 }

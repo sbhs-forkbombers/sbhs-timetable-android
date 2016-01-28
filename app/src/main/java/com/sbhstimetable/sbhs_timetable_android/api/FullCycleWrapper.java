@@ -48,9 +48,7 @@ public class FullCycleWrapper {
 	private int currentDayInCycle = -1;
 	private static final List<String> weeks = Arrays.asList("A", "B", "C");
 
-	private EventListener l;
-
-	private List<DataSetObserver> watchers = new ArrayList<DataSetObserver>();
+	private List<DataSetObserver> watchers = new ArrayList<>();
 
 	public FullCycleWrapper(Context c) {
 		cache = new StorageCache(c);
@@ -81,7 +79,7 @@ public class FullCycleWrapper {
 		if (todayBells == null) {
 			ApiWrapper.requestBells(c);
 		}
-		this.l = new EventListener();
+		EventListener l = new EventListener();
 		ApiWrapper.getEventBus().register(l);
 	}
 
@@ -101,10 +99,6 @@ public class FullCycleWrapper {
 		} else {
 			return cycle.getFetchTime();
 		}
-	}
-
-	public Today getVariationData() {
-		return variationData;
 	}
 
 	public boolean hasFullTimetable() {
@@ -134,7 +128,7 @@ public class FullCycleWrapper {
 		}
 		else {
 			Log.i("FullCycleWrapper", "No day available", new Exception());
-			return -1; // TODO FIXME
+			return -1;
 		}
 	}
 
@@ -177,34 +171,26 @@ public class FullCycleWrapper {
 		this.notifyDSOs();
 	}
 
+	@SuppressWarnings("unused")
 	private class EventListener {
 
 		public void onEvent(TimetableEvent e) {
-			//Log.i("FCW$EventListener", "got TimetableEvent");
 			if (e.successful()) {
 				updateTimetable(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Timetable failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 
 		public void onEvent(TodayEvent e) {
-			//Log.i("FCW$EventListener", "got TodayEvent");
 			if (e.successful()) {
 				updateToday(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Today failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 
 		public void onEvent(BellsEvent e) {
-			//Log.i("FCW$EventListener", "got BellsEvent");
 			if (e.successful()) {
 				if (e.getResponse().isStatic() && todayBells != null) return;
 				updateBells(e.getResponse());
-			} /*else {
-				Log.e("FCW$EventListener", "Bells failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 	}
 

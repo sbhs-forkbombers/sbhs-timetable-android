@@ -22,6 +22,7 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	private FullCycleWrapper cycle;
 	private int currentIndex;
 	private FrameLayout theFilterSelector;
-	private List<DataSetObserver> watchers = new ArrayList<DataSetObserver>();
+	private List<DataSetObserver> watchers = new ArrayList<>();
 
 	private int curDayIndex;
 	private int curWeekIndex;
@@ -121,10 +122,10 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 	@Override
 	public View getView(int i, View convertView, ViewGroup parent) {
 		if (i == 0 && (!cycle.hasFullTimetable() || cycle.getDayNumber(currentIndex) == null)) {
-			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, null);
+			return ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent, false);
 		}
 		if (i == 6) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
+			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
@@ -142,9 +143,9 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 				s.setOnItemSelectedListener(this);
 				return theFilterSelector;
 			}
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_today_spinner, null);
+			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_today_spinner, parent, false);
 			Spinner s = (Spinner)f.findViewById(R.id.spinner_day);
-			ArrayAdapter<String> a = new ArrayAdapter<String>(parent.getContext(), R.layout.textview, days);
+			ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, days);
 			s.setAdapter(a);
 			s.setSelection(this.curDayIndex);
 			s.setOnItemSelectedListener(this);
@@ -164,7 +165,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.timetable_class_header) != null) {
 			view = (FrameLayout)convertView;
 		} else {
-			view = (FrameLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_timetable_classinfo, null);
+			view = (FrameLayout)LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_timetable_classinfo, parent, false);
 		}
 		header = (TextView)view.findViewById(R.id.timetable_class_header);
 		roomText = (TextView)view.findViewById(R.id.timetable_class_room);
@@ -181,7 +182,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		} else {
 			changed.setVisibility(View.VISIBLE);
 		}
-		int colour = roomText.getContext().getResources().getColor(R.color.standout);
+		int colour = ContextCompat.getColor(roomText.getContext(), R.color.standout);
 		if (l.cancelled()) {
 			roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
 			teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
@@ -244,7 +245,6 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
 	@Override
 	public void onInvalidated() {
-		//super.onInvalidated();
 		onChanged();
 	}
 }

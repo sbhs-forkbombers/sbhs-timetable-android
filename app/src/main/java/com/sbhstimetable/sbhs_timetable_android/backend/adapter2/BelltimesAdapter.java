@@ -21,8 +21,6 @@ package com.sbhstimetable.sbhs_timetable_android.backend.adapter2;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.os.Build;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,20 +41,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BelltimesAdapter implements ListAdapter {
-	private StorageCache cache;
 	private Belltimes bells;
-	private EventListener eventListener;
 	private List<DataSetObserver> dsos = new ArrayList<>();
 
 	public BelltimesAdapter(Context c) {
-		this.cache = new StorageCache(c);
+		StorageCache cache = new StorageCache(c);
 		this.bells = cache.loadBells();
 		if (bells == null || (!bells.current() && !bells.isStatic())) {
 			ApiWrapper.requestBells(c);
 			bells = null;
 		}
-		this.eventListener = new EventListener();
-		ApiWrapper.getEventBus().register(this.eventListener);
+		EventListener eventListener = new EventListener();
+		ApiWrapper.getEventBus().register(eventListener);
 	}
 
 	@Override
@@ -130,19 +126,19 @@ public class BelltimesAdapter implements ListAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		boolean fakedPosition = false;
 		if (bells == null) {
-			View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+			View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, parent, false);
 			TextView t = (TextView)r.findViewById(R.id.textview);
-			t.setText("Couldn't load today's bells! Might be a problem with SBHS?");
+			t.setText(R.string.err_bells_couldnt_load);
 			return r;
 		}
 		if (bells.isStatic() || bells.areBellsAltered()) {
 			if (position == 0) {
-				View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, null);
+				View r = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, parent, false);
 				TextView t = (TextView)r.findViewById(R.id.textview);
 				if (bells.isStatic()) {
-					t.setText("Offline (default bells)");
+					t.setText(R.string.warn_bells_offline);
 				} else {
-					t.setText("Bells Changed: " + bells.getBellsAlteredReason());
+					t.setText(String.format(t.getResources().getString(R.string.lbl_bells_changed), bells.getBellsAlteredReason()));
 				}
 				return r;
 			}
@@ -150,7 +146,7 @@ public class BelltimesAdapter implements ListAdapter {
 			position--;
 		}
 		if (position == getCount()-(fakedPosition ? 2 : 1)) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, null);
+			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
 			TextView t = (TextView)v.findViewById(R.id.last_updated);
 			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
 					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
@@ -159,17 +155,10 @@ public class BelltimesAdapter implements ListAdapter {
 			return v;
 		}
 		View r;
-		if (bells == null) {
-			TextView t = new TextView(parent.getContext());
-			t.setText("Couldn't load belltimes!");
-			t.setGravity(Gravity.CENTER);
-			t.setTextAppearance(parent.getContext(), android.R.style.TextAppearance_DeviceDefault_Large);
-			return t;
-		}
 		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.bell_time) != null) {
 			r = convertView;
 		} else {
-			r = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_belltimes_entry, null);
+			r = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_belltimes_entry, parent, false);
 		}
 		Belltimes.Bell bell = this.bells.getBellIndex(position);
 		TextView time = (TextView)r.findViewById(R.id.bell_time);
@@ -201,16 +190,13 @@ public class BelltimesAdapter implements ListAdapter {
 		this.notifyDSOs();
 	}
 
+	@SuppressWarnings("unused")
 	private class EventListener {
 		public void onEvent(BellsEvent e) {
 			if (e.successful()) {
 				if (bells != null && e.getResponse().isStatic()) return;
-				//Log.i("BellsAdapter$EVL", "successful request - " + e.getResponse());
 				updateBells(e.getResponse());
-			} /*else {
-				//updateError(e.getErrorMessage());
-				Log.e("BellsAdapter$EVL", "request failed - " + e.getErrorMessage());
-			}*/
+			}
 		}
 	}
 

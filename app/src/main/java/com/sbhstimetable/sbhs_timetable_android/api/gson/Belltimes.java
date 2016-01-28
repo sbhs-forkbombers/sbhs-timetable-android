@@ -22,7 +22,6 @@ package com.sbhstimetable.sbhs_timetable_android.api.gson;
 import android.util.Log;
 
 import com.sbhstimetable.sbhs_timetable_android.TimetableApp;
-import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import com.sbhstimetable.sbhs_timetable_android.api.Belltime;
 import com.sbhstimetable.sbhs_timetable_android.api.DateTimeHelper;
 import com.sbhstimetable.sbhs_timetable_android.api.FetchedObject;
@@ -34,7 +33,7 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "MismatchedReadAndWriteOfArray"})
 public class Belltimes implements FetchedObject {
 	private String status;
 	private boolean bellsAltered;
@@ -112,10 +111,8 @@ public class Belltimes implements FetchedObject {
 			return false;
 		}
 		DateTime expires = getSchoolDay().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
-		if (expires.isAfterNow()) {
-			return true;
-		}
-		return false;
+		return expires.isAfterNow();
+
 	}
 
 	public boolean isStatic() {

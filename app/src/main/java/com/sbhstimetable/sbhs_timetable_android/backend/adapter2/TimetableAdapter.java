@@ -284,6 +284,8 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
         private static final String TAG = "MEMES";
         boolean isNewGesture = true;
         boolean hasCompletedScroll = false;
+        static final int MIN_DISTANCE = 50;
+        static final int MAX_DELTA_Y = 300;
         @Override
         public boolean onDown(MotionEvent e) {
             isNewGesture = true;
@@ -293,8 +295,6 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 
         @Override
         public boolean onScroll(MotionEvent start, MotionEvent end, float deltaX, float deltaY) {
-            final int MIN_DISTANCE = 50;
-            final int MAX_DELTA_Y = 200;
             if (!isNewGesture && hasCompletedScroll) {
                 return true;
             }
@@ -326,6 +326,45 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
                 }
             } catch (Exception e) {
                 // meh
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onFling(MotionEvent start, MotionEvent end, float velocityX, float velocityY) {
+            if (!isNewGesture && hasCompletedScroll) {
+                return true;
+            }
+            isNewGesture = false;
+            try {
+                if (Math.abs(start.getY() - end.getY()) > MAX_DELTA_Y) {
+                    return false;
+                }
+                if (start.getX() - end.getX() > MIN_DISTANCE) {
+                    // gone left
+                    hasCompletedScroll = true;
+                    currentIndex--;
+                    currentIndex = (currentIndex < 0 ? 15 + currentIndex : currentIndex);
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    hasCompletedScroll = true;
+                    return true;
+                } else if (end.getX() - start.getX() > MIN_DISTANCE) {
+                    // gone right
+                    hasCompletedScroll = true;
+                    currentIndex++;
+                    currentIndex = currentIndex % 15;
+                    int day = currentIndex % 5;
+                    int wk = (int)Math.floor(currentIndex / 5);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_day)).setSelection(day);
+                    ((Spinner)theFilterSelector.findViewById(R.id.spinner_week)).setSelection(wk);
+                    hasCompletedScroll = true;
+                    return true;
+                }
+            } catch (Exception e) {
+
             }
             return false;
         }

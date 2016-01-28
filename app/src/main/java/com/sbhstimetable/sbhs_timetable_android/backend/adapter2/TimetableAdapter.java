@@ -59,7 +59,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		cycle = new FullCycleWrapper(c);
 		cycle.addDataSetObserver(this);
 		currentIndex = cycle.getCurrentDayInCycle();
-		int tmp = currentIndex - 1;
+		int tmp = currentIndex;
 		//Log.i("TimetableAdapter", "curIndex = " + currentIndex + ", %5 = " + (tmp % 5) + ", / 5 = " + Math.floor(tmp / 5));
 		curDayIndex = (tmp % 5);
 		curWeekIndex = (int)Math.floor(tmp / 5);
@@ -213,6 +213,8 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
 		return false;
 	}
 
+
+	/* spinner stuff */
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 		if (parent.getId() == R.id.spinner_week) {

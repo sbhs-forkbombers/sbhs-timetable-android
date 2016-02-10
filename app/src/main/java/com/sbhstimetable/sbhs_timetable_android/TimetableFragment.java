@@ -27,9 +27,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,133 +53,137 @@ import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
  * to handle interaction events.
  * Use the {@link TimetableFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class TimetableFragment extends Fragment {
 
 
-	private SwipeRefreshLayout layout;
-	private EventListener listener;
-	private static final String TAG = "TimetableFragment";
-	private GestureDetectorCompat gestureDetector;
+    private SwipeRefreshLayout layout;
+    private EventListener listener;
+    private static final String TAG = "TimetableFragment";
+    private GestureDetectorCompat gestureDetector;
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 * @return A new instance of fragment TimetableFragment.
-	 */
-	public static TimetableFragment newInstance() {
-		return new TimetableFragment();
-	}
-	public TimetableFragment() {
-		// Required empty public constructor
-		this.listener = new EventListener(this);
-	}
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @return A new instance of fragment TimetableFragment.
+     */
+    public static TimetableFragment newInstance() {
+        return new TimetableFragment();
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-	}
+    public TimetableFragment() {
+        // Required empty public constructor
+        this.listener = new EventListener(this);
+    }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-	@Override
-	@SuppressLint("ResourceAsColor")
-	public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		if (!ApiWrapper.isLoggedIn()) {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-			View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
-			TextView t = (TextView)v.findViewById(R.id.textview);
-			t.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					Intent i = new Intent(container.getContext(), LoginActivity.class);
-					container.getContext().startActivity(i);
-				}
-			});
-			return v;
-		}
-		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_timetable, container, false);
-		this.layout = v;
+    @Override
+    @SuppressLint("ResourceAsColor")
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        if (!ApiWrapper.isLoggedIn()) {
 
-		final Context c = this.getActivity();
-		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				ApiWrapper.requestBells(c);
-				ApiWrapper.requestNotices(c);
-				ApiWrapper.requestToday(c);
-				ApiWrapper.requestTimetable(c);
-			}
-		});
-		if (ApiWrapper.isLoadingSomething()) {
-			TypedValue typed_value = new TypedValue();
-			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
-			v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
-			v.setRefreshing(true);
-		}
-		if (ThemeHelper.isBackgroundDark()) {
-			// ignore these errors
-			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
-		} else {
-			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
-		}
-		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
+            View v = inflater.inflate(R.layout.fragment_pls2login, container, false);
+            TextView t = (TextView) v.findViewById(R.id.textview);
+            t.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(container.getContext(), LoginActivity.class);
+                    container.getContext().startActivity(i);
+                }
+            });
+            return v;
+        }
+        final SwipeRefreshLayout v = (SwipeRefreshLayout) inflater.inflate(R.layout.fragment_timetable, container, false);
+        this.layout = v;
 
-		ApiWrapper.getEventBus().registerSticky(this.listener);
+        final Context c = this.getActivity();
+        v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ApiWrapper.requestBells(c);
+                ApiWrapper.requestNotices(c);
+                ApiWrapper.requestToday(c);
+                ApiWrapper.requestTimetable(c);
+            }
+        });
+        if (ApiWrapper.isLoadingSomething()) {
+            TypedValue typed_value = new TypedValue();
+            getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+            v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+            v.setRefreshing(true);
+        }
+        if (ThemeHelper.isBackgroundDark()) {
+            // ignore these errors
+            v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
+        } else {
+            v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
+        }
+        v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
 
-		return v;
-	}
+        ApiWrapper.getEventBus().registerSticky(this.listener);
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		ListView z = (ListView)this.getActivity().findViewById(R.id.timetable_listview);
-		final TimetableAdapter adapter = new TimetableAdapter(this.getActivity());
-		z.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				return adapter.getGestureListener().onTouchEvent(event);
-			}
-		});
-		z.setAdapter(adapter);
+        return v;
+    }
 
-	}
+    @Override
+    public void onStart() {
+        super.onStart();
+        ListView z = (ListView) this.getActivity().findViewById(R.id.timetable_listview);
+        final TimetableAdapter adapter = new TimetableAdapter(this.getActivity());
+        z.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return adapter.getGestureListener().onTouchEvent(event);
+            }
+        });
+        z.setAdapter(adapter);
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		ApiWrapper.getEventBus().unregister(this.listener);
-	}
+    }
 
-	@SuppressWarnings("unused")
-	private class EventListener {
-		private TimetableFragment t;
-		public EventListener(TimetableFragment t) {
-			this.t = t;
-		}
-		public void onEvent(RequestReceivedEvent<?> e) {
-			if (!ApiWrapper.isLoadingSomething()) {
-				t.layout.setRefreshing(false);
-				t.layout.clearAnimation();
-			}
-			if (!e.successful()) {
-				Toast.makeText(t.layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
-			}
-		}
-		public void onEventMainThread(RefreshingStateEvent e) {
-			if (e.refreshing && !t.layout.isRefreshing()) {
-				TypedValue typed_value = new TypedValue();
-				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
-				t.layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
-				t.layout.setRefreshing(true);
-			}
-		}
-	}
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        ApiWrapper.getEventBus().unregister(this.listener);
+    }
+
+    @SuppressWarnings("unused")
+    private class EventListener {
+        private TimetableFragment t;
+
+        public EventListener(TimetableFragment t) {
+            this.t = t;
+        }
+
+        public void onEvent(RequestReceivedEvent<?> e) {
+            if (!ApiWrapper.isLoadingSomething()) {
+                t.layout.setRefreshing(false);
+                t.layout.clearAnimation();
+            }
+            if (!e.successful()) {
+                Toast.makeText(t.layout.getContext(), "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public void onEventMainThread(RefreshingStateEvent e) {
+            if (e.refreshing && !t.layout.isRefreshing()) {
+                TypedValue typed_value = new TypedValue();
+                getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+                t.layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+                t.layout.setRefreshing(true);
+            }
+        }
+    }
 
 }

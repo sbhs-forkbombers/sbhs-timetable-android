@@ -46,68 +46,69 @@ import com.sbhstimetable.sbhs_timetable_android.event.RequestReceivedEvent;
  * to handle interaction events.
  * Use the {@link BelltimesFragment#newInstance} factory method to
  * create an instance of this fragment.
- *
  */
 public class BelltimesFragment extends Fragment {
 
-	private SwipeRefreshLayout layout;
+    private SwipeRefreshLayout layout;
 
 
-	private EventListener eventListener;
+    private EventListener eventListener;
 
-	/** are we refreshing
-	 *  in the UI?
-	 */
-	public boolean refreshing = false;
-	//private Menu menu;
+    /**
+     * are we refreshing
+     * in the UI?
+     */
+    public boolean refreshing = false;
+    //private Menu menu;
 
-	public static BelltimesFragment newInstance() {
-		return new BelltimesFragment();
-	}
-	public BelltimesFragment() {
-		// Required empty public constructor
-	}
+    public static BelltimesFragment newInstance() {
+        return new BelltimesFragment();
+    }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-	}
+    public BelltimesFragment() {
+        // Required empty public constructor
+    }
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		//this.menu = menu;
-		super.onCreateOptionsMenu(menu, inflater);
-	}
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-	@Override
-	@SuppressLint("ResourceAsColor")
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		final SwipeRefreshLayout v = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_belltimes, container, false);
-		this.layout = v;
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //this.menu = menu;
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-		final Context c = this.getActivity();
-		v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				refreshing = true;
-				ApiWrapper.requestBells(c);
-				ApiWrapper.requestNotices(c);
-				ApiWrapper.requestToday(c);
-			}
-		});
-		if (ThemeHelper.isBackgroundDark()) {
-			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
-		} else {
-			v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
-		}
-		v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
+    @Override
+    @SuppressLint("ResourceAsColor")
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        final SwipeRefreshLayout v = (SwipeRefreshLayout) inflater.inflate(R.layout.fragment_belltimes, container, false);
+        this.layout = v;
 
-		final ListView lv = (ListView)v.findViewById(R.id.belltimes_listview);
+        final Context c = this.getActivity();
+        v.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshing = true;
+                ApiWrapper.requestBells(c);
+                ApiWrapper.requestNotices(c);
+                ApiWrapper.requestToday(c);
+            }
+        });
+        if (ThemeHelper.isBackgroundDark()) {
+            v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_dark);
+        } else {
+            v.setProgressBackgroundColorSchemeResource(R.color.background_floating_material_light);
+        }
+        v.setColorSchemeResources(R.color.blue, R.color.green, R.color.yellow, R.color.red);
+
+        final ListView lv = (ListView) v.findViewById(R.id.belltimes_listview);
 
 		/*lv.setOnScrollListener(new AbsListView.OnScrollListener() {
-			@Override
+            @Override
 			public void onScrollStateChanged(AbsListView absListView, int i) {
 			}
 
@@ -120,51 +121,53 @@ public class BelltimesFragment extends Fragment {
 				v.setEnabled(topRowVerticalPosition >= -100);
 			}
 		});*/
-		if (ApiWrapper.isLoadingSomething()) {
-			// this is a workaround - see https://code.google.com/p/android/issues/detail?id=77712
-			TypedValue typed_value = new TypedValue();
-			getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
-			v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
-			v.setRefreshing(true);
-		}
-		BelltimesAdapter adapter = new BelltimesAdapter(getActivity());
-		lv.setAdapter(adapter);
+        if (ApiWrapper.isLoadingSomething()) {
+            // this is a workaround - see https://code.google.com/p/android/issues/detail?id=77712
+            TypedValue typed_value = new TypedValue();
+            getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+            v.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+            v.setRefreshing(true);
+        }
+        BelltimesAdapter adapter = new BelltimesAdapter(getActivity());
+        lv.setAdapter(adapter);
 
-		this.eventListener = new EventListener(getActivity());
-		ApiWrapper.getEventBus().registerSticky(this.eventListener);
-		return v;
-	}
+        this.eventListener = new EventListener(getActivity());
+        ApiWrapper.getEventBus().registerSticky(this.eventListener);
+        return v;
+    }
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		ApiWrapper.getEventBus().unregister(this.eventListener);
-		eventListener = null;
-	}
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        ApiWrapper.getEventBus().unregister(this.eventListener);
+        eventListener = null;
+    }
 
-	@SuppressWarnings("unused")
-	private class EventListener {
-		private Context c;
-		public EventListener(Context c) {
-			this.c = c;
-		}
-		public void onEventMainThread(RequestReceivedEvent<?> e) {
-			if (!ApiWrapper.isLoadingSomething()) {
-				layout.setRefreshing(false);
-			}
-			if (!e.successful()) {
-				Toast.makeText(c, "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
-			}
-		}
+    @SuppressWarnings("unused")
+    private class EventListener {
+        private Context c;
 
-		public void onEventMainThread(RefreshingStateEvent e) {
-			if (e.refreshing && !layout.isRefreshing()) {
-				TypedValue typed_value = new TypedValue();
-				getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
-				layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
-				layout.setRefreshing(true);
-			}
-		}
-	}
+        public EventListener(Context c) {
+            this.c = c;
+        }
+
+        public void onEventMainThread(RequestReceivedEvent<?> e) {
+            if (!ApiWrapper.isLoadingSomething()) {
+                layout.setRefreshing(false);
+            }
+            if (!e.successful()) {
+                Toast.makeText(c, "Failed to load " + e.getType() + ": " + e.getErrorMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        public void onEventMainThread(RefreshingStateEvent e) {
+            if (e.refreshing && !layout.isRefreshing()) {
+                TypedValue typed_value = new TypedValue();
+                getActivity().getTheme().resolveAttribute(android.support.v7.appcompat.R.attr.actionBarSize, typed_value, true);
+                layout.setProgressViewOffset(false, 0, getResources().getDimensionPixelSize(typed_value.resourceId));
+                layout.setRefreshing(true);
+            }
+        }
+    }
 
 }

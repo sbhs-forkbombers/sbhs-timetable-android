@@ -47,7 +47,7 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 public class TodayAppWidget extends AppWidgetProvider {
 
     @Override
-	@SuppressLint("NewApi")
+    @SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         int home[] = new int[appWidgetIds.length];
         int lock[] = new int[appWidgetIds.length];
@@ -61,19 +61,18 @@ public class TodayAppWidget extends AppWidgetProvider {
                     home[homeIdx++] = i;
                 }
             }
-        }
-        else {
+        } else {
             home = appWidgetIds;
             homeIdx = appWidgetIds.length;
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-		Intent intent = new Intent(context, TimetableActivity.class);
-		PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
+        Intent intent = new Intent(context, TimetableActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(context, 0, intent, 0);
         if (homeIdx > 0) {
             RemoteViews homeScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
-			//homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview);
-			homeScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
-			homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
+            //homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview);
+            homeScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
+            homeScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
@@ -85,11 +84,11 @@ public class TodayAppWidget extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(home, homeScreenWidg);
         }
 
-        if (lockIdx > 0 ) {
+        if (lockIdx > 0) {
             RemoteViews lockScreenWidg = new RemoteViews(context.getPackageName(), R.layout.today_app_widget);
-			lockScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
-			lockScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
-			String c = "#";
+            lockScreenWidg.setOnClickPendingIntent(R.id.widget_today_root, pi);
+            lockScreenWidg.setPendingIntentTemplate(R.id.widget_today_listview, pi);
+            String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_LS, "00");
             c += "00".substring(trans.length()) + trans;
             c += "000000"; // WHY JAVA

@@ -29,42 +29,42 @@ import android.view.MenuItem;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 
 public class SettingsActivity extends AppCompatActivity {
-	public Toolbar mToolbar;
-	public TypedValue mTypedValue;
+    public Toolbar mToolbar;
+    public TypedValue mTypedValue;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		ThemeHelper.setTheme(this);
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_settings);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
 
-		mTypedValue = new TypedValue();
-		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
-		int colorPrimary = mTypedValue.data;
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		mToolbar.setBackgroundColor(colorPrimary);
+        mTypedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+        int colorPrimary = mTypedValue.data;
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setBackgroundColor(colorPrimary);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
-			int colorPrimaryDark = mTypedValue.data;
-			getWindow().setStatusBarColor(colorPrimaryDark);
-		}
-		setSupportActionBar(mToolbar);
-		if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+            int colorPrimaryDark = mTypedValue.data;
+            getWindow().setStatusBarColor(colorPrimaryDark);
+        }
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == android.R.id.home) {
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-	@Override
-	public void onBackPressed() {
-		finish();
-	}
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

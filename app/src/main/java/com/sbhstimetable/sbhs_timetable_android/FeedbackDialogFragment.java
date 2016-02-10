@@ -31,16 +31,16 @@ import android.support.v7.app.AlertDialog;
 import com.sbhstimetable.sbhs_timetable_android.backend.internal.PrefUtil;
 
 public class FeedbackDialogFragment extends DialogFragment {
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		final Context c = getActivity();
-		builder.setMessage(R.string.pls2feedback).setPositiveButton(R.string.no_show, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialogInterface, int i) {
-			PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(PrefUtil.PREF_DISABLE_DIALOG, true).apply();
-			}
-		}).setTitle(R.string.dialog_title);
-		return builder.create();
-	}
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final Context c = getActivity();
+        builder.setMessage(R.string.pls2feedback).setPositiveButton(R.string.no_show, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                PreferenceManager.getDefaultSharedPreferences(c).edit().putBoolean(PrefUtil.PREF_DISABLE_DIALOG, true).apply();
+            }
+        }).setTitle(R.string.dialog_title);
+        return builder.create();
+    }
 }

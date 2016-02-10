@@ -31,179 +31,180 @@ import java.util.HashMap;
 
 @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection", "ConstantConditions"})
 public class Timetable implements FetchedObject {
-	private HashMap<String, TimetableDay> days;
-	private HashMap<String, SubjectInfo> subjInfo;
-	private String status;
-	private long _fetchTime;
+    private HashMap<String, TimetableDay> days;
+    private HashMap<String, SubjectInfo> subjInfo;
+    private String status;
+    private long _fetchTime;
 
-	public boolean valid() {
-		return status == null;
-	}
+    public boolean valid() {
+        return status == null;
+    }
 
-	public TimetableDay getDayNumber(String num) {
-		TimetableDay res = days.get(num);
-		res.setDayNumber(Integer.valueOf(num));
-		return res;
-	}
+    public TimetableDay getDayNumber(String num) {
+        TimetableDay res = days.get(num);
+        res.setDayNumber(Integer.valueOf(num));
+        return res;
+    }
 
-	public TimetableDay getDayNumber(int num) {
-		num++;
-		TimetableDay res = days.get(((Integer)num).toString());
-		if (res == null) return res;
-		res.setDayNumber(num-1);
-		res._subjInfo = subjInfo;
-		return res;
-	}
+    public TimetableDay getDayNumber(int num) {
+        num++;
+        TimetableDay res = days.get(((Integer) num).toString());
+        if (res == null) return res;
+        res.setDayNumber(num - 1);
+        res._subjInfo = subjInfo;
+        return res;
+    }
 
-	@Override
-	public DateTime getFetchTime() {
-		return new DateTime(_fetchTime*1000);
-	}
+    @Override
+    public DateTime getFetchTime() {
+        return new DateTime(_fetchTime * 1000);
+    }
 
-	public class TimetableDay implements Day {
-		@SerializedName("dayname")
-		private String dayName;
-		private HashMap<String, FixedLesson> periods;
-		private int dayNumber;
-		private HashMap<String, SubjectInfo> _subjInfo;
+    public class TimetableDay implements Day {
+        @SerializedName("dayname")
+        private String dayName;
+        private HashMap<String, FixedLesson> periods;
+        private int dayNumber;
+        private HashMap<String, SubjectInfo> _subjInfo;
 
-		protected void setDayNumber(int num) {
-			dayNumber = num;
-		}
+        protected void setDayNumber(int num) {
+            dayNumber = num;
+        }
 
-		@Override
-		public int getDayNumber() {
-			return dayNumber;
-		}
+        @Override
+        public int getDayNumber() {
+            return dayNumber;
+        }
 
-		@Override
-		public String getDayName() {
-			return dayName.split(" ")[0];
-		}
+        @Override
+        public String getDayName() {
+            return dayName.split(" ")[0];
+        }
 
-		@Override
-		public String getWeek() {
-			return dayName.split(" ")[1];
-		}
+        @Override
+        public String getWeek() {
+            return dayName.split(" ")[1];
+        }
 
-		@Override
-		public Lesson getPeriod(int number) {
-			String key = ((Integer)number).toString();
-			if (!this.periods.containsKey(key)) {
-				return new FreePeriod();
-			}
-			FixedLesson l = this.periods.get(key);
-			l.subjInfo = this._subjInfo.get(l.year + l.title);
-			return l;
-		}
+        @Override
+        public Lesson getPeriod(int number) {
+            String key = ((Integer) number).toString();
+            if (!this.periods.containsKey(key)) {
+                return new FreePeriod();
+            }
+            FixedLesson l = this.periods.get(key);
+            l.subjInfo = this._subjInfo.get(l.year + l.title);
+            return l;
+        }
 
-		@Override
-		public boolean varies() {
-			return false;
-		}
+        @Override
+        public boolean varies() {
+            return false;
+        }
 
-		public class FixedLesson implements Lesson {
-			private String title;
-			private String teacher;
-			private String room;
-			private String year;
-			public SubjectInfo subjInfo;
-			@Override
-			public String getSubject() {
-				if (subjInfo == null) {
-					return "Unknown";
-				}
-				return subjInfo.getSubjectName();
-				//return subjInfo.get(year + title).getSubjectName();
-			}
+        public class FixedLesson implements Lesson {
+            private String title;
+            private String teacher;
+            private String room;
+            private String year;
+            public SubjectInfo subjInfo;
 
-			@Override
-			public String getShortName() {
-				return title;
-			}
+            @Override
+            public String getSubject() {
+                if (subjInfo == null) {
+                    return "Unknown";
+                }
+                return subjInfo.getSubjectName();
+                //return subjInfo.get(year + title).getSubjectName();
+            }
 
-			@Override
-			public String getRoom() {
-				return room;
-			}
+            @Override
+            public String getShortName() {
+                return title;
+            }
 
-			@Override
-			public boolean roomChanged() {
-				return false;
-			}
+            @Override
+            public String getRoom() {
+                return room;
+            }
 
-			@Override
-			public String getTeacher() {
-				if (subjInfo == null) {
-					return "someone";
-				}
-				String[] parts = subjInfo.getNormalTeacher().split(" ");
-				String teacherLastName = "";
-				for (int i = 2; i < parts.length; i++) {
-					teacherLastName += parts[i];
-				}
-				String ltemp = teacherLastName.toLowerCase();
-				String stemp = teacher.toLowerCase();
-				int prevIndex = 0;
-				for (char i : stemp.toCharArray()) {
-					if (ltemp.indexOf(i, prevIndex) != -1) {
-						prevIndex = ltemp.indexOf(i, prevIndex);
-					} else {
-						return teacher;
-					}
-				}
-				return parts[0] + " " + teacherLastName;
-			}
+            @Override
+            public boolean roomChanged() {
+                return false;
+            }
 
-			@Override
-			public boolean teacherChanged() {
-				return false;
-			}
+            @Override
+            public String getTeacher() {
+                if (subjInfo == null) {
+                    return "someone";
+                }
+                String[] parts = subjInfo.getNormalTeacher().split(" ");
+                String teacherLastName = "";
+                for (int i = 2; i < parts.length; i++) {
+                    teacherLastName += parts[i];
+                }
+                String ltemp = teacherLastName.toLowerCase();
+                String stemp = teacher.toLowerCase();
+                int prevIndex = 0;
+                for (char i : stemp.toCharArray()) {
+                    if (ltemp.indexOf(i, prevIndex) != -1) {
+                        prevIndex = ltemp.indexOf(i, prevIndex);
+                    } else {
+                        return teacher;
+                    }
+                }
+                return parts[0] + " " + teacherLastName;
+            }
 
-			@Override
-			public boolean cancelled() {
-				return false;
-			}
+            @Override
+            public boolean teacherChanged() {
+                return false;
+            }
 
-			@Override
-			public boolean isTimetabledFree() {
-				return false;
-			}
+            @Override
+            public boolean cancelled() {
+                return false;
+            }
 
-		}
-	}
+            @Override
+            public boolean isTimetabledFree() {
+                return false;
+            }
 
-	public class SubjectInfo {
-		private String title;
-		private String shortTitle;
-		private String teacher;
-		private String subject;
-		private String fullTeacher;
-		private String year;
+        }
+    }
 
-		public String getFullSubjectName() {
-			return subject;
-		}
+    public class SubjectInfo {
+        private String title;
+        private String shortTitle;
+        private String teacher;
+        private String subject;
+        private String fullTeacher;
+        private String year;
 
-		public String getSubjectName() {
-			return title;
-		}
+        public String getFullSubjectName() {
+            return subject;
+        }
 
-		public String getShortSubjectName() {
-			return shortTitle;
-		}
+        public String getSubjectName() {
+            return title;
+        }
 
-		public String getNormalTeacher() {
-			return fullTeacher;
-		}
+        public String getShortSubjectName() {
+            return shortTitle;
+        }
 
-		public String getShortTeacher() {
-			return teacher;
-		}
+        public String getNormalTeacher() {
+            return fullTeacher;
+        }
 
-		public String getYear() {
-			return year;
-		}
+        public String getShortTeacher() {
+            return teacher;
+        }
 
-	}
+        public String getYear() {
+            return year;
+        }
+
+    }
 }

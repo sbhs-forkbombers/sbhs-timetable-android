@@ -24,72 +24,72 @@ import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 import retrofit.RetrofitError;
 
 public class RequestReceivedEvent<T> {
-	private T response;
-	private RetrofitError err;
-	private boolean invalidError;
-	private String type;
+    private T response;
+    private RetrofitError err;
+    private boolean invalidError;
+    private String type;
 
-	protected RequestReceivedEvent(T response, String type) {
-		this.response = response;
-		this.type = type;
-	}
+    protected RequestReceivedEvent(T response, String type) {
+        this.response = response;
+        this.type = type;
+    }
 
-	protected RequestReceivedEvent(RetrofitError r, String type) {
-		this.err = r;
-		this.type = type;
-	}
+    protected RequestReceivedEvent(RetrofitError r, String type) {
+        this.err = r;
+        this.type = type;
+    }
 
-	protected RequestReceivedEvent(boolean invalid, String type) {
-		this.invalidError = invalid;
-		this.type = type;
-	}
+    protected RequestReceivedEvent(boolean invalid, String type) {
+        this.invalidError = invalid;
+        this.type = type;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public RetrofitError getErr() {
-		return err;
-	}
+    public RetrofitError getErr() {
+        return err;
+    }
 
-	public String getErrorMessage() {
-		if (ApiWrapper.getApi() == null) {
-			return "You need an internet connection to load data";
-		}
-		if (invalidError) {
-			return "Invalid response from server";
-		}
+    public String getErrorMessage() {
+        if (ApiWrapper.getApi() == null) {
+            return "You need an internet connection to load data";
+        }
+        if (invalidError) {
+            return "Invalid response from server";
+        }
 
-		if (err == null) {
-			return "Success";
-		}
+        if (err == null) {
+            return "Success";
+        }
 
-		if (err.getKind() == RetrofitError.Kind.CONVERSION) {
-			return "Error parsing response from server.";
-		}
+        if (err.getKind() == RetrofitError.Kind.CONVERSION) {
+            return "Error parsing response from server.";
+        }
 
-		if (err.getKind() == RetrofitError.Kind.HTTP) {
-			if (err.getResponse().getStatus() == 502) {
-				return "Server is down.";
-			} else if (err.getResponse().getStatus() == 401) {
-				return "Not logged in.";
-			} else {
-				return "Server error occurred.";
-			}
-		}
+        if (err.getKind() == RetrofitError.Kind.HTTP) {
+            if (err.getResponse().getStatus() == 502) {
+                return "Server is down.";
+            } else if (err.getResponse().getStatus() == 401) {
+                return "Not logged in.";
+            } else {
+                return "Server error occurred.";
+            }
+        }
 
-		if (err.getKind() == RetrofitError.Kind.NETWORK) {
-			return "Connection to the server failed";
-		}
+        if (err.getKind() == RetrofitError.Kind.NETWORK) {
+            return "Connection to the server failed";
+        }
 
-		return "Unexpected error occurred.";
-	}
+        return "Unexpected error occurred.";
+    }
 
-	public T getResponse() {
-		return response;
-	}
+    public T getResponse() {
+        return response;
+    }
 
-	public boolean successful() {
-		return response != null;
-	}
+    public boolean successful() {
+        return response != null;
+    }
 }

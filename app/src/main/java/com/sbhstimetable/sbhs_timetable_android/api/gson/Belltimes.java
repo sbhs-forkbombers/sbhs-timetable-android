@@ -35,182 +35,183 @@ import java.util.List;
 
 @SuppressWarnings({"unused", "MismatchedReadAndWriteOfArray"})
 public class Belltimes implements FetchedObject {
-	private String status;
-	private boolean bellsAltered;
-	public boolean staticBells;
-	private String bellsAlteredReason;
+    private String status;
+    private boolean bellsAltered;
+    public boolean staticBells;
+    private String bellsAlteredReason;
 
-	/**
-	 * The date, YYYY-MM-DD
-	 */
-	public String date;
-	/**
-	 * The day of the week (Monday, Tuesday, etc)
-	 */
-	private String day;
-	private String term;
-	private String week;
-	private String weekType;
-	private long _fetchTime;
+    /**
+     * The date, YYYY-MM-DD
+     */
+    public String date;
+    /**
+     * The day of the week (Monday, Tuesday, etc)
+     */
+    private String day;
+    private String term;
+    private String week;
+    private String weekType;
+    private long _fetchTime;
 
-	private transient final List<String> days = Arrays.asList("Monday","Tuesday","Wednesday","Thursday","Friday");
-	private transient final List<String> weeks = Arrays.asList("A", "B", "C");
+    private transient final List<String> days = Arrays.asList("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
+    private transient final List<String> weeks = Arrays.asList("A", "B", "C");
 
-	private Bell[] bells;
+    private Bell[] bells;
 
-	private transient DateTimeFormatter dayParser = new DateTimeFormatterBuilder()
-			.appendYear(4, 4).appendLiteral('-').appendMonthOfYear(2).appendLiteral('-').appendDayOfMonth(2).toFormatter();
+    private transient DateTimeFormatter dayParser = new DateTimeFormatterBuilder()
+            .appendYear(4, 4).appendLiteral('-').appendMonthOfYear(2).appendLiteral('-').appendDayOfMonth(2).toFormatter();
 
-	public DateTime getSchoolDay() {
-		return dayParser.parseDateTime(date);
-	}
+    public DateTime getSchoolDay() {
+        return dayParser.parseDateTime(date);
+    }
 
-	public String getWeek() {
-		return week + weekType;
-	}
+    public String getWeek() {
+        return week + weekType;
+    }
 
-	@Override
-	public DateTime getFetchTime() {
-		return new DateTime(_fetchTime*1000L);
-	}
+    @Override
+    public DateTime getFetchTime() {
+        return new DateTime(_fetchTime * 1000L);
+    }
 
-	public Bell getBellIndex(int i) {
-		if (i >= bells.length) {
-			return null;
-		}
-		return bells[i].setParent(this);
-	}
+    public Bell getBellIndex(int i) {
+        if (i >= bells.length) {
+            return null;
+        }
+        return bells[i].setParent(this);
+    }
 
-	public boolean areBellsAltered() {
-		return bellsAltered;
-	}
+    public boolean areBellsAltered() {
+        return bellsAltered;
+    }
 
-	public String getBellsAlteredReason() {
-		return bellsAlteredReason;
-	}
+    public String getBellsAlteredReason() {
+        return bellsAlteredReason;
+    }
 
-	public String getDayName() {
-		return day;
-	}
+    public String getDayName() {
+        return day;
+    }
 
-	public int getDayNumber() {
-		//Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
-		if (weeks.indexOf(weekType) < 0) {
-			return -1;
-		}
-		return (days.indexOf(day)) + 5*weeks.indexOf(weekType);
-	}
+    public int getDayNumber() {
+        //Log.i("Belltimes", day + " " + weekType + " => " + (days.indexOf(day)+1) + " " + weeks.indexOf(weekType	));
+        if (weeks.indexOf(weekType) < 0) {
+            return -1;
+        }
+        return (days.indexOf(day)) + 5 * weeks.indexOf(weekType);
+    }
 
-	public int getLength() {
-		return bells.length;
-	}
+    public int getLength() {
+        return bells.length;
+    }
 
-	public boolean current() {
-		Log.i("Belltimes", "" + staticBells);
-		if (staticBells) {
-			return false;
-		}
-		DateTime expires = getSchoolDay().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
-		return expires.isAfterNow();
+    public boolean current() {
+        Log.i("Belltimes", "" + staticBells);
+        if (staticBells) {
+            return false;
+        }
+        DateTime expires = getSchoolDay().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
+        return expires.isAfterNow();
 
-	}
+    }
 
-	public boolean isStatic() {
-		return staticBells;
-	}
+    public boolean isStatic() {
+        return staticBells;
+    }
 
-	public boolean valid() {
-		return !status.equalsIgnoreCase("error");
-	}
+    public boolean valid() {
+        return !status.equalsIgnoreCase("error");
+    }
 
-	// TODO getNextBell(), IPeriod should implement getPeriodNumber() and have better getName(). hasPeriodNext() maybe?
+    // TODO getNextBell(), IPeriod should implement getPeriodNumber() and have better getName(). hasPeriodNext() maybe?
 
-	public class Bell implements Belltime {
-		private String bell;
-		private String time;
-		private int index;
-		private Integer periodNumber;
-		private Belltimes parent;
-		private boolean different;
-		private String normally;
+    public class Bell implements Belltime {
+        private String bell;
+        private String time;
+        private int index;
+        private Integer periodNumber;
+        private Belltimes parent;
+        private boolean different;
+        private String normally;
 
-		public Bell() {}
+        public Bell() {
+        }
 
-		public Bell setParent(Belltimes p) {
-			this.parent = p;
-			return this;
-		}
+        public Bell setParent(Belltimes p) {
+            this.parent = p;
+            return this;
+        }
 
-		public String getBellDisplay() {
-			return time;
-		}
+        public String getBellDisplay() {
+            return time;
+        }
 
-		@Override
-		public String getBellName() {
-			if (this.isPeriodStart()) {
-				return "Period " + bell;
-			}
-			return this.bell;
-		}
+        @Override
+        public String getBellName() {
+            if (this.isPeriodStart()) {
+                return "Period " + bell;
+            }
+            return this.bell;
+        }
 
-		public boolean differs() {
-			return different;
-		}
+        public boolean differs() {
+            return different;
+        }
 
-		@Override
-		public DateTime getBellTime() {
-			if (TimetableApp.BELLTIME_ALLOW_FAKE_DAY)
-				return DateTimeHelper.getHHMMFormatter().parseDateTime(time);
-			return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getYYYYMMDDFormatter().parseLocalDateTime(parent.date).toLocalDate());
-		}
+        @Override
+        public DateTime getBellTime() {
+            if (TimetableApp.BELLTIME_ALLOW_FAKE_DAY)
+                return DateTimeHelper.getHHMMFormatter().parseDateTime(time);
+            return DateTimeHelper.getHHMMFormatter().parseDateTime(time).withDate(DateTimeHelper.getYYYYMMDDFormatter().parseLocalDateTime(parent.date).toLocalDate());
+        }
 
-		@Override
-		public boolean isPeriodStart() {
-			return getPeriodNumber() != 9001;
-		}
+        @Override
+        public boolean isPeriodStart() {
+            return getPeriodNumber() != 9001;
+        }
 
-		@Override
-		public int getPeriodNumber() {
-			if (this.periodNumber != null) {
-				return this.periodNumber;
-			}
-			try {
-				this.periodNumber = Integer.parseInt(this.bell);
-				return this.periodNumber;
-			} catch (NumberFormatException e) {
-				return 9001;
-			}
-		}
+        @Override
+        public int getPeriodNumber() {
+            if (this.periodNumber != null) {
+                return this.periodNumber;
+            }
+            try {
+                this.periodNumber = Integer.parseInt(this.bell);
+                return this.periodNumber;
+            } catch (NumberFormatException e) {
+                return 9001;
+            }
+        }
 
-		public Bell getNextBellTime() {
-			if (index < parent.bells.length-1) {
-				return parent.bells[index+1];
-			}
-			return null;
-		}
+        public Bell getNextBellTime() {
+            if (index < parent.bells.length - 1) {
+                return parent.bells[index + 1];
+            }
+            return null;
+        }
 
-		public Bell getPreviousBellTime() {
-			if (index == 0) {
-				return null;
-			}
-			return parent.bells[index-1];
-		}
+        public Bell getPreviousBellTime() {
+            if (index == 0) {
+                return null;
+            }
+            return parent.bells[index - 1];
+        }
 
-		@Override
-		public boolean isNextBellPeriod() {
-			if (index >= parent.bells.length-2) {
-				return false;
-			} else {
-				if (parent.bells[index + 1].isPeriodStart()) {
-					return true;
-				}
-			}
-			return false;
-		}
+        @Override
+        public boolean isNextBellPeriod() {
+            if (index >= parent.bells.length - 2) {
+                return false;
+            } else {
+                if (parent.bells[index + 1].isPeriodStart()) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-		public int getIndex() {
-			return this.index;
-		}
-	}
+        public int getIndex() {
+            return this.index;
+        }
+    }
 
 }

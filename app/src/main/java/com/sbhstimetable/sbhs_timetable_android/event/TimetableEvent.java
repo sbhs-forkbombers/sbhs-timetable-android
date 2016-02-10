@@ -24,15 +24,15 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Timetable;
 import retrofit.RetrofitError;
 
 public class TimetableEvent extends RequestReceivedEvent<Timetable> {
-	public TimetableEvent(Timetable response) {
-		super(response, "full timetable");
-	}
+    public TimetableEvent(Timetable response) {
+        super(response, "full timetable");
+    }
 
-	public TimetableEvent(RetrofitError r) {
-		super(r, "full timetable");
-	}
+    public TimetableEvent(RetrofitError r) {
+        super(r, "full timetable");
+    }
 
-	public TimetableEvent(boolean invalid) {
-		super(invalid, "full timetable");
-	}
+    public TimetableEvent(boolean invalid) {
+        super(invalid, "full timetable");
+    }
 }

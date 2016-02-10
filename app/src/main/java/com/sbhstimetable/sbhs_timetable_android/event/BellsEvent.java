@@ -24,12 +24,12 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Belltimes;
 import retrofit.RetrofitError;
 
 public class BellsEvent extends RequestReceivedEvent<Belltimes> {
-	public BellsEvent(Belltimes response) {
-		super(response, "belltimes");
-	}
+    public BellsEvent(Belltimes response) {
+        super(response, "belltimes");
+    }
 
-	public BellsEvent(RetrofitError r) {
-		super(r, "belltimes");
-	}
+    public BellsEvent(RetrofitError r) {
+        super(r, "belltimes");
+    }
 
 }

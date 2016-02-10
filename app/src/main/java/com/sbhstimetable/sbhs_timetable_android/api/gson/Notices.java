@@ -41,195 +41,195 @@ import java.util.Set;
 
 @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
 public class Notices implements FetchedObject {
-	private String date;
-	private String term;
-	private String week;
-	private String status;
-	private long _fetchTime;
-	private HashMap<String, Notice[]> notices;
-	private transient HashMap<String, Notice[]> noticeFiltered;
+    private String date;
+    private String term;
+    private String week;
+    private String status;
+    private long _fetchTime;
+    private HashMap<String, Notice[]> notices;
+    private transient HashMap<String, Notice[]> noticeFiltered;
 
-	public Notice[] getNoticesForWeight(int weight) {
-		return getNoticesForWeight(((Integer)weight).toString());
-	}
+    public Notice[] getNoticesForWeight(int weight) {
+        return getNoticesForWeight(((Integer) weight).toString());
+    }
 
-	public Notice[] getNoticesForWeight(String weight) {
-		if (noticeFiltered == null) {
-			return notices.get(weight);
-		}
-		return noticeFiltered.get(weight);
-	}
+    public Notice[] getNoticesForWeight(String weight) {
+        if (noticeFiltered == null) {
+            return notices.get(weight);
+        }
+        return noticeFiltered.get(weight);
+    }
 
-	public int getNumberOfNotices() {
-		int total = 0;
-		for (String i : getWeights()) {
-			total += notices.get(i).length;
-		}
-		return total;
-	}
+    public int getNumberOfNotices() {
+        int total = 0;
+        for (String i : getWeights()) {
+            total += notices.get(i).length;
+        }
+        return total;
+    }
 
-	public int getVisibleNotices() {
-		int total = 0;
-		for (String i : getWeights()) {
-			total += getNoticesForWeight(i).length;
-		}
-		return total;
-	}
+    public int getVisibleNotices() {
+        int total = 0;
+        for (String i : getWeights()) {
+            total += getNoticesForWeight(i).length;
+        }
+        return total;
+    }
 
-	public void filterToYear(String year) {
-		if (year == null) {
-			noticeFiltered = null;
-			return;
-		}
-		HashMap<String,Notice[]> map = new HashMap<>();
-		for (Map.Entry<String,Notice[]> i : notices.entrySet()) {
-			List<Notice> res = new ArrayList<>();
-			for (Notice j : i.getValue()) {
-				if (j.isYearApplicable(year)) {
-					res.add(j);
-				}
-			}
-			map.put(i.getKey(), res.toArray(new Notice[res.size()]));
-		}
-		this.noticeFiltered = map;
-	}
+    public void filterToYear(String year) {
+        if (year == null) {
+            noticeFiltered = null;
+            return;
+        }
+        HashMap<String, Notice[]> map = new HashMap<>();
+        for (Map.Entry<String, Notice[]> i : notices.entrySet()) {
+            List<Notice> res = new ArrayList<>();
+            for (Notice j : i.getValue()) {
+                if (j.isYearApplicable(year)) {
+                    res.add(j);
+                }
+            }
+            map.put(i.getKey(), res.toArray(new Notice[res.size()]));
+        }
+        this.noticeFiltered = map;
+    }
 
-	@Override
-	public DateTime getFetchTime() {
-		return new DateTime(this._fetchTime*1000);
-	}
+    @Override
+    public DateTime getFetchTime() {
+        return new DateTime(this._fetchTime * 1000);
+    }
 
-	public Notice getNoticeAtIndex(int idx) {
-		int total = 0;
-		int iters = 0;
-		Comparator<String> comp = new Comparator<String>() {
-			@Override
-			public int compare(String lhs, String rhs) {
-				try {
-					int l = Integer.parseInt(lhs);
-					int r = Integer.parseInt(rhs);
-					if (l < r) {
-						return -1;
-					} else if (l > r) {
-						return 1;
-					}
-					return 0;
-				} catch (NumberFormatException e) {
-					throw new ClassCastException("Not an integer");
-				}
-			}
-		};
+    public Notice getNoticeAtIndex(int idx) {
+        int total = 0;
+        int iters = 0;
+        Comparator<String> comp = new Comparator<String>() {
+            @Override
+            public int compare(String lhs, String rhs) {
+                try {
+                    int l = Integer.parseInt(lhs);
+                    int r = Integer.parseInt(rhs);
+                    if (l < r) {
+                        return -1;
+                    } else if (l > r) {
+                        return 1;
+                    }
+                    return 0;
+                } catch (NumberFormatException e) {
+                    throw new ClassCastException("Not an integer");
+                }
+            }
+        };
 
-		List<String> weights = Arrays.asList(getWeights().toArray(new String[getWeights().size()]));
-		Collections.sort(weights, comp);
-		Collections.reverse(weights);
-		String last = null;
-		for (String s : weights) {
-			int oldTotal = total;
-			total += getNoticesForWeight(s).length;
-			if (idx < total) {
-				last = s;
-				idx -= oldTotal; // now it's the index within the list
-				if (idx < 0) idx = 0;
-				break;
-			}
-		}
-		if (last == null) return null;
-		return getNoticesForWeight(last)[idx];
-	}
+        List<String> weights = Arrays.asList(getWeights().toArray(new String[getWeights().size()]));
+        Collections.sort(weights, comp);
+        Collections.reverse(weights);
+        String last = null;
+        for (String s : weights) {
+            int oldTotal = total;
+            total += getNoticesForWeight(s).length;
+            if (idx < total) {
+                last = s;
+                idx -= oldTotal; // now it's the index within the list
+                if (idx < 0) idx = 0;
+                break;
+            }
+        }
+        if (last == null) return null;
+        return getNoticesForWeight(last)[idx];
+    }
 
-	public boolean valid() {
-		return status == null;
-	}
+    public boolean valid() {
+        return status == null;
+    }
 
-	public Set<String> getWeights() {
-		return notices.keySet();
-	}
+    public Set<String> getWeights() {
+        return notices.keySet();
+    }
 
-	public class Notice implements Comparable<Notice> {
-		@SerializedName("dTarget")
-		private String displayTarget;
-		private String[] years;
-		private String title;
-		private String text;
-		private String author;
-		private String id;
-		private int weight;
+    public class Notice implements Comparable<Notice> {
+        @SerializedName("dTarget")
+        private String displayTarget;
+        private String[] years;
+        private String title;
+        private String text;
+        private String author;
+        private String id;
+        private int weight;
 
-		private transient List<String> yearList;
+        private transient List<String> yearList;
 
-		private boolean isMeeting;
-		private String meetingDate;
-		private String meetingTime;
-		private String meetingPlace;
+        private boolean isMeeting;
+        private String meetingDate;
+        private String meetingTime;
+        private String meetingPlace;
 
-		public String getDisplayTarget() {
-			return displayTarget;
-		}
+        public String getDisplayTarget() {
+            return displayTarget;
+        }
 
-		private void initYearList() {
-			if (yearList == null) {
-				yearList = Arrays.asList(years);
-			}
-		}
+        private void initYearList() {
+            if (yearList == null) {
+                yearList = Arrays.asList(years);
+            }
+        }
 
-		public long getID() {
-			return Long.parseLong(this.id);
-		}
+        public long getID() {
+            return Long.parseLong(this.id);
+        }
 
-		public String getTitle() {
-			return title;
-		}
+        public String getTitle() {
+            return title;
+        }
 
-		public String getText() {
-			return text;
-		}
+        public String getText() {
+            return text;
+        }
 
-		public String getAuthor() {
-			return author;
-		}
+        public String getAuthor() {
+            return author;
+        }
 
-		public boolean isYearApplicable(int year) {
-			return isYearApplicable(((Integer)year).toString());
-		}
+        public boolean isYearApplicable(int year) {
+            return isYearApplicable(((Integer) year).toString());
+        }
 
-		public boolean isYearApplicable(String year) {
-			initYearList();
-			return this.yearList.contains(year);
-		}
+        public boolean isYearApplicable(String year) {
+            initYearList();
+            return this.yearList.contains(year);
+        }
 
-		public Spanned getTextViewNoticeContents() {
-			return Html.fromHtml(this.text.replace("<p>", "").replace("</p>", "<br />"));
-		}
+        public Spanned getTextViewNoticeContents() {
+            return Html.fromHtml(this.text.replace("<p>", "").replace("</p>", "<br />"));
+        }
 
-		@Override
-		public int compareTo(@NonNull Notice another) {
-			return this.weight - another.weight;
-		}
+        @Override
+        public int compareTo(@NonNull Notice another) {
+            return this.weight - another.weight;
+        }
 
-		public boolean isMeeting() {
-			return this.isMeeting;
-		}
+        public boolean isMeeting() {
+            return this.isMeeting;
+        }
 
-		public String getMeetingDate() {
-			DateTime date = DateTimeHelper.getYYYYMMDDFormatter().parseDateTime(this.meetingDate);
-			if (date.plusDays(-1).getDayOfMonth() == DateTime.now().getDayOfMonth()) {
-				return "Today";
-			} else if (date.getDayOfMonth() == DateTime.now().getDayOfMonth()) {
-				return "Tomorrow";
-			} else if (DateTime.now().plusDays(7).isAfter(date.toInstant()) && DateTime.now().isBefore(date.toInstant())) {
-				return date.dayOfMonth().getAsShortText();
-			} else {
-				return new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendMonthOfYearShortText().toFormatter().print(date.toInstant());
-			}
-		}
+        public String getMeetingDate() {
+            DateTime date = DateTimeHelper.getYYYYMMDDFormatter().parseDateTime(this.meetingDate);
+            if (date.plusDays(-1).getDayOfMonth() == DateTime.now().getDayOfMonth()) {
+                return "Today";
+            } else if (date.getDayOfMonth() == DateTime.now().getDayOfMonth()) {
+                return "Tomorrow";
+            } else if (DateTime.now().plusDays(7).isAfter(date.toInstant()) && DateTime.now().isBefore(date.toInstant())) {
+                return date.dayOfMonth().getAsShortText();
+            } else {
+                return new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendMonthOfYearShortText().toFormatter().print(date.toInstant());
+            }
+        }
 
-		public String getMeetingTime() {
-			return meetingTime;
-		}
+        public String getMeetingTime() {
+            return meetingTime;
+        }
 
-		public String getMeetingPlace() {
-			return meetingPlace;
-		}
-	}
+        public String getMeetingPlace() {
+            return meetingPlace;
+        }
+    }
 }

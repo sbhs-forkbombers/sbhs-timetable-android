@@ -24,15 +24,15 @@ import com.sbhstimetable.sbhs_timetable_android.api.gson.Notices;
 import retrofit.RetrofitError;
 
 public class NoticesEvent extends RequestReceivedEvent<Notices> {
-	public NoticesEvent(Notices response) {
-		super(response, "notices");
-	}
+    public NoticesEvent(Notices response) {
+        super(response, "notices");
+    }
 
-	public NoticesEvent(RetrofitError r) {
-		super(r, "notices");
-	}
+    public NoticesEvent(RetrofitError r) {
+        super(r, "notices");
+    }
 
-	public NoticesEvent(boolean invalid) {
-		super(invalid, "notices");
-	}
+    public NoticesEvent(boolean invalid) {
+        super(invalid, "notices");
+    }
 }

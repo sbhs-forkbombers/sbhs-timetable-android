@@ -50,19 +50,19 @@ import org.joda.time.DateTime;
 
 public class CountdownAppWidget extends AppWidgetProvider {
     private static PendingIntent pending;
-	private DateTimeHelper dth;
-	private StorageCache cache;
+    private DateTimeHelper dth;
+    private StorageCache cache;
 
     @Override
-	@SuppressLint("NewApi")
+    @SuppressLint("NewApi")
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-		if (this.cache == null) {
-			this.cache = new StorageCache(context);
-		}
-		if (this.dth == null) {
-			this.dth = new DateTimeHelper(context);
-		}
+        if (this.cache == null) {
+            this.cache = new StorageCache(context);
+        }
+        if (this.dth == null) {
+            this.dth = new DateTimeHelper(context);
+        }
         int home[] = new int[appWidgetIds.length];
         int lock[] = new int[appWidgetIds.length];
         int lockIdx = 0;
@@ -75,8 +75,7 @@ public class CountdownAppWidget extends AppWidgetProvider {
                     home[homeIdx++] = i;
                 }
             }
-        }
-        else {
+        } else {
             home = appWidgetIds;
             homeIdx = appWidgetIds.length;
         }
@@ -94,8 +93,8 @@ public class CountdownAppWidget extends AppWidgetProvider {
             if (!dth.hasBells()) {
                 dth.setBells(b);
             }
-			Belltimes.Bell bell = dth.getNextBell();
-			/*if (bell == null) {
+            Belltimes.Bell bell = dth.getNextBell();
+            /*if (bell == null) {
 				ApiWrapper.requestBells(context);
 			}*/
             long time = dth.getNextEvent().toDateTime().getMillis() - DateTime.now().getMillis();
@@ -105,20 +104,20 @@ public class CountdownAppWidget extends AppWidgetProvider {
             if (bell != null) {
                 label = bell.getBellName();
                 in = "starts in";
-				time = bell.getBellTime().toDateTime().withDate(DateTime.now().toLocalDate()).getMillis() - DateTime.now().getMillis();
+                time = bell.getBellTime().toDateTime().withDate(DateTime.now().toLocalDate()).getMillis() - DateTime.now().getMillis();
             }
-			//Log.i("Countdown", "Up next " + bell + " time: " + bell.getBellTime().toString());
-            cntDwn = DateTimeHelper.toCountdown((int)(time / 1000));
+            //Log.i("Countdown", "Up next " + bell + " time: " + bell.getBellTime().toString());
+            cntDwn = DateTimeHelper.toCountdown((int) (time / 1000));
 
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-		RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
-		Intent intent = new Intent(context, TimetableActivity.class);
-		views.setOnClickPendingIntent(R.id.widget_countdown_root, PendingIntent.getActivity(context, 0, intent, 0));
-		views.setTextViewText(R.id.widget_label, label);
-		views.setTextViewText(R.id.widget_in, in);
-		views.setTextViewText(R.id.widget_next_period, cntDwn);
-		if (homeIdx > 0) {
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_app_widget);
+        Intent intent = new Intent(context, TimetableActivity.class);
+        views.setOnClickPendingIntent(R.id.widget_countdown_root, PendingIntent.getActivity(context, 0, intent, 0));
+        views.setTextViewText(R.id.widget_label, label);
+        views.setTextViewText(R.id.widget_in, in);
+        views.setTextViewText(R.id.widget_next_period, cntDwn);
+        if (homeIdx > 0) {
             String c = "#";
             String trans = p.getString(PrefUtil.WIDGET_TRANSPARENCY_HS, "32");
             c += "00".substring(trans.length()) + trans;
@@ -138,13 +137,13 @@ public class CountdownAppWidget extends AppWidgetProvider {
         }
 
 
-        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent m = new Intent(context, this.getClass());
         m.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         m.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass())));
         //if (pending != null) am.cancel(pending);
         pending = PendingIntent.getBroadcast(context, appWidgetIds[0], m, PendingIntent.FLAG_CANCEL_CURRENT);
-        am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime()+1000, pending);
+        am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pending);
     }
 /*
 	@Override
@@ -157,7 +156,7 @@ public class CountdownAppWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         super.onDisabled(context);
         if (pending != null) {
-            ((AlarmManager)context.getSystemService(Context.ALARM_SERVICE)).cancel(pending);
+            ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(pending);
         }
     }
 }

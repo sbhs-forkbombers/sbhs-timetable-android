@@ -22,24 +22,30 @@ package com.sbhstimetable.sbhs_timetable_android.api;
 import org.joda.time.DateTime;
 
 public interface Lesson {
-	String getSubject();
-	String getShortName();
+    String getSubject();
 
-	String getRoom();
-	boolean roomChanged();
+    String getShortName();
 
-	String getTeacher();
-	boolean teacherChanged();
+    String getRoom();
 
-	boolean cancelled();
+    boolean roomChanged();
 
-	boolean isTimetabledFree();
+    String getTeacher();
 
-	interface WithBelltime extends Lesson {
-		DateTime getStart();
-		DateTime getEnd();
-		String getNext();
-		String getName();
-	}
+    boolean teacherChanged();
+
+    boolean cancelled();
+
+    boolean isTimetabledFree();
+
+    interface WithBelltime extends Lesson {
+        DateTime getStart();
+
+        DateTime getEnd();
+
+        String getNext();
+
+        String getName();
+    }
 
 }

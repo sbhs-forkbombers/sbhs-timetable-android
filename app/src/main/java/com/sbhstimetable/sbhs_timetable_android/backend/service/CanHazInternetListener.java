@@ -31,35 +31,35 @@ import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 
 public class CanHazInternetListener extends BroadcastReceiver {
 
-	public static void disable(Context c) {
-		Log.d("CanHazInternet", "Disabling your number one source for internet since 1998");
-		ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
-		PackageManager pm = c.getPackageManager();
-		pm.setComponentEnabledSetting(receiver,
-				PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-				PackageManager.DONT_KILL_APP);
-	}
+    public static void disable(Context c) {
+        Log.d("CanHazInternet", "Disabling your number one source for internet since 1998");
+        ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
+        PackageManager pm = c.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
+    }
 
-	public static void enable(Context c) {
-		Log.d("CanHazInternet", "Enabling your number one source for internet since 1998");
-		ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
-		PackageManager pm = c.getPackageManager();
-		pm.setComponentEnabledSetting(receiver,
-				PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-				PackageManager.DONT_KILL_APP);
-	}
+    public static void enable(Context c) {
+        Log.d("CanHazInternet", "Enabling your number one source for internet since 1998");
+        ComponentName receiver = new ComponentName(c, CanHazInternetListener.class);
+        PackageManager pm = c.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+    }
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.d("CanHazInternet", "Hi I'm the CanHazInternetListener, your number one source for internet since 1998");
-		ConnectivityManager c = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		boolean hasNet = c.getActiveNetworkInfo() != null && c.getActiveNetworkInfo().isConnected();
-		if (hasNet) {
-			// download all the things
-			ApiWrapper.requestBells(context);
-			ApiWrapper.requestToday(context);
-			ApiWrapper.requestNotices(context);
-			disable(context);
-		}
-	}
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d("CanHazInternet", "Hi I'm the CanHazInternetListener, your number one source for internet since 1998");
+        ConnectivityManager c = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean hasNet = c.getActiveNetworkInfo() != null && c.getActiveNetworkInfo().isConnected();
+        if (hasNet) {
+            // download all the things
+            ApiWrapper.requestBells(context);
+            ApiWrapper.requestToday(context);
+            ApiWrapper.requestNotices(context);
+            disable(context);
+        }
+    }
 }

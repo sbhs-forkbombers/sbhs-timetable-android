@@ -31,58 +31,57 @@ import com.sbhstimetable.sbhs_timetable_android.R;
 import java.lang.reflect.Field;
 
 public class ThemeHelper {
-	private static boolean isDark = true;
-	private static Integer curAppTheme = null;
-	private static ColorStateList curTextColor = null;
+    private static boolean isDark = true;
+    private static Integer curAppTheme = null;
+    private static ColorStateList curTextColor = null;
 
-	public static void setTheme(Activity a) {
-		if (curAppTheme != null) {
-			a.setTheme(curAppTheme);
-		}
-		String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "AppTheme");
-		String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "Dark");
+    public static void setTheme(Activity a) {
+        if (curAppTheme != null) {
+            a.setTheme(curAppTheme);
+        }
+        String colour = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.COLOUR, "AppTheme");
+        String theme = PreferenceManager.getDefaultSharedPreferences(a).getString(PrefUtil.THEME, "Dark");
 
-		if (!colour.startsWith("AppTheme")) {
-			colour = "AppTheme_" + colour.substring(0, 1).toUpperCase() + colour.substring(1);
-		}
-		if (theme.equals("Light")) {
-			colour += "_Light";
-			isDark = false;
-		}
-		else {
-			isDark = true;
-		}
-		Log.d("ThemeHelper", "Setting colour to " + colour);
-		int colourRes = R.style.AppTheme;
-		if (!colour.equals("AppTheme")) {
+        if (!colour.startsWith("AppTheme")) {
+            colour = "AppTheme_" + colour.substring(0, 1).toUpperCase() + colour.substring(1);
+        }
+        if (theme.equals("Light")) {
+            colour += "_Light";
+            isDark = false;
+        } else {
+            isDark = true;
+        }
+        Log.d("ThemeHelper", "Setting colour to " + colour);
+        int colourRes = R.style.AppTheme;
+        if (!colour.equals("AppTheme")) {
 
-			try {
-				Field f = R.style.class.getField(colour);
-				colourRes = f.getInt(null);
-				a.setTheme(colourRes);
-			} catch (Exception e) {
-				Log.v("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
-			}
-		}
-		TextView tv = new TextView(a);
-		curTextColor = tv.getTextColors();
+            try {
+                Field f = R.style.class.getField(colour);
+                colourRes = f.getInt(null);
+                a.setTheme(colourRes);
+            } catch (Exception e) {
+                Log.v("ThemeHelper", "Damn couldn't get the colour '" + colour + "', falling back to blue...", e);
+            }
+        }
+        TextView tv = new TextView(a);
+        curTextColor = tv.getTextColors();
 
-		curAppTheme = colourRes;
-	}
+        curAppTheme = colourRes;
+    }
 
-	public static boolean themeNeedsRevalidating() {
-		return curAppTheme == null;
-	}
+    public static boolean themeNeedsRevalidating() {
+        return curAppTheme == null;
+    }
 
-	public static void invalidateTheme() {
-		curAppTheme = null;
-	}
+    public static void invalidateTheme() {
+        curAppTheme = null;
+    }
 
-	public static boolean isBackgroundDark() {
-		return isDark;
-	}
+    public static boolean isBackgroundDark() {
+        return isDark;
+    }
 
-	public static ColorStateList getTextColor() {
-		return curTextColor;
-	}
+    public static ColorStateList getTextColor() {
+        return curTextColor;
+    }
 }

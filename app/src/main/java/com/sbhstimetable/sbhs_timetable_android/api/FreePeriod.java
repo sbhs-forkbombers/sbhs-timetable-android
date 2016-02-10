@@ -20,43 +20,43 @@
 package com.sbhstimetable.sbhs_timetable_android.api;
 
 public class FreePeriod implements Lesson {
-	@Override
-	public String getSubject() {
-		return "Free";
-	}
+    @Override
+    public String getSubject() {
+        return "Free";
+    }
 
-	@Override
-	public String getShortName() {
-		return "Free";
-	}
+    @Override
+    public String getShortName() {
+        return "Free";
+    }
 
-	@Override
-	public String getRoom() {
-		return "N/A";
-	}
+    @Override
+    public String getRoom() {
+        return "N/A";
+    }
 
-	@Override
-	public boolean isTimetabledFree() {
-		return true;
-	}
+    @Override
+    public boolean isTimetabledFree() {
+        return true;
+    }
 
-	@Override
-	public boolean roomChanged() {
-		return false;
-	}
+    @Override
+    public boolean roomChanged() {
+        return false;
+    }
 
-	@Override
-	public String getTeacher() {
-		return "N/A";
-	}
+    @Override
+    public String getTeacher() {
+        return "N/A";
+    }
 
-	@Override
-	public boolean teacherChanged() {
-		return false;
-	}
+    @Override
+    public boolean teacherChanged() {
+        return false;
+    }
 
-	@Override
-	public boolean cancelled() {
-		return false;
-	}
+    @Override
+    public boolean cancelled() {
+        return false;
+    }
 }

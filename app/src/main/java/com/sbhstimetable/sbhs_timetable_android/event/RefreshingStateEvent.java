@@ -20,8 +20,9 @@
 package com.sbhstimetable.sbhs_timetable_android.event;
 
 public class RefreshingStateEvent {
-	public boolean refreshing;
-	public RefreshingStateEvent(boolean r) {
-		this.refreshing = r;
-	}
+    public boolean refreshing;
+
+    public RefreshingStateEvent(boolean r) {
+        this.refreshing = r;
+    }
 }

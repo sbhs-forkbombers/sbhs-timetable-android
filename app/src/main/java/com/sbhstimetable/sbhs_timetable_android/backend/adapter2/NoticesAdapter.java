@@ -50,211 +50,211 @@ import java.util.List;
 import static com.sbhstimetable.sbhs_timetable_android.backend.internal.Compat.setTextAppearanceCompat;
 
 public class NoticesAdapter implements ListAdapter, AdapterView.OnItemSelectedListener {
-	private Notices notices;
-	private List<DataSetObserver> dsos = new ArrayList<>();
-	private int curIndex;
-	private FrameLayout theFilterSelector;
-	private String curError = null;
+    private Notices notices;
+    private List<DataSetObserver> dsos = new ArrayList<>();
+    private int curIndex;
+    private FrameLayout theFilterSelector;
+    private String curError = null;
 
-	private static final String[] years = new String[] {"All Notices", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Staff"};
+    private static final String[] years = new String[]{"All Notices", "Year 7", "Year 8", "Year 9", "Year 10", "Year 11", "Year 12", "Staff"};
 
-	public NoticesAdapter(Context c) {
-		StorageCache cache = new StorageCache(c);
-		this.notices = cache.loadNotices();
-		EventListener e = new EventListener();
-		ApiWrapper.getEventBus().register(e);
-		if (this.notices == null) {
-			ApiWrapper.requestNotices(c);
-			if (ApiWrapper.getApi() == null) {
-				curError = "Please connect to the internet to load the notices.";
-			}
-		}
-	}
+    public NoticesAdapter(Context c) {
+        StorageCache cache = new StorageCache(c);
+        this.notices = cache.loadNotices();
+        EventListener e = new EventListener();
+        ApiWrapper.getEventBus().register(e);
+        if (this.notices == null) {
+            ApiWrapper.requestNotices(c);
+            if (ApiWrapper.getApi() == null) {
+                curError = "Please connect to the internet to load the notices.";
+            }
+        }
+    }
 
-	@Override
-	public boolean areAllItemsEnabled() {
-		return true;
-	}
+    @Override
+    public boolean areAllItemsEnabled() {
+        return true;
+    }
 
-	@Override
-	public boolean isEnabled(int position) {
-		return true;
-	}
+    @Override
+    public boolean isEnabled(int position) {
+        return true;
+    }
 
-	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
-		this.dsos.add(observer);
-	}
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+        this.dsos.add(observer);
+    }
 
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
-		this.dsos.remove(observer);
-	}
+    @Override
+    public void unregisterDataSetObserver(DataSetObserver observer) {
+        this.dsos.remove(observer);
+    }
 
-	private void notifyDSOs() {
-		for (DataSetObserver i : dsos) {
-			i.onChanged();
-		}
-	}
+    private void notifyDSOs() {
+        for (DataSetObserver i : dsos) {
+            i.onChanged();
+        }
+    }
 
-	private void filter(String year) {
-		if (year == null || year.equals(years[0])) {
-			this.notices.filterToYear(null);
-		} else {
-			this.notices.filterToYear(year.replace("Year ", ""));
-		}
-		this.notifyDSOs();
-	}
+    private void filter(String year) {
+        if (year == null || year.equals(years[0])) {
+            this.notices.filterToYear(null);
+        } else {
+            this.notices.filterToYear(year.replace("Year ", ""));
+        }
+        this.notifyDSOs();
+    }
 
-	@Override
-	public int getCount() {
-		if (notices == null) {
-			//return curError == null ? 1 : 2;
-			return 1;
-		} else if (notices.getVisibleNotices() == 0) {
-			return 3;
-		}
-		return notices.getVisibleNotices()+2;
-	}
+    @Override
+    public int getCount() {
+        if (notices == null) {
+            //return curError == null ? 1 : 2;
+            return 1;
+        } else if (notices.getVisibleNotices() == 0) {
+            return 3;
+        }
+        return notices.getVisibleNotices() + 2;
+    }
 
-	@Override
-	public Object getItem(int position) {
-		if (position == 0) {
-			return "Selector thingy";
-		}
-		return notices.getNoticeAtIndex(position);
-	}
+    @Override
+    public Object getItem(int position) {
+        if (position == 0) {
+            return "Selector thingy";
+        }
+        return notices.getNoticeAtIndex(position);
+    }
 
-	@Override
-	public long getItemId(int position) {
-		if (position < notices.getVisibleNotices()) {
-			return notices.getNoticeAtIndex(position).getID();
-		} else {
-			return 0;
-		}
-	}
+    @Override
+    public long getItemId(int position) {
+        if (position < notices.getVisibleNotices()) {
+            return notices.getNoticeAtIndex(position).getID();
+        } else {
+            return 0;
+        }
+    }
 
-	@Override
-	public boolean hasStableIds() {
-		return false;
-	}
+    @Override
+    public boolean hasStableIds() {
+        return false;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		if (notices == null) {
-			if (position == 0 && curError == null) {
-				return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent, false);
-			} else {
-				View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, parent, false);
-				TextView t = (TextView)v.findViewById(R.id.textview);
-				t.setText(curError);
-				return v;
-			}
-		}
-		if (notices.getNumberOfNotices() == 0 && position == 0) {
-			TextView res = new TextView(parent.getContext());
-			setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
-			res.setGravity(Gravity.CENTER);
-			res.setText(R.string.no_notices);
-			return res;
-		} else if (position == 0) {
-			if (this.theFilterSelector != null) {
-				Spinner s = (Spinner)theFilterSelector.findViewById(R.id.spinner);
-				curIndex = s.getSelectedItemPosition();
-				this.filter(curIndex == 0 ? null : years[curIndex]);
-				return theFilterSelector;
-			}
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (notices == null) {
+            if (position == 0 && curError == null) {
+                return ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_list_loading, parent, false);
+            } else {
+                View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.view_cardview_text, parent, false);
+                TextView t = (TextView) v.findViewById(R.id.textview);
+                t.setText(curError);
+                return v;
+            }
+        }
+        if (notices.getNumberOfNotices() == 0 && position == 0) {
+            TextView res = new TextView(parent.getContext());
+            setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
+            res.setGravity(Gravity.CENTER);
+            res.setText(R.string.no_notices);
+            return res;
+        } else if (position == 0) {
+            if (this.theFilterSelector != null) {
+                Spinner s = (Spinner) theFilterSelector.findViewById(R.id.spinner);
+                curIndex = s.getSelectedItemPosition();
+                this.filter(curIndex == 0 ? null : years[curIndex]);
+                return theFilterSelector;
+            }
 
-			FrameLayout f = (FrameLayout)((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, parent, false);
-			ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, years);
-			Spinner s = (Spinner)f.findViewById(R.id.spinner);
-			s.setAdapter(a);
-			s.setSelection(this.curIndex);
-			s.setOnItemSelectedListener(this);
-			this.theFilterSelector = f;
-			return f;
-		} else if (position == getCount() -1 ) {
-			View v = ((LayoutInflater)parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
-			TextView t = (TextView)v.findViewById(R.id.last_updated);
-			DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
-					.appendMonthOfYearShortText().appendLiteral(' ').appendYear(4,4).appendLiteral(' ').appendHourOfDay(2)
-					.appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
-			t.setText(f.print(this.notices.getFetchTime().toLocalDateTime()));
-			return v;
-		} else if (position == getCount() - 2 && notices.getVisibleNotices() == 0) {
-			TextView res = new TextView(parent.getContext());
-			setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
-			res.setGravity(Gravity.CENTER);
-			res.setText(R.string.no_notices);
-			return res;
-		}
-		Notices.Notice n = notices.getNoticeAtIndex(position-1);
-		View res;
-		if (convertView instanceof FrameLayout && convertView.findViewById(R.id.notice_title) instanceof TextView) {
-			res = convertView;
-		} else {
-			res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, parent, false);
-		}
-		TextView v = (TextView)res.findViewById(R.id.notice_body);
-		CharSequence s = n.getTextViewNoticeContents();
-		if (n.isMeeting()) {
-			String meetingDate = n.getMeetingDate();
-			String meetingTime = n.getMeetingTime();
-			String meetingPlace = n.getMeetingPlace();
-			String toSpan = "<span><strong>Meeting Date:</strong> " + meetingDate + " at " + meetingTime + "<br />";
-			toSpan += "<span><strong>Meeting Place:</strong> " + meetingPlace + "<br /><br />";
-			Spanned s2 = Html.fromHtml(toSpan);
-			s = TextUtils.concat(s2, s);
-		}
-		v.setText(s);
-		TextView title = (TextView)res.findViewById(R.id.notice_title);
-		title.setText(n.getTitle());
-		TextView author = (TextView)res.findViewById(R.id.notice_author);
-		author.setText(n.getAuthor());
-		TextView targ = (TextView)res.findViewById(R.id.notice_target);
-		targ.setText(String.format("(%s)", n.getDisplayTarget()));
-		return res;
-	}
+            FrameLayout f = (FrameLayout) ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_listview_spinner, parent, false);
+            ArrayAdapter<String> a = new ArrayAdapter<>(parent.getContext(), R.layout.textview, years);
+            Spinner s = (Spinner) f.findViewById(R.id.spinner);
+            s.setAdapter(a);
+            s.setSelection(this.curIndex);
+            s.setOnItemSelectedListener(this);
+            this.theFilterSelector = f;
+            return f;
+        } else if (position == getCount() - 1) {
+            View v = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.layout_last_updated, parent, false);
+            TextView t = (TextView) v.findViewById(R.id.last_updated);
+            DateTimeFormatter f = new DateTimeFormatterBuilder().appendDayOfWeekShortText().appendLiteral(' ').appendDayOfMonth(2).appendLiteral(' ')
+                    .appendMonthOfYearShortText().appendLiteral(' ').appendYear(4, 4).appendLiteral(' ').appendHourOfDay(2)
+                    .appendLiteral(':').appendMinuteOfHour(2).appendLiteral(':').appendSecondOfMinute(2).toFormatter();
+            t.setText(f.print(this.notices.getFetchTime().toLocalDateTime()));
+            return v;
+        } else if (position == getCount() - 2 && notices.getVisibleNotices() == 0) {
+            TextView res = new TextView(parent.getContext());
+            setTextAppearanceCompat(res, android.R.style.TextAppearance_DeviceDefault_Large);
+            res.setGravity(Gravity.CENTER);
+            res.setText(R.string.no_notices);
+            return res;
+        }
+        Notices.Notice n = notices.getNoticeAtIndex(position - 1);
+        View res;
+        if (convertView instanceof FrameLayout && convertView.findViewById(R.id.notice_title) instanceof TextView) {
+            res = convertView;
+        } else {
+            res = ((LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.notice_info_view, parent, false);
+        }
+        TextView v = (TextView) res.findViewById(R.id.notice_body);
+        CharSequence s = n.getTextViewNoticeContents();
+        if (n.isMeeting()) {
+            String meetingDate = n.getMeetingDate();
+            String meetingTime = n.getMeetingTime();
+            String meetingPlace = n.getMeetingPlace();
+            String toSpan = "<span><strong>Meeting Date:</strong> " + meetingDate + " at " + meetingTime + "<br />";
+            toSpan += "<span><strong>Meeting Place:</strong> " + meetingPlace + "<br /><br />";
+            Spanned s2 = Html.fromHtml(toSpan);
+            s = TextUtils.concat(s2, s);
+        }
+        v.setText(s);
+        TextView title = (TextView) res.findViewById(R.id.notice_title);
+        title.setText(n.getTitle());
+        TextView author = (TextView) res.findViewById(R.id.notice_author);
+        author.setText(n.getAuthor());
+        TextView targ = (TextView) res.findViewById(R.id.notice_target);
+        targ.setText(String.format("(%s)", n.getDisplayTarget()));
+        return res;
+    }
 
-	@Override
-	public int getItemViewType(int position) {
-		return (position == 0 ? 0 : 1);
-	}
+    @Override
+    public int getItemViewType(int position) {
+        return (position == 0 ? 0 : 1);
+    }
 
-	@Override
-	public int getViewTypeCount() {
-		return 2;
-	}
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
 
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-		curIndex = position;
-		this.filter(curIndex == 0 ? null : years[curIndex]);
-	}
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        curIndex = position;
+        this.filter(curIndex == 0 ? null : years[curIndex]);
+    }
 
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
 
-	}
+    }
 
-	private void updateNotices(Notices n) {
-		this.notices = n;
-		this.curIndex = 0;
-		curError = null;
-		this.notifyDSOs();
-	}
+    private void updateNotices(Notices n) {
+        this.notices = n;
+        this.curIndex = 0;
+        curError = null;
+        this.notifyDSOs();
+    }
 
-	@SuppressWarnings("unused")
-	private class EventListener {
-		public void onEvent(NoticesEvent e) {
-			if (e.successful()) {
-				updateNotices(e.getResponse());
-			}
-		}
-	}
+    @SuppressWarnings("unused")
+    private class EventListener {
+        public void onEvent(NoticesEvent e) {
+            if (e.successful()) {
+                updateNotices(e.getResponse());
+            }
+        }
+    }
 }

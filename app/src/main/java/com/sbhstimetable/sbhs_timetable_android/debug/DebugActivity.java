@@ -45,133 +45,133 @@ import com.sbhstimetable.sbhs_timetable_android.event.RefreshingStateEvent;
 
 @SuppressWarnings("all") // warnings in debugging? no thanks
 public class DebugActivity extends AppCompatActivity {
-	public Toolbar mToolbar;
-	public TypedValue mTypedValue;
+    public Toolbar mToolbar;
+    public TypedValue mTypedValue;
 
-	private StorageCache cache;
+    private StorageCache cache;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		ThemeHelper.setTheme(this);
-		super.onCreate(savedInstanceState);
-		cache = new StorageCache(this);
-		setContentView(R.layout.activity_debug);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
+        super.onCreate(savedInstanceState);
+        cache = new StorageCache(this);
+        setContentView(R.layout.activity_debug);
 
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		mTypedValue = new TypedValue();
-		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
-		int colorPrimary = mTypedValue.data;
-		mToolbar.setBackgroundColor(colorPrimary);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mTypedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+        int colorPrimary = mTypedValue.data;
+        mToolbar.setBackgroundColor(colorPrimary);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
-			int colorPrimaryDark = mTypedValue.data;
-			getWindow().setStatusBarColor(colorPrimaryDark);
-		}
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+            int colorPrimaryDark = mTypedValue.data;
+            getWindow().setStatusBarColor(colorPrimaryDark);
+        }
 
-		setSupportActionBar(mToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		final TextView status = (TextView)findViewById(R.id.status);
+        final TextView status = (TextView) findViewById(R.id.status);
 
-		findViewById(R.id.guess_week).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				status.setText(String.valueOf(cache.loadWeek()));
-			}
-		});
+        findViewById(R.id.guess_week).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                status.setText(String.valueOf(cache.loadWeek()));
+            }
+        });
 
-		findViewById(R.id.loading_timetable).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (ApiWrapper.getEventBus().getStickyEvent(RefreshingStateEvent.class).refreshing) {
-					status.setText("cancelled refreshing event");
-					ApiWrapper.doneRefreshing();
-				} else {
-					status.setText("posted refreshing event");
-					ApiWrapper.notifyRefreshing();
-				}
-				//status.setText(ApiWrapper.loadingTimetable + "");
-			}
-		});
+        findViewById(R.id.loading_timetable).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ApiWrapper.getEventBus().getStickyEvent(RefreshingStateEvent.class).refreshing) {
+                    status.setText("cancelled refreshing event");
+                    ApiWrapper.doneRefreshing();
+                } else {
+                    status.setText("posted refreshing event");
+                    ApiWrapper.notifyRefreshing();
+                }
+                //status.setText(ApiWrapper.loadingTimetable + "");
+            }
+        });
 
-		((CheckBox)findViewById(R.id.today_override)).setChecked(ApiWrapper.overrideEnabled);
+        ((CheckBox) findViewById(R.id.today_override)).setChecked(ApiWrapper.overrideEnabled);
 
-		((CheckBox)findViewById(R.id.today_override)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			//public boolean runOnce = false;
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+        ((CheckBox) findViewById(R.id.today_override)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //public boolean runOnce = false;
+            @Override
+            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+                /*if (!runOnce) {
+					runOnce = true;
+					return;
+				}*/
+                final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
+                if (buttonView.isChecked()) {
+                    AlertDialog a = new AlertDialog.Builder(buttonView.getContext()).setTitle("Here be dragons!").setMessage("You might get stuff wrong if you do this. Don't do it, except for testing(tm)").setIcon(R.drawable.ic_warning_white_48dp)
+                            .setNegativeButton("Abort!", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(buttonView.getContext(), "Crisis averted.", Toast.LENGTH_SHORT).show();
+                                    buttonView.toggle();
+                                }
+                            }).setPositiveButton("I'm ready", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    p.edit().putBoolean(PrefUtil.OVERRIDE, true).apply();
+                                    ApiWrapper.overrideEnabled = true;
+                                }
+                            }).show();
+                } else {
+                    p.edit().putBoolean(PrefUtil.OVERRIDE, false).apply();
+                    ApiWrapper.overrideEnabled = false;
+                }
+            }
+        });
+
+        ((CheckBox) findViewById(R.id.http_debugging)).setChecked(ApiWrapper.httpDebugging);
+        ((CheckBox) findViewById(R.id.http_debugging)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            //public boolean runOnce = false;
+            @Override
+            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
 				/*if (!runOnce) {
 					runOnce = true;
 					return;
 				}*/
-				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
-				if (buttonView.isChecked()) {
-					AlertDialog a = new AlertDialog.Builder(buttonView.getContext()).setTitle("Here be dragons!").setMessage("You might get stuff wrong if you do this. Don't do it, except for testing(tm)").setIcon(R.drawable.ic_warning_white_48dp)
-							.setNegativeButton("Abort!", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									Toast.makeText(buttonView.getContext(), "Crisis averted.", Toast.LENGTH_SHORT).show();
-									buttonView.toggle();
-								}
-							}).setPositiveButton("I'm ready", new DialogInterface.OnClickListener() {
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									p.edit().putBoolean(PrefUtil.OVERRIDE, true).apply();
-									ApiWrapper.overrideEnabled = true;
-								}
-							}).show();
-				} else {
-					p.edit().putBoolean(PrefUtil.OVERRIDE, false).apply();
-					ApiWrapper.overrideEnabled = false;
-				}
-			}
-		});
+                final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
+                if (buttonView.isChecked()) {
+                    p.edit().putBoolean("httpDebugging", true).apply();
+                } else {
+                    p.edit().putBoolean("httpDebugging", false).apply();
+                }
+                ApiWrapper.initialise(buttonView.getContext()); // re-init api wrapper
+                Toast.makeText(buttonView.getContext(), "Successfully " + (buttonView.isChecked() ? "en" : "dis") + "abled HTTP debugging", Toast.LENGTH_SHORT).show();
+            }
+        });
 
-		((CheckBox)findViewById(R.id.http_debugging)).setChecked(ApiWrapper.httpDebugging);
-		((CheckBox)findViewById(R.id.http_debugging)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			//public boolean runOnce = false;
-			@Override
-			public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-				/*if (!runOnce) {
-					runOnce = true;
-					return;
-				}*/
-				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(buttonView.getContext());
-				if (buttonView.isChecked()) {
-					p.edit().putBoolean("httpDebugging", true).apply();
-				} else {
-					p.edit().putBoolean("httpDebugging", false).apply();
-				}
-				ApiWrapper.initialise(buttonView.getContext()); // re-init api wrapper
-				Toast.makeText(buttonView.getContext(), "Successfully " + (buttonView.isChecked() ? "en" : "dis") + "abled HTTP debugging", Toast.LENGTH_SHORT).show();
-			}
-		});
+        ((CheckBox) findViewById(R.id.belltime_date_debug)).setChecked(TimetableApp.BELLTIME_ALLOW_FAKE_DAY);
+        ((CheckBox) findViewById(R.id.belltime_date_debug)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(compoundButton.getContext());
+                p.edit().putBoolean(PrefUtil.BELLTIMES_DAY_TESTING, compoundButton.isChecked()).apply();
+                Toast.makeText(compoundButton.getContext(), "Done!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-		((CheckBox)findViewById(R.id.belltime_date_debug)).setChecked(TimetableApp.BELLTIME_ALLOW_FAKE_DAY);
-		((CheckBox)findViewById(R.id.belltime_date_debug)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-				final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(compoundButton.getContext());
-				p.edit().putBoolean(PrefUtil.BELLTIMES_DAY_TESTING, compoundButton.isChecked()).apply();
-				Toast.makeText(compoundButton.getContext(), "Done!", Toast.LENGTH_SHORT).show();
-			}
-		});
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == android.R.id.home) {
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
-	@Override
-	public void onBackPressed() {
-		finish();
-	}
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

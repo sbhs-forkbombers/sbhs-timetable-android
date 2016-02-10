@@ -27,36 +27,37 @@ import android.util.Log;
 import com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper;
 
 public class WidgetUpdaterService extends Service {
-	public static final String ACTION_UPDATE = "doUpdate";
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
+    public static final String ACTION_UPDATE = "doUpdate";
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent == null) {
-			Log.wtf("WidgetUpdateService", "NULL INTENT WTF");
-			return super.onStartCommand(null, flags, startId);
-		}
-		if (intent.getAction() == null) {
-			Log.wtf("WidgetUpdateService", "NULL ACTION " + intent.describeContents());
-			return super.onStartCommand(intent, flags, startId);
-		}
-		if (intent.getAction().equals(ACTION_UPDATE)) {
-			ApiWrapper.requestBells(this);
-			ApiWrapper.requestToday(this);
-		}
-		return super.onStartCommand(intent, flags, startId);
-	}
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
 
-	@Override
-	public void onCreate() {
-		super.onCreate();
-	}
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) {
+            Log.wtf("WidgetUpdateService", "NULL INTENT WTF");
+            return super.onStartCommand(null, flags, startId);
+        }
+        if (intent.getAction() == null) {
+            Log.wtf("WidgetUpdateService", "NULL ACTION " + intent.describeContents());
+            return super.onStartCommand(intent, flags, startId);
+        }
+        if (intent.getAction().equals(ACTION_UPDATE)) {
+            ApiWrapper.requestBells(this);
+            ApiWrapper.requestToday(this);
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

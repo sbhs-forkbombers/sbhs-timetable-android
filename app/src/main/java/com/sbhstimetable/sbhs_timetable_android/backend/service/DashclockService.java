@@ -38,20 +38,21 @@ import org.joda.time.format.DateTimeFormatterBuilder;
 
 public class DashclockService extends DashClockExtension {
     private FullCycleWrapper cycle;
-	private DateTimeHelper dth;
-	private StorageCache cache;
+    private DateTimeHelper dth;
+    private StorageCache cache;
+
     @Override
     protected void onInitialize(boolean isReconnect) {
         super.onInitialize(isReconnect);
         setUpdateWhenScreenOn(true);
         cycle = new FullCycleWrapper(this);
         dth = new DateTimeHelper(this);
-		cache = new StorageCache(this);
+        cache = new StorageCache(this);
 
-		dth.setBells(cache.loadBells());
-		if (!dth.hasBells()) {
-			ApiWrapper.requestBells(this);
-		}
+        dth.setBells(cache.loadBells());
+        if (!dth.hasBells()) {
+            ApiWrapper.requestBells(this);
+        }
 
     }
 
@@ -63,67 +64,64 @@ public class DashclockService extends DashClockExtension {
             publishUpdate(new ExtensionData().visible(false));
             return;
         }
-		Day t = null;
-		if (cycle.ready()) {
-			t = cycle.getToday();
-		}
-		if (!cycle.hasRealTimeInfo()) {
-			ApiWrapper.requestToday(this);
-		}
-		if (this.dth.getNextPeriod() == null || this.dth.getNextBell().getBellName().startsWith("Roll")) summary = true;
-		ExtensionData res = new ExtensionData().icon(R.mipmap.ic_notification_icon).clickIntent(new Intent(this, TimetableActivity.class));
+        Day t = null;
+        if (cycle.ready()) {
+            t = cycle.getToday();
+        }
+        if (!cycle.hasRealTimeInfo()) {
+            ApiWrapper.requestToday(this);
+        }
+        if (this.dth.getNextPeriod() == null || this.dth.getNextBell().getBellName().startsWith("Roll"))
+            summary = true;
+        ExtensionData res = new ExtensionData().icon(R.mipmap.ic_notification_icon).clickIntent(new Intent(this, TimetableActivity.class));
         if (t != null && !summary) {
-			Belltimes.Bell next = dth.getNextPeriod();
-			num = next.getPeriodNumber();
+            Belltimes.Bell next = dth.getNextPeriod();
+            num = next.getPeriodNumber();
             publishUpdate(res.status(t.getPeriod(num).getShortName() + " - " + t.getPeriod(num).getRoom())
                             .expandedTitle(t.getPeriod(num).getSubject())
                             .expandedBody("in " + t.getPeriod(num).getRoom() + " with " + t.getPeriod(num).getTeacher())
                             .visible(true)
             );
-        }
-        else if (summary && t != null) {
+        } else if (summary && t != null) {
             String subjects = "";
-            for (int i : new int[] { 1, 2, 3, 4, 5}) {
+            for (int i : new int[]{1, 2, 3, 4, 5}) {
                 Lesson p = t.getPeriod(i);
                 if (i == 5) {
                     if (p != null) {
                         subjects += "and " + p.getSubject().replace(" Period", "");
-                    }
-                    else {
+                    } else {
                         subjects += "and free!";
                     }
                     continue;
                 }
                 if (p != null) {
                     subjects += p.getSubject().replace(" Period", "") + ", ";
-                }
-                else {
+                } else {
                     subjects += "Free, ";
                 }
             }
             if (!cycle.ready()) {
                 subjects = "I need to reload!";
                 ApiWrapper.requestToday(this);
-				ApiWrapper.requestTimetable(this);
+                ApiWrapper.requestTimetable(this);
             }
             String shortTitle;
-			String day = new DateTimeFormatterBuilder().appendDayOfWeekText().toFormatter().print(dth.getNextSchoolDay());
-			if (day.length() > 3) {
+            String day = new DateTimeFormatterBuilder().appendDayOfWeekText().toFormatter().print(dth.getNextSchoolDay());
+            if (day.length() > 3) {
                 shortTitle = day.substring(0, 3);
-				if (cycle.getToday().getWeek().isEmpty()) {
-					shortTitle += " " + cache.loadWeek();
-				} else {
-					shortTitle += " " + cycle.getToday().getWeek();
-				}
-            }
-            else {
+                if (cycle.getToday().getWeek().isEmpty()) {
+                    shortTitle += " " + cache.loadWeek();
+                } else {
+                    shortTitle += " " + cycle.getToday().getWeek();
+                }
+            } else {
                 shortTitle = "TMR";
             }
             publishUpdate(res.status(shortTitle)
-							.expandedTitle(day)
-							.expandedBody(subjects)
-							.visible(true)
-			);
+                            .expandedTitle(day)
+                            .expandedBody(subjects)
+                            .visible(true)
+            );
         }
     }
 }

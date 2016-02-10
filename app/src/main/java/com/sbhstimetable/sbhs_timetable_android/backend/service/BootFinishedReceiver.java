@@ -33,9 +33,9 @@ public class BootFinishedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
-        if (p.getBoolean("notifications_enable",false)) {
-			Intent i = new Intent(context, NotificationService.class);
-			i.setAction(NotificationService.ACTION_INITIALISE);
+        if (p.getBoolean("notifications_enable", false)) {
+            Intent i = new Intent(context, NotificationService.class);
+            i.setAction(NotificationService.ACTION_INITIALISE);
             context.startService(i);
         }
     }

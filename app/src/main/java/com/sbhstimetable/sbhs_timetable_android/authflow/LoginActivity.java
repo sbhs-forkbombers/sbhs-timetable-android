@@ -45,74 +45,74 @@ import com.sbhstimetable.sbhs_timetable_android.backend.internal.ThemeHelper;
 import static com.sbhstimetable.sbhs_timetable_android.api.ApiWrapper.baseURL;
 
 public class LoginActivity extends AppCompatActivity {
-	public Toolbar mToolbar;
-	public TypedValue mTypedValue;
-	public WebView mWebView;
+    public Toolbar mToolbar;
+    public TypedValue mTypedValue;
+    public WebView mWebView;
 
-	@Override
-	@SuppressWarnings("ConstantConditions")
-	protected void onCreate(Bundle savedInstanceState) {
-		ThemeHelper.setTheme(this);
-		super.onCreate(savedInstanceState);
-		supportRequestWindowFeature(Window.FEATURE_PROGRESS);
-		setContentView(R.layout.activity_login);
-		mTypedValue = new TypedValue();
-		getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
-		int colorPrimary = mTypedValue.data;
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		mToolbar.setBackgroundColor(colorPrimary);
-		setSupportActionBar(mToolbar);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.setTheme(this);
+        super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_PROGRESS);
+        setContentView(R.layout.activity_login);
+        mTypedValue = new TypedValue();
+        getTheme().resolveAttribute(R.attr.colorPrimary, mTypedValue, true);
+        int colorPrimary = mTypedValue.data;
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setBackgroundColor(colorPrimary);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
-			int colorPrimaryDark = mTypedValue.data;
-			getWindow().setStatusBarColor(colorPrimaryDark);
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getTheme().resolveAttribute(R.attr.colorPrimaryDark, mTypedValue, true);
+            int colorPrimaryDark = mTypedValue.data;
+            getWindow().setStatusBarColor(colorPrimaryDark);
+        }
 
-		mWebView = (WebView) findViewById(R.id.loginview);
-		mWebView.setBackgroundColor(Color.parseColor("#000000"));
-		mWebView.getSettings().setSaveFormData(true);
-		final Activity me = this;
-		mWebView.setWebViewClient(new WebViewClient() {
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				//Log.e("LoginActivity", "navigate to " + url);
+        mWebView = (WebView) findViewById(R.id.loginview);
+        mWebView.setBackgroundColor(Color.parseColor("#000000"));
+        mWebView.getSettings().setSaveFormData(true);
+        final Activity me = this;
+        mWebView.setWebViewClient(new WebViewClient() {
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                //Log.e("LoginActivity", "navigate to " + url);
 
-				if (url.toLowerCase().startsWith(baseURL.replace("https", "http").toLowerCase()) && ((url.endsWith("/") || url.endsWith("loggedIn=true") || url.contains("mobile_loading")))) {
-					// this would be our website!
-					String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
-					for (String i : cookies) {
-						if (i.contains("SESSID")) {
-							String sessionID = i.split("=")[1];
-							ApiWrapper.finishedLogin(me, sessionID);
+                if (url.toLowerCase().startsWith(baseURL.replace("https", "http").toLowerCase()) && ((url.endsWith("/") || url.endsWith("loggedIn=true") || url.contains("mobile_loading")))) {
+                    // this would be our website!
+                    String[] cookies = CookieManager.getInstance().getCookie(baseURL).split("[;]");
+                    for (String i : cookies) {
+                        if (i.contains("SESSID")) {
+                            String sessionID = i.split("=")[1];
+                            ApiWrapper.finishedLogin(me, sessionID);
 
-							PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(PrefUtil.PREF_LOGGED_IN_ONCE, true).apply();
-							me.onBackPressed();
-						}
-					}
-				}
-			}
-		});
-		mWebView.loadUrl(baseURL + "/try_do_oauth?app=1");
-	}
+                            PreferenceManager.getDefaultSharedPreferences(me).edit().putBoolean(PrefUtil.PREF_LOGGED_IN_ONCE, true).apply();
+                            me.onBackPressed();
+                        }
+                    }
+                }
+            }
+        });
+        mWebView.loadUrl(baseURL + "/try_do_oauth?app=1");
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		int id = item.getItemId();
-		if (id == android.R.id.home) {
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
-	@Override
-	public void onBackPressed() {
-		Intent i = new Intent(this, TimetableActivity.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		startActivity(i);
-		finish();
-	}
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(this, TimetableActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(i);
+        finish();
+    }
 
 }

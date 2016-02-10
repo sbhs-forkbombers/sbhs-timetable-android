@@ -23,13 +23,13 @@ package com.sbhstimetable.sbhs_timetable_android.backend.internal;
 public class PrefUtil {
     public static final String WIDGET_TRANSPARENCY_HS = "widget_transparency_homescreen";
     public static final String WIDGET_TRANSPARENCY_LS = "widget_transparency_lockscreen";
-	public static final String THEME = "app_theme";
-	public static final String COLOUR = "app_colour";
-	public static final String NOTIFICATIONS_ENABLED = "notifications_enable";
-	public static final String NOTIFICATION_INCLUDE_BREAKS = "notifications_only_periods";
-	public static final String NOTIFICATIONS_PERSISTENT = "notification_persist";
-	public static final String BELLTIMES_DAY_TESTING = "bell_day_testing";
-	public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
-	public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
-	public static final String OVERRIDE = "ignoreVariationsReady";
+    public static final String THEME = "app_theme";
+    public static final String COLOUR = "app_colour";
+    public static final String NOTIFICATIONS_ENABLED = "notifications_enable";
+    public static final String NOTIFICATION_INCLUDE_BREAKS = "notifications_only_periods";
+    public static final String NOTIFICATIONS_PERSISTENT = "notification_persist";
+    public static final String BELLTIMES_DAY_TESTING = "bell_day_testing";
+    public static final String PREF_DISABLE_DIALOG = "disableFeedbackDialog";
+    public static final String PREF_LOGGED_IN_ONCE = "hasLoggedInBefore";
+    public static final String OVERRIDE = "ignoreVariationsReady";
 }

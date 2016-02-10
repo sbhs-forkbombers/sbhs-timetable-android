@@ -50,24 +50,25 @@ public class TodayWidgetService extends RemoteViewsService {
 
     class TodayRemoteViewsFactory implements RemoteViewsFactory {
         private Context con;
-		private EventListener e;
-		private FullCycleWrapper cycle;
+        private EventListener e;
+        private FullCycleWrapper cycle;
+
         TodayRemoteViewsFactory(Context c) {
             this.con = c;
-			this.e = new EventListener(c);
-			this.cycle = new FullCycleWrapper(c);
-			ApiWrapper.getEventBus().register(e);
-		}
+            this.e = new EventListener(c);
+            this.cycle = new FullCycleWrapper(c);
+            ApiWrapper.getEventBus().register(e);
+        }
 
         @Override
         public void onCreate() {
-			Log.i("TodayWidgetService", "Hi I am the today widget service your number one source for widgets since 1998");
-			DateTime nextUpdate = DateTime.now().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
-			AlarmManager am = (AlarmManager)con.getSystemService(Context.ALARM_SERVICE);
-			Intent intent = new Intent();
-			intent.setClass(con, WidgetUpdaterService.class);
-			PendingIntent updateIntent = PendingIntent.getService(con, 0, intent, 0);
-			am.set(AlarmManager.ELAPSED_REALTIME, nextUpdate.getMillis() - DateTime.now().getMillis(), updateIntent);
+            Log.i("TodayWidgetService", "Hi I am the today widget service your number one source for widgets since 1998");
+            DateTime nextUpdate = DateTime.now().withTimeAtStartOfDay().plusHours(15).plusMinutes(15);
+            AlarmManager am = (AlarmManager) con.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent();
+            intent.setClass(con, WidgetUpdaterService.class);
+            PendingIntent updateIntent = PendingIntent.getService(con, 0, intent, 0);
+            am.set(AlarmManager.ELAPSED_REALTIME, nextUpdate.getMillis() - DateTime.now().getMillis(), updateIntent);
         }
 
         @Override
@@ -86,7 +87,7 @@ public class TodayWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int i) {
-			Log.i("TWS", "Updating " + i);
+            Log.i("TWS", "Updating " + i);
             if (!this.cycle.ready()) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
                 r.setTextViewText(R.id.label, "Waiting for data... (Maybe get an internet connection?)");
@@ -97,7 +98,7 @@ public class TodayWidgetService extends RemoteViewsService {
             }
             if (i == 0) {
                 RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_textview);
-				Log.i("TWS", "day index " + cycle.getCurrentDayInCycle() + " day " + cycle.getToday());
+                Log.i("TWS", "day index " + cycle.getCurrentDayInCycle() + " day " + cycle.getToday());
                 String res = cycle.getToday().getDayName() + " " + cycle.getToday().getWeek();
                 r.setTextViewText(R.id.label, res);
                 //r.setInt(R.id.label, "setGravity", Gravity.LEFT);
@@ -111,19 +112,19 @@ public class TodayWidgetService extends RemoteViewsService {
             if (p.roomChanged()) {
                 r.setTextColor(R.id.timetable_class_room, standout);
             } else {
-				r.setTextColor(R.id.timetable_class_room, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
-			}
+                r.setTextColor(R.id.timetable_class_room, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
+            }
             r.setTextViewText(R.id.timetable_class_teacher, p.getTeacher());
             if (p.teacherChanged()) {
                 r.setTextColor(R.id.timetable_class_teacher, standout);
             } else {
-				r.setTextColor(R.id.timetable_class_teacher, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
-			}
+                r.setTextColor(R.id.timetable_class_teacher, ContextCompat.getColor(con, R.color.primary_text_default_material_dark));
+            }
 
             if (!p.roomChanged() && !p.teacherChanged()) {
                 r.setImageViewBitmap(R.id.timetable_class_changed, null);
             }
-			r.setOnClickFillInIntent(R.id.classinfo_root, new Intent());
+            r.setOnClickFillInIntent(R.id.classinfo_root, new Intent());
             return r;
         }
 
@@ -150,19 +151,21 @@ public class TodayWidgetService extends RemoteViewsService {
         }
 
         @SuppressWarnings("unused")
-		private class EventListener {
-			private Context context;
-			public EventListener(Context c) {
-				this.context = c;
-			}
-			public void onEvent(TodayEvent today) {
-				if (!today.successful()) return;
-				AppWidgetManager a = AppWidgetManager.getInstance(context);
-				int ids[] = a.getAppWidgetIds(new ComponentName(context, TodayAppWidget.class));
-				a.notifyAppWidgetViewDataChanged(ids, R.id.widget_today_listview);
+        private class EventListener {
+            private Context context;
 
-			}
-		}
+            public EventListener(Context c) {
+                this.context = c;
+            }
+
+            public void onEvent(TodayEvent today) {
+                if (!today.successful()) return;
+                AppWidgetManager a = AppWidgetManager.getInstance(context);
+                int ids[] = a.getAppWidgetIds(new ComponentName(context, TodayAppWidget.class));
+                a.notifyAppWidgetViewDataChanged(ids, R.id.widget_today_listview);
+
+            }
+        }
     }
 
 

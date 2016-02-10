@@ -135,11 +135,9 @@ public class NotificationService extends Service {
 			showTomorrowNotification();
 		} else {
 			if (dth.getNextPeriod() == null) {
-				Log.i("NotificationService", "doot doot");
 				showEndOfDayNotification();
 
 			} else {
-				Log.i("NotificationService", "oot ootd");
 				showNextPeriodNotification();
 			}
 		}
@@ -213,7 +211,6 @@ public class NotificationService extends Service {
         Belltimes.Bell eod = this.dth.getNextBell();
         b.setContentTitle(eod.getBellName());
         b.setContentText("at " + eod.getBellDisplay());
-		b.setContentInfo("doot doot");
 		b.setWhen(eod.getBellTime().getMillis());
         mNM.notify(NOTIFICATION, b.build());
     }

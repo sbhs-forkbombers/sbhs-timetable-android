@@ -100,7 +100,7 @@
 
 		<receiver
 			android:name=".backend.service.CountdownAppWidget"
-			android:label="SBHS Timetable - Countdown" >
+			android:label="@string/widget_countdown" >
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 			</intent-filter>
@@ -124,7 +124,7 @@
 		</receiver>
 		<receiver
 			android:name=".backend.service.TodayAppWidget"
-			android:label="SBHS Timetable - Today" >
+			android:label="@string/widget_today" >
 			<intent-filter>
 				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
 				<action android:name="com.sbhstimetable.action.TODAY_UPDATE" />

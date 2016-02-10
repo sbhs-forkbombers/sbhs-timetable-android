@@ -29,6 +29,8 @@
 	<string name="title_activity_login">Login</string>
 	<string name="title_activity_debug">Debuggering</string>
 	<string name="title_activity_class_info">Some Class</string>
+	<string name="widget_countdown">Next Bell Countdown</string>
+	<string name="widget_today">Today\'s Timetable</string>
 
 	<!-- action labels -->
 	<string name="navigation_drawer_open">Open navigation drawer</string>

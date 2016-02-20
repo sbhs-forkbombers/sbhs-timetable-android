@@ -130,7 +130,8 @@ public class CountdownAppWidget extends AppWidgetProvider {
                     p = cycle.getToday().getPeriod(next.getPeriodNumber());
                     label = p.getSubject();
                 } else {
-                    label = next.getBellName();}
+                    label = next.getBellName();
+                }
             } else { // There's consecutive non-periods - i.e lunch 1 -> lunch 2
                 label = next.getBellName();
                 connector = "starts in";}
@@ -195,12 +196,6 @@ public class CountdownAppWidget extends AppWidgetProvider {
         pending = PendingIntent.getBroadcast(context, appWidgetIds[0], m, PendingIntent.FLAG_CANCEL_CURRENT);
         am.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 1000, pending);
     }
-
-	/*@Override
-	public void onEnabled(Context c) {
-
-	}*/
-
 
     @Override
     public void onDisabled(Context context) {

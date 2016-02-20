@@ -219,6 +219,9 @@ public class StorageCache {
         Period gap = new Period(d, thisWeek);
         idx += gap.getWeeks();
         idx %= 3;
+        if (idx < 0) {
+            return "A";
+        }
         return new String[]{"A", "B", "C"}[idx];
     }
 

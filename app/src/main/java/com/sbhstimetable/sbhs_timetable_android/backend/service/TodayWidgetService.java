@@ -108,7 +108,7 @@ public class TodayWidgetService extends RemoteViewsService {
             RemoteViews r = new RemoteViews(con.getPackageName(), R.layout.layout_timetable_classinfo_widget);
             r.setTextViewText(R.id.timetable_class_header, p.getSubject());
             r.setTextViewText(R.id.timetable_class_room, p.getRoom());
-            int standout = ContextCompat.getColor(con, R.color.standout);
+            int standout = ContextCompat.getColor(con, R.color.accent);
             if (p.roomChanged()) {
                 r.setTextColor(R.id.timetable_class_room, standout);
             } else {

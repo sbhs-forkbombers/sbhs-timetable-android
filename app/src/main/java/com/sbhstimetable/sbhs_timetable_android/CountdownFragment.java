@@ -274,16 +274,10 @@ public class CountdownFragment extends Fragment {
 
         if (p != null) {
             if (p.teacherChanged()) {
-                teacher.setTextColor(ContextCompat.getColor(getActivity(), R.color.standout));
-            } else {
-                teacher.setTextColor(ContextCompat.getColor(getActivity(), R.color.primary_text_default_material_dark));
-                //teacher.setTextColor(getActivity().getResources().getColor(R.color.secondary_text_dark));
+                teacher.setTextColor(ContextCompat.getColor(getActivity(), R.color.accent));
             }
             if (p.roomChanged()) {
-                room.setTextColor(ContextCompat.getColor(getActivity(), R.color.standout));
-            } else {
-                room.setTextColor(ContextCompat.getColor(getActivity(), R.color.primary_text_default_material_dark));
-                //room.setTextColor(getActivity().getResources().getColor(android.R.color.secondary_text_dark));
+                room.setTextColor(ContextCompat.getColor(getActivity(), R.color.accent));
             }
         }
 

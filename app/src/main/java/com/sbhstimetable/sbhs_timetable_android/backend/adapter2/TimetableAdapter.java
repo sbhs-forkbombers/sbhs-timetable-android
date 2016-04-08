@@ -193,7 +193,7 @@ public class TimetableAdapter extends DataSetObserver implements ListAdapter, Ad
         } else {
             changed.setVisibility(View.VISIBLE);
         }
-        int colour = ContextCompat.getColor(roomText.getContext(), R.color.standout);
+        int colour = ContextCompat.getColor(roomText.getContext(), R.color.accent);
         if (l.cancelled()) {
             roomText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             teacherText.setPaintFlags(Paint.STRIKE_THRU_TEXT_FLAG);

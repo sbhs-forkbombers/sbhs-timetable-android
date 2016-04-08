@@ -82,11 +82,13 @@ public class TimetableActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
         mNavigationView.getMenu().findItem(mNavItemId).setChecked(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        mNavigationView.getMenu().getItem(4).setIcon(ContextCompat.getDrawable(getApplicationContext(), ThemeHelper.isBackgroundDark() ? R.drawable.ic_settings_dark_24dp : R.drawable.ic_settings_white_24dp));
+        mNavigationView.getMenu().getItem(4).setIcon(ContextCompat.getDrawable(getApplicationContext(),
+                ThemeHelper.isBackgroundDark() ? R.drawable.ic_settings_dark_24dp : R.drawable.ic_settings_white_24dp));
         //ApiAccessor.load(this);
         ApiWrapper.initialise(this);
         if (!ApiWrapper.isLoggedIn()) {
@@ -106,7 +108,8 @@ public class TimetableActivity extends AppCompatActivity
             this.cache = new StorageCache(this);
         }
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(this);
-        if (!NotificationService.running && p.getBoolean(PrefUtil.NOTIFICATIONS_ENABLED, false) && p.getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true)) {
+        if (!NotificationService.running && p.getBoolean(PrefUtil.NOTIFICATIONS_ENABLED, false) &&
+                p.getBoolean(PrefUtil.NOTIFICATIONS_PERSISTENT, true)) {
             Intent i = new Intent(this, NotificationService.class);
             i.setAction(NotificationService.ACTION_INITIALISE);
             this.startService(i);

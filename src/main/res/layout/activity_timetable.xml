@@ -49,6 +49,7 @@
 		android:layout_height="match_parent"
 		android:layout_gravity="start"
 		android:fitsSystemWindows="true"
+		android:overScrollMode="never"
 		app:menu="@menu/nav" />
 
 </android.support.v4.widget.DrawerLayout>

@@ -29,6 +29,7 @@
 	<color name="primary_red">#fff44336</color> <!-- red 500 -->
 	<color name="primary_red_dark">#ffd32f2f</color> <!-- red 700 -->
 	<color name="accent">#ffffc400</color> <!-- amber A400 -->
+	<color name="accent_light">#ffffab00</color> <!-- amber A700 -->
 	<color name="red">#fff44336</color> <!-- red 500 -->
 	<color name="green">#ff4caf50</color> <!-- green 500 -->
 	<color name="blue">#ff2196f3</color> <!-- blue 500 -->
